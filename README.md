@@ -1,2 +1,2 @@
-# neoterm.nvim
-Manage buffer/tab/window specific terminal buffers in neovim
+# nuiterm.nvim
+This Neovim plugin is meant to facilitate creating, managing, and sending text to terminals which are attached to the buffer/tab/window that you are currently in. This is most useful in the context of REPLs - you may want to send text from your file to a REPL just for that file, or you may always have your files in the left window and want to share the REPL, or you may use tabs to organize different projects which share a REPL.
