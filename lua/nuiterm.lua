@@ -130,11 +130,10 @@ function nuiterm.send_visual(type,num)
   end
 end
 
-function nuiterm.send_file()
-  local bufnum = vim.fn.bufnr()
-  local top_row = 1
-  local bot_row = vim.api.nvim_buf_line_count(0)
-  nuiterm.send_lines(bufnum, top_row, bot_row)
+function nuiterm.send_file(type,num)
+  local start_line = 1
+  local end_line = vim.api.nvim_buf_line_count(0)
+  nuiterm.send_lines(start_line,end_line,type,num)
 end
 
 function nuiterm.toggle_menu()
