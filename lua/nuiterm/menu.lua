@@ -1,5 +1,4 @@
 local Menu = require("nui.menu")
-local nuiterm = require("nuiterm")
 local utils = require("nuiterm.utils")
 local menu = {}
 
@@ -19,8 +18,7 @@ menu.menu_options = {
   }
 }
 
-function menu.show_terminal_menu()
-  local lines = {}
+function menu.add_editor_terms(lines)
   if utils.table_length(Nuiterms["editor"]) > 0 then
     lines[#lines+1] = Menu.separator("Editor")
     for _,t in pairs(Nuiterms["editor"]) do
@@ -30,6 +28,9 @@ function menu.show_terminal_menu()
       lines[#lines+1] = menu_item
     end
   end
+end
+
+function menu.add_tab_terms(lines)
   if utils.table_length(Nuiterms["tab"]) > 0 then
     lines[#lines+1] = Menu.separator("Tab")
     for _,t in pairs(Nuiterms["tab"]) do
@@ -44,6 +45,9 @@ function menu.show_terminal_menu()
       lines[#lines+1] = menu_item
     end
   end
+end
+
+function menu.add_window_terms(lines)
   if utils.table_length(Nuiterms["window"]) > 0 then
     lines[#lines+1] = Menu.separator("Window")
     for _,t in pairs(Nuiterms["window"]) do
@@ -55,6 +59,9 @@ function menu.show_terminal_menu()
       lines[#lines+1] = menu_item
     end
   end
+end
+
+function menu.add_buffer_terms(lines)
   if utils.table_length(Nuiterms["buffer"]) > 0 then
     lines[#lines+1] = Menu.separator("Buffer")
     for _,t in pairs(Nuiterms["buffer"]) do
@@ -66,21 +73,7 @@ function menu.show_terminal_menu()
       lines[#lines+1] = menu_item
     end
   end
-  nuiterm.terminal_menu = Menu(menu.menu_options, {
-    lines = lines,
-    max_width = 20,
-    keymap = {
-      focus_next = { "j", "<Down>", "<Tab>" },
-      focus_prev = { "k", "<Up>", "<S-Tab>" },
-      close = { "<Esc>", "<C-c>", "q" },
-      submit = { "<CR>", "<Space>" },
-    },
-    on_submit = function(item)
-      nuiterm.toggle(item.type,item.type_id)
-    end,
-  })
-  nuiterm.terminal_menu:mount()
-  nuiterm.menu_shown = true
 end
+
 
 return menu

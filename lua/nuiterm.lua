@@ -1,7 +1,9 @@
 vim = vim
 local Terminal = require("nuiterm.terminal")
+local Menu = require("nui.menu")
 local defaults = require("nuiterm.config").defaults
 local utils = require("nuiterm.utils")
+local menu = require("nuiterm.menu")
 local nuiterm = {}
 
 Nuiterms = {
@@ -142,6 +144,35 @@ function nuiterm.toggle_menu()
   else
     nuiterm.show_terminal_menu()
   end
+end
+
+function nuiterm.show_terminal_menu()
+  local lines = {}
+  menu.add_editor_terms(lines)
+  menu.add_tab_terms(lines)
+  menu.add_window_terms(lines)
+  menu.add_buffer_terms(lines)
+  nuiterm.terminal_menu = Menu(menu.menu_options, {
+    lines = lines,
+    max_width = 20,
+    keymap = {
+      focus_next = { "j", "<Down>", "<Tab>" },
+      focus_prev = { "k", "<Up>", "<S-Tab>" },
+      close = { "<Esc>", "<C-c>", "q" },
+      submit = { "<CR>", "<Space>" },
+    },
+    on_submit = function(item)
+      if item then
+        nuiterm.toggle(item.type,item.type_id)
+      end
+      nuiterm.menu_shown = false
+    end,
+    on_close = function()
+      nuiterm.menu_shown = false
+    end
+  })
+  nuiterm.terminal_menu:mount()
+  nuiterm.menu_shown = true
 end
 
 -- Ensure terminal is left properly
