@@ -18,27 +18,32 @@ menu.menu_options = {
   }
 }
 
-function menu.add_editor_terms(lines)
+function menu.add_editor_terms(lines,remove_header)
   if utils.table_length(Nuiterms["editor"]) > 0 then
-    lines[#lines+1] = Menu.separator("Editor")
+    if not remove_header then
+      lines[#lines+1] = Menu.separator("Editor")
+    end
     for _,t in pairs(Nuiterms["editor"]) do
+      local display = "Editor "..t.type_id
       local menu_item = Menu.item(
-        tostring(t.type_id),{type=t.type,type_id=t.type_id}
+        display,{type=t.type,type_id=t.type_id}
       )
       lines[#lines+1] = menu_item
     end
   end
 end
 
-function menu.add_tab_terms(lines)
+function menu.add_tab_terms(lines,remove_header)
   if utils.table_length(Nuiterms["tab"]) > 0 then
-    lines[#lines+1] = Menu.separator("Tab")
+    if not remove_header then
+      lines[#lines+1] = Menu.separator("Tab")
+    end
     for _,t in pairs(Nuiterms["tab"]) do
       local buf_names = ""
       for _,win in pairs(vim.api.nvim_tabpage_list_wins(t.type_id)) do
         buf_names = buf_names.." "..vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
       end
-      local display = "Tab: "..t.type_id.." -- Buffers in tab: "..buf_names
+      local display = "Tab "..t.type_id.."- Buffers in tab: "..buf_names
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -47,12 +52,14 @@ function menu.add_tab_terms(lines)
   end
 end
 
-function menu.add_window_terms(lines)
+function menu.add_window_terms(lines,remove_header)
   if utils.table_length(Nuiterms["window"]) > 0 then
-    lines[#lines+1] = Menu.separator("Window")
+    if not remove_header then
+      lines[#lines+1] = Menu.separator("Window")
+    end
     for _,t in pairs(Nuiterms["window"]) do
       local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(t.type_id))
-      local display = "Window: "..t.type_id.." -- Buffer in window: "..buf_name
+      local display = "Window "..t.type_id.."- Buffer in window: "..buf_name
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -61,12 +68,14 @@ function menu.add_window_terms(lines)
   end
 end
 
-function menu.add_buffer_terms(lines)
+function menu.add_buffer_terms(lines,remove_header)
   if utils.table_length(Nuiterms["buffer"]) > 0 then
-    lines[#lines+1] = Menu.separator("Buffer")
+    if not remove_header then
+      lines[#lines+1] = Menu.separator("Buffer")
+    end
     for _,t in pairs(Nuiterms["buffer"]) do
       local buf_name = vim.api.nvim_buf_get_name(t.type_id)
-      local display = "Buffer: "..t.type_id.." -- Name: "..buf_name
+      local display = "Buffer "..t.type_id..": "..buf_name
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -74,6 +83,5 @@ function menu.add_buffer_terms(lines)
     end
   end
 end
-
 
 return menu
