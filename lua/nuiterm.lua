@@ -79,7 +79,7 @@ function nuiterm.send(cmd,type,num)
     term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
   end
   term:show(defaults.focus_on_send)
-  term:send(cmd)
+  term:send(cmd..'\n')
   if not defaults.show_on_send then
     term:hide()
     -- Strange bug: deal with entering insert mode if terminal is hidden
@@ -90,7 +90,7 @@ end
 function nuiterm.send_line(type,num)
   local row = vim.api.nvim_win_get_cursor(0)[1]
   local line = vim.api.nvim_buf_get_lines(0,row-1,row,true)
-  nuiterm.send(line[1]..'\n',type,num)
+  nuiterm.send(line[1],type,num)
 end
 
 function nuiterm.send_lines(start_line,end_line,type,num)
