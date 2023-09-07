@@ -9,9 +9,13 @@ function Terminal:new(options)
   options = vim.tbl_deep_extend("force",defaults,options)
   self.__index = self
   options.type = options.type
+  if not options.open_at_cwd then
+    options.cwd = vim.fn.expand("%:p:h")
+  end
   options.type_id = utils.get_type_id(options.type)
   options.bufnr = vim.api.nvim_create_buf(false,false)
   options.bufname = "nuiterm:" .. options.type .. ":" .. tostring(options.type_id)
+  options.repl = false
   local ui_object = {}
   if options.ui.type == "split" then
     local bn = {bufnr = options.bufnr}
@@ -45,9 +49,15 @@ function Terminal:show(focus,cmd)
     end
     vim.api.nvim_win_set_buf(0,self.bufnr)
     if cmd then
-      self.chan = vim.fn.termopen(cmd, {on_exit=function()vim.api.nvim_feedkeys("i","n","t")end})
+      self.chan = vim.fn.termopen(cmd, {
+        on_exit=function()vim.api.nvim_feedkeys("i","n","t")end,
+        cwd=self.cwd
+      })
     else
-      self.chan = vim.fn.termopen(vim.o.shell, {on_exit=function()vim.api.nvim_feedkeys("i","n","t")end})
+      self.chan = vim.fn.termopen(vim.o.shell, {
+        on_exit=function()vim.api.nvim_feedkeys("i","n","t")end,
+        cwd=self.cwd
+      })
     end
     vim.api.nvim_buf_set_option(self.bufnr,"filetype","terminal")
     vim.api.nvim_win_set_option(0,"number",false)
