@@ -19,6 +19,16 @@ function nuiterm.create_new_term(opts)
   return Terminal:new(opts)
 end
 
+function nuiterm.hide_all_terms()
+  for group,_ in pairs(Nuiterms) do
+    for _,other_term in pairs(Nuiterms[group]) do
+      if other_term.ui.shown == true then
+        other_term:hide()
+      end
+    end
+  end
+end
+
 function nuiterm.toggle(type,num)
   type = type or defaults.type
   local ft = vim.bo.filetype
@@ -30,18 +40,10 @@ function nuiterm.toggle(type,num)
     term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
   end
 
-  for group,_ in pairs(Nuiterms) do
-    for _,other_term in pairs(Nuiterms[group]) do
-      if other_term.ui.shown == true then
-        if other_term.bufnr ~= term.bufnr then
-          other_term:hide()
-        end
-      end
-    end
-  end
   if term.ui.shown then
     term:hide()
   else
+    nuiterm.hide_all_terms()
     term:show(defaults.focus_on_open)
   end
 end
@@ -78,6 +80,7 @@ function nuiterm.send(cmd,type,num)
     local type_id = utils.get_type_id(type,num)
     term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
   end
+  nuiterm.hide_all_terms()
   term:show(defaults.focus_on_send)
   term:send(cmd..'\n')
   if not defaults.show_on_send then
