@@ -129,7 +129,11 @@ function nuiterm.send_visual(type,num)
   if (start_line == end_line) and (start_col ~= end_col) then
     nuiterm.send_selection(start_line,start_col,end_col,type,num)
   else
-    nuiterm.send_lines(start_line,end_line,type,num)
+    if start_line > end_line then
+      nuiterm.send_lines(end_line,start_line,type,num)
+    else
+      nuiterm.send_lines(start_line,end_line,type,num)
+    end
   end
 end
 
