@@ -5,6 +5,7 @@ config.defaults = {
   focus_on_open = true,
   focus_on_send = false,
   open_at_cwd = false,
+  keymaps = {},
   ui = {
     type = "split",
     default_split_opts = {

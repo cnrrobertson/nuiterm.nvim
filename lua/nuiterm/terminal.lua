@@ -37,6 +37,14 @@ function Terminal:new(options)
   return term
 end
 
+function Terminal:set_keymaps()
+  if self.keymaps then
+    for _,km in pairs(self.keymaps) do
+      self.ui.object:map(unpack(km))
+    end
+  end
+end
+
 function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
@@ -47,6 +55,7 @@ function Terminal:show(focus,cmd)
     if self.bufnr == nil then
       self.bufnr = vim.api.nvim_create_buf(false,false)
     end
+    self:set_keymaps()
     vim.api.nvim_win_set_buf(0,self.bufnr)
     if cmd then
       self.chan = vim.fn.termopen(cmd, {
