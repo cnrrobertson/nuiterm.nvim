@@ -12,6 +12,7 @@ Nuiterms = {
   window = {},
   buffer = {}
 }
+Nuiterm_data = {}
 nuiterm.menu_mounted = false
 nuiterm.menu_shown = false
 
@@ -194,6 +195,27 @@ vim.api.nvim_create_autocmd({"BufUnload"}, {
     end
   end
 })
+
+-- Only allow terminals in terminal windows
+if defaults.terminal_win_fixed then
+  vim.api.nvim_create_autocmd({"BufLeave"}, {
+    pattern = {"nuiterm:*"},
+    callback = function(ev)
+      Nuiterm_data['term_win_id'] = vim.api.nvim_get_current_win()
+      Nuiterm_data['last_term_bufnr'] = ev.buf
+    end
+  })
+  vim.api.nvim_create_autocmd({"BufEnter"}, {
+    pattern = {"*"},
+    callback = function(ev)
+      if vim.api.nvim_get_current_win() == Nuiterm_data['term_win_id'] then
+        if string.match(ev.file, "nuiterm:") == nil then
+          vim.api.nvim_win_set_buf(Nuiterm_data['term_win_id'], Nuiterm_data['last_term_bufnr'])
+        end
+      end
+    end
+  })
+end
 
 return nuiterm
 

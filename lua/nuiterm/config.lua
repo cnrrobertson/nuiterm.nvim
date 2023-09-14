@@ -5,6 +5,7 @@ config.defaults = {
   focus_on_open = true,
   focus_on_send = false,
   open_at_cwd = false,
+  terminal_win_fixed = true,
   keymaps = {},
   ui = {
     type = "split",
