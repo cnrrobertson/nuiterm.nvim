@@ -183,7 +183,7 @@ end
 
 -- Ensure terminal is left properly
 vim.api.nvim_create_autocmd({"BufUnload"}, {
-  pattern = {"nuiterm*"},
+  pattern = {"nuiterm:*"},
   callback = function(ev)
     local term_group,term_id = nuiterm.find_terminal_group_and_id(ev.buf)
     if Nuiterms then
