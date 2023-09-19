@@ -35,7 +35,7 @@ function nuiterm.toggle(type,num)
   local ft = vim.bo.filetype
   local term = {}
   if ft == "terminal" then
-    term = nuiterm.find_terminal()
+    term,_,_ = nuiterm.find_terminal()
   else
     local type_id = utils.get_type_id(type,num)
     term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
@@ -52,20 +52,9 @@ end
 function nuiterm.find_terminal(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   for group,_ in pairs(Nuiterms) do
-    for _,term in pairs(Nuiterms[group]) do
-      if term.bufnr == bufnr then
-        return term
-      end
-    end
-  end
-end
-
-function nuiterm.find_terminal_group_and_id(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  for group,_ in pairs(Nuiterms) do
     for id,term in pairs(Nuiterms[group]) do
       if term.bufnr == bufnr then
-        return group,id
+        return term,group,id
       end
     end
   end
@@ -76,7 +65,7 @@ function nuiterm.send(cmd,type,num)
   local ft = vim.bo.filetype
   local term = {}
   if ft == "terminal" then
-    term = nuiterm.find_terminal()
+    term,_,_ = nuiterm.find_terminal()
   else
     local type_id = utils.get_type_id(type,num)
     term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
@@ -186,7 +175,7 @@ end
 vim.api.nvim_create_autocmd({"BufUnload"}, {
   pattern = {"nuiterm:*"},
   callback = function(ev)
-    local term_group,term_id = nuiterm.find_terminal_group_and_id(ev.buf)
+    local _,term_group,term_id = nuiterm.find_terminal(ev.buf)
     if Nuiterms then
       Nuiterms[term_group][term_id].ui.object:unmount()
       Nuiterms[term_group][term_id].ui.mounted = false
