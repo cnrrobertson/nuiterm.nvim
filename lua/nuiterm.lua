@@ -60,6 +60,16 @@ function nuiterm.find_terminal(bufnr)
   end
 end
 
+function nuiterm.focus_buffer_for_terminal(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  local _,group,id = nuiterm.find_terminal(bufnr)
+  if group == "buffer" then
+    local winid = vim.fn.win_getid(1)
+    vim.api.nvim_win_set_buf(winid,id)
+    vim.api.nvim_set_current_win(winid)
+  end
+end
+
 function nuiterm.send(cmd,type,num)
   type = type or defaults.type
   local ft = vim.bo.filetype
