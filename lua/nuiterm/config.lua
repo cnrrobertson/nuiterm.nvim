@@ -9,7 +9,7 @@ config.defaults = {
   keymaps = {},
   ui = {
     type = "split",
-    default_split_opts = {
+    split_opts = {
       enter = true,
       focusable = true,
       border = {
@@ -19,7 +19,7 @@ config.defaults = {
       size = "40%",
       relative = "editor",
     },
-    default_popup_opts = {
+    popup_opts = {
       enter = true,
       focusable = true,
       border = {
@@ -31,6 +31,21 @@ config.defaults = {
         height = "80%"
       },
       relative = "editor",
+    },
+    menu_opts = {
+      relative = "editor",
+      position = '50%',
+      size = '50%',
+      border = {
+        style = "rounded",
+        text = {
+          top = "Terminal Menu",
+          top_align = "center",
+        },
+      },
+      win_options = {
+        winhighlight = "Normal:Normal",
+      }
     }
   }
 }

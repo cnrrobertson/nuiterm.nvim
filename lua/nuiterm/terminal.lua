@@ -1,12 +1,12 @@
 local Split = require("nui.split")
 local Popup = require("nui.Popup")
-local defaults = require("nuiterm.config").defaults
+local config = require("nuiterm.config")
 local utils = require("nuiterm.utils")
 local Terminal = {}
 
 function Terminal:new(options)
   options = options or {}
-  options = vim.tbl_deep_extend("force",defaults,options)
+  options = vim.tbl_deep_extend("force",config,options)
   self.__index = self
   options.type = options.type
   if not options.open_at_cwd then
@@ -19,11 +19,11 @@ function Terminal:new(options)
   local ui_object = {}
   if options.ui.type == "split" then
     local bn = {bufnr = options.bufnr}
-    local split_opts = vim.tbl_deep_extend("force",options.ui.default_split_opts,bn)
+    local split_opts = vim.tbl_deep_extend("force",options.ui.split_opts,bn)
     ui_object = Split(split_opts)
   else
     local bn = {bufnr = options.bufnr}
-    local popup_opts = vim.tbl_deep_extend("force",options.ui.default_popup_opts,bn)
+    local popup_opts = vim.tbl_deep_extend("force",options.ui.popup_opts,bn)
     ui_object = Popup(popup_opts)
   end
   options.ui = {

@@ -4,10 +4,10 @@
 vim = vim
 local Terminal = require("nuiterm.terminal")
 local Menu = require("nui.menu")
-local defaults = require("nuiterm.config").defaults
 local utils = require("nuiterm.utils")
 local menu = require("nuiterm.menu")
 Nuiterm = {}
+Nuiterm.config = require("nuiterm.config")
 
 Nuiterm.terminals = {
   editor = {},
@@ -161,7 +161,7 @@ function Nuiterm.show_terminal_menu()
   menu.add_tab_terms(lines)
   menu.add_window_terms(lines)
   menu.add_buffer_terms(lines)
-  Nuiterm.terminal_menu = Menu(menu.menu_options, {
+  Nuiterm.terminal_menu = Menu(Nuiterm.config.menu_opts, {
     lines = lines,
     max_width = 20,
     keymap = {

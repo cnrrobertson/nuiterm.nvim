@@ -2,22 +2,6 @@ local Menu = require("nui.menu")
 local utils = require("nuiterm.utils")
 local menu = {}
 
-menu.menu_options = {
- relative = "editor",
-  position = '50%',
-  size = '50%',
-  border = {
-    style = "rounded",
-    text = {
-      top = "Terminal Menu",
-      top_align = "center",
-    },
-  },
-  win_options = {
-    winhighlight = "Normal:Normal",
-  }
-}
-
 function menu.get_mounted_terms(group)
   local terms = {}
   for _,t in pairs(Nuiterm.terminals[group]) do
