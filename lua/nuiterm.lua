@@ -1,28 +1,31 @@
+--- *nuiterm* Neovim terminal manager for terminals "bound" to editor, tab, window, or buffer
+--- *Nuiterm*
+
 vim = vim
 local Terminal = require("nuiterm.terminal")
 local Menu = require("nui.menu")
 local defaults = require("nuiterm.config").defaults
 local utils = require("nuiterm.utils")
 local menu = require("nuiterm.menu")
-local nuiterm = {}
+Nuiterm = {}
 
-Nuiterms = {
+Nuiterm.terminals = {
   editor = {},
   tab = {},
   window = {},
   buffer = {}
 }
-Nuiterm_data = {}
-nuiterm.menu_mounted = false
-nuiterm.menu_shown = false
+Nuiterm.data = {}
+Nuiterm.menu_mounted = false
+Nuiterm.menu_shown = false
 
-function nuiterm.create_new_term(opts)
+function Nuiterm.create_new_term(opts)
   return Terminal:new(opts)
 end
 
-function nuiterm.hide_all_terms()
-  for group,_ in pairs(Nuiterms) do
-    for _,other_term in pairs(Nuiterms[group]) do
+function Nuiterm.hide_all_terms()
+  for group,_ in pairs(Nuiterm.terminals) do
+    for _,other_term in pairs(Nuiterm.terminals[group]) do
       if other_term.ui.shown == true then
         other_term:hide()
       end
@@ -30,29 +33,29 @@ function nuiterm.hide_all_terms()
   end
 end
 
-function nuiterm.toggle(type,num)
+function Nuiterm.toggle(type,num)
   type = type or defaults.type
   local ft = vim.bo.filetype
   local term = {}
   if ft == "terminal" then
-    term,_,_ = nuiterm.find_terminal()
+    term,_,_ = Nuiterm.find_terminal()
   else
     local type_id = utils.get_type_id(type,num)
-    term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
+    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
   end
 
   if term.ui.shown then
     term:hide()
   else
-    nuiterm.hide_all_terms()
+    Nuiterm.hide_all_terms()
     term:show(defaults.focus_on_open)
   end
 end
 
-function nuiterm.find_terminal(bufnr)
+function Nuiterm.find_terminal(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-  for group,_ in pairs(Nuiterms) do
-    for id,term in pairs(Nuiterms[group]) do
+  for group,_ in pairs(Nuiterm.terminals) do
+    for id,term in pairs(Nuiterm.terminals[group]) do
       if term.bufnr == bufnr then
         return term,group,id
       end
@@ -60,9 +63,9 @@ function nuiterm.find_terminal(bufnr)
   end
 end
 
-function nuiterm.focus_buffer_for_terminal(bufnr)
+function Nuiterm.focus_buffer_for_terminal(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local _,group,id = nuiterm.find_terminal(bufnr)
+  local _,group,id = Nuiterm.find_terminal(bufnr)
   if group == "buffer" then
     local winid = vim.fn.win_getid(1)
     vim.api.nvim_win_set_buf(winid,id)
@@ -70,17 +73,17 @@ function nuiterm.focus_buffer_for_terminal(bufnr)
   end
 end
 
-function nuiterm.send(cmd,type,num)
+function Nuiterm.send(cmd,type,num)
   type = type or defaults.type
   local ft = vim.bo.filetype
   local term = {}
   if ft == "terminal" then
-    term,_,_ = nuiterm.find_terminal()
+    term,_,_ = Nuiterm.find_terminal()
   else
     local type_id = utils.get_type_id(type,num)
-    term = Nuiterms[type][type_id] or nuiterm.create_new_term({type=type})
+    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
   end
-  nuiterm.hide_all_terms()
+  Nuiterm.hide_all_terms()
   term:show(defaults.focus_on_send)
   term:send(cmd..'\n')
   if not defaults.show_on_send then
@@ -90,13 +93,13 @@ function nuiterm.send(cmd,type,num)
   end
 end
 
-function nuiterm.send_line(type,num)
+function Nuiterm.send_line(type,num)
   local row = vim.api.nvim_win_get_cursor(0)[1]
   local line = vim.api.nvim_buf_get_lines(0,row-1,row,true)
-  nuiterm.send(line[1],type,num)
+  Nuiterm.send(line[1],type,num)
 end
 
-function nuiterm.send_lines(start_line,end_line,type,num)
+function Nuiterm.send_lines(start_line,end_line,type,num)
   local lines = vim.api.nvim_buf_get_lines(0,start_line-1,end_line,false)
   local no_empty = {}
   for _, v in ipairs(lines) do
@@ -106,10 +109,10 @@ function nuiterm.send_lines(start_line,end_line,type,num)
   end
   no_empty[#no_empty+1] = ""
   local combined = table.concat(no_empty,"\n")
-  nuiterm.send(combined,type,num)
+  Nuiterm.send(combined,type,num)
 end
 
-function nuiterm.send_selection(line,start_col,end_col,type,num)
+function Nuiterm.send_selection(line,start_col,end_col,type,num)
   local sc = nil
   local ec = nil
   if start_col > end_col then
@@ -120,45 +123,45 @@ function nuiterm.send_selection(line,start_col,end_col,type,num)
     ec = end_col
   end
   local text = vim.api.nvim_buf_get_text(0,line-1,sc-1,line-1,ec,{})
-  nuiterm.send(table.concat(text),type,num)
+  Nuiterm.send(table.concat(text),type,num)
 end
 
-function nuiterm.send_visual(type,num)
+function Nuiterm.send_visual(type,num)
   local start_line, start_col = unpack(vim.fn.getpos("v"), 2, 4)
   local end_line, end_col = unpack(vim.fn.getpos("."), 2, 4)
   if (start_line == end_line) and (start_col ~= end_col) then
-    nuiterm.send_selection(start_line,start_col,end_col,type,num)
+    Nuiterm.send_selection(start_line,start_col,end_col,type,num)
   else
     if start_line > end_line then
-      nuiterm.send_lines(end_line,start_line,type,num)
+      Nuiterm.send_lines(end_line,start_line,type,num)
     else
-      nuiterm.send_lines(start_line,end_line,type,num)
+      Nuiterm.send_lines(start_line,end_line,type,num)
     end
   end
 end
 
-function nuiterm.send_file(type,num)
+function Nuiterm.send_file(type,num)
   local start_line = 1
   local end_line = vim.api.nvim_buf_line_count(0)
-  nuiterm.send_lines(start_line,end_line,type,num)
+  Nuiterm.send_lines(start_line,end_line,type,num)
 end
 
-function nuiterm.toggle_menu()
-  if nuiterm.menu_shown then
-    nuiterm.terminal_menu:unmount()
-    nuiterm.menu_shown = false
+function Nuiterm.toggle_menu()
+  if Nuiterm.menu_shown then
+    Nuiterm.terminal_menu:unmount()
+    Nuiterm.menu_shown = false
   else
-    nuiterm.show_terminal_menu()
+    Nuiterm.show_terminal_menu()
   end
 end
 
-function nuiterm.show_terminal_menu()
+function Nuiterm.show_terminal_menu()
   local lines = {}
   menu.add_editor_terms(lines)
   menu.add_tab_terms(lines)
   menu.add_window_terms(lines)
   menu.add_buffer_terms(lines)
-  nuiterm.terminal_menu = Menu(menu.menu_options, {
+  Nuiterm.terminal_menu = Menu(menu.menu_options, {
     lines = lines,
     max_width = 20,
     keymap = {
@@ -169,28 +172,28 @@ function nuiterm.show_terminal_menu()
     },
     on_submit = function(item)
       if item then
-        nuiterm.toggle(item.type,item.type_id)
+        Nuiterm.toggle(item.type,item.type_id)
       end
-      nuiterm.menu_shown = false
+      Nuiterm.menu_shown = false
     end,
     on_close = function()
-      nuiterm.menu_shown = false
+      Nuiterm.menu_shown = false
     end
   })
-  nuiterm.terminal_menu:mount()
-  nuiterm.menu_shown = true
+  Nuiterm.terminal_menu:mount()
+  Nuiterm.menu_shown = true
 end
 
 -- Ensure terminal is left properly
 vim.api.nvim_create_autocmd({"BufUnload"}, {
-  pattern = {"nuiterm:*"},
+  pattern = {"Nuiterm:*"},
   callback = function(ev)
-    local _,term_group,term_id = nuiterm.find_terminal(ev.buf)
-    if Nuiterms then
-      Nuiterms[term_group][term_id].ui.object:unmount()
-      Nuiterms[term_group][term_id].ui.mounted = false
-      Nuiterms[term_group][term_id].ui.shown = false
-      Nuiterms[term_group][term_id].bufnr = nil
+    local _,term_group,term_id = Nuiterm.find_terminal(ev.buf)
+    if Nuiterm.terminals then
+      Nuiterm.terminals[term_group][term_id].ui.object:unmount()
+      Nuiterm.terminals[term_group][term_id].ui.mounted = false
+      Nuiterm.terminals[term_group][term_id].ui.shown = false
+      Nuiterm.terminals[term_group][term_id].bufnr = nil
     end
   end
 })
@@ -198,23 +201,23 @@ vim.api.nvim_create_autocmd({"BufUnload"}, {
 -- Only allow terminals in terminal windows
 if defaults.terminal_win_fixed then
   vim.api.nvim_create_autocmd({"BufLeave"}, {
-    pattern = {"nuiterm:*"},
+    pattern = {"Nuiterm:*"},
     callback = function(ev)
-      Nuiterm_data['term_win_id'] = vim.api.nvim_get_current_win()
-      Nuiterm_data['last_term_bufnr'] = ev.buf
+      Nuiterm.data['term_win_id'] = vim.api.nvim_get_current_win()
+      Nuiterm.data['last_term_bufnr'] = ev.buf
     end
   })
   vim.api.nvim_create_autocmd({"BufEnter"}, {
     pattern = {"*"},
     callback = function(ev)
-      if vim.api.nvim_get_current_win() == Nuiterm_data['term_win_id'] then
-        if string.match(ev.file, "nuiterm:") == nil then
-          vim.api.nvim_win_set_buf(Nuiterm_data['term_win_id'], Nuiterm_data['last_term_bufnr'])
+      if vim.api.nvim_get_current_win() == Nuiterm.data['term_win_id'] then
+        if string.match(ev.file, "Nuiterm:") == nil then
+          vim.api.nvim_win_set_buf(Nuiterm.data['term_win_id'], Nuiterm.data['last_term_bufnr'])
         end
       end
     end
   })
 end
 
-return nuiterm
+return Nuiterm
 

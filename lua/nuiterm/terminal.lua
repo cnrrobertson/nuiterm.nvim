@@ -33,7 +33,7 @@ function Terminal:new(options)
     object = ui_object
   }
   local term = setmetatable(options,self)
-  Nuiterms[options.type][options.type_id] = term
+  Nuiterm.terminals[options.type][options.type_id] = term
   return term
 end
 

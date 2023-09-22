@@ -6,7 +6,7 @@ function utils.get_type_id(type,num)
   else
     local type_id = 1
     if type == "editor" then
-      type_id = num or utils.table_length(Nuiterms[type])+1
+      type_id = num or utils.table_length(Nuiterm.terminals[type])+1
     elseif type == "tab" then
       type_id = vim.api.nvim_get_current_tabpage()
     elseif type == "window" then
