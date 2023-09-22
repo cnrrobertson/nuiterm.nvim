@@ -31,7 +31,7 @@ See |Nuiterm.config| for available config settings.
 - 'MunifTanjim/nui.nvim' for UI
 - (optional) 'nvim-telescope/telescope.nvim' for extra terminal finder
 
-## Example config with keybindings
+## Example config with keybindings~
 >
   require('nuiterm').setup({
     type = "buffer",
@@ -43,11 +43,32 @@ See |Nuiterm.config| for available config settings.
   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 <
 
-## Telescope integration
+## Telescope integration~
 `telescope.nvim` can be used to find and pick terminals to toggle via
 keymap as:
 >
   vim.keymap.set('n','<leader>f',require('nuiterm.telescope').picker)
+<
+
+## Task-specific terminals~
+A common use case for floating terminals such as are provided with this
+plugin is to quickly open a TUI such as `lazygit`. This can be easily
+accomplished with nuiterm via:
+
+>
+  local function lazygit_terminal()
+   local term = require("nuiterm").create_new_term({
+     type = "editor",
+     type_id = 100,
+      keymaps = {{'t', '<esc>', '<esc>'}},
+     ui = {
+       type = "float",
+       default_popup_opts = {border={text={top="Lazygit"}}}
+     }
+   })
+   term:show(true,"lazygit")
+  end
+  vim.keymap.set('n','<leader>g',lazygit_terminal)
 <
 
 # Tips~
