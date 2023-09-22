@@ -6,9 +6,9 @@ local conf = require("telescope.config").values
 local menu = require("nuiterm.menu")
 local nuiterm = require("nuiterm")
 
-local M = {}
+local terminal_finder = {}
 
-M.picker = function(opts)
+terminal_finder.picker = function(opts)
 	opts = opts or {}
 	local nuiterm_finder = function()
 		local terminals = {}
@@ -45,4 +45,4 @@ M.picker = function(opts)
 	}):find()
 end
 
-return M
+return terminal_finder
