@@ -2,8 +2,29 @@ local Split = require("nui.split")
 local Popup = require("nui.Popup")
 local config = require("nuiterm.config")
 local utils = require("nuiterm.utils")
+
+---@tag Terminal
+---@signature Terminal
+---
+---@class Terminal
+---
+---@field bufname string name of terminal buffer (uses nuiterm:... pattern)
+---@field bufnr integer buffer number of terminal buffer
+---@field cwd string directory of terminal
+---@field keymaps table table of keymaps that are set for terminal buffer
+---@field repl boolean whether repl active or not (not currently used)
+---@field type string type of terminal (see |Nuiterm.config|)
+---@field type_id integer id number of terminal (specific to type)
+---@field ui table ui details for terminal
+---@field ui.type string type of nui object to use for window
+---@field ui.mounted boolean whether terminal window is created
+---@field ui.shown boolean whether terminal buffer is being shown
+---@field ui.object nui.object terminal nui object
 local Terminal = {}
 
+--- Create new terminal object
+---
+---@param options table|nil config options for terminal (see |Nuiterm.config|)
 function Terminal:new(options)
   options = options or {}
   options = vim.tbl_deep_extend("force",config,options)
@@ -37,6 +58,8 @@ function Terminal:new(options)
   return term
 end
 
+--- Create keymaps in terminal buffer
+---
 function Terminal:set_keymaps()
   if self.keymaps then
     for _,km in pairs(self.keymaps) do
@@ -45,6 +68,10 @@ function Terminal:set_keymaps()
   end
 end
 
+--- Show the terminal window
+---
+---@param focus boolean|nil whether to put cursor in terminal when showing
+---@param cmd string|nil cmd to send to terminal upon showing
 function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
@@ -86,11 +113,16 @@ function Terminal:show(focus,cmd)
   end
 end
 
+--- Hide the terminal window
+---
 function Terminal:hide()
   self.ui.object:hide()
   self.ui.shown = false
 end
 
+--- Send command to the terminal
+---
+---@param cmd string|nil command to run in terminal
 function Terminal:send(cmd)
   vim.api.nvim_chan_send(self.chan, cmd)
 end

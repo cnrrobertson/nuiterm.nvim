@@ -1,10 +1,22 @@
-local config = {}
-config.defaults = {
-  type = "buffer", -- or "editor" or "tab" or "window"
+---@tag Nuiterm.config
+---@signature Nuiterm.config
+---
+---@text Plugin config
+---
+--- Default values:
+---@eval return MiniDoc.afterlines_to_code(MiniDoc.current.eval_section)
+--minidoc_replace_start Nuiterm.config = {
+local config = {
+  --minidoc_replace_end
+  -- Default type of terminal
+  -- could be "buffer", "window", "tab", or "editor"
+  type = "buffer",
   show_on_send = true,
   focus_on_open = true,
   focus_on_send = false,
+  -- Whether to use vim cwd for terminal directory
   open_at_cwd = false,
+  -- Whether to only allow terminal buffer to use terminal window
   terminal_win_fixed = true,
   keymaps = {},
   ui = {
@@ -49,5 +61,6 @@ config.defaults = {
     }
   }
 }
+--minidoc_afterlines_end
 
 return config

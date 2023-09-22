@@ -1,0 +1,370 @@
+==============================================================================
+------------------------------------------------------------------------------
+*nuiterm* Neovim terminal manager for terminals local to buffer, window, tab, or editor
+*Nuiterm*
+
+MIT License Copyright (c) 2023 Connor Robertson
+
+===========================================================================
+
+Key features:
+- Quickly toggle window with terminal buffer inside
+
+- Terminal buffer is local to buffer, window, tab, or editor in that it
+  can be quickly toggled and text can be sent to it from it's respective
+  locality
+
+- Terminals can be quickly toggled from a menu or telescope extension
+
+- Text can be easily sent from buffer to terminal (line, visual selection,
+  visual line selection, etc.) built with a REPL in mind
+
+# Setup~
+
+This plugin needs to be setup with `require('nuiterm').setup({})` (replace
+`{}` with you `config` table). It will create a global Lua table `Nuiterm`
+which contains the `terminals` and `data`.
+
+See |Nuiterm.config| for available config settings.
+
+## Dependencies~
+- 'MunifTanjim/nui.nvim' for UI
+- (optional) 'nvim-telescope/telescope.nvim' for extra terminal finder
+
+## Example config with keybindings
+>
+  require('nuiterm').setup({
+    type = "buffer",
+    focus_on_open = false,
+    focus_on_send = false,
+  })
+  vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
+  vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
+  vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
+<
+
+## Telescope integration
+`telescope.nvim` can be used to find and pick terminals to toggle via
+keymap as:
+>
+  vim.keymap.set('n','<leader>f',require('nuiterm.telescope').picker)
+<
+
+# Tips~
+
+- Given that most terminals are implemented as vim `splits` and are opened
+  and closed constantly, it is helpful to set the vim option `:noequalalways`
+  or `:lua vim.o.equalalways = false` to stop constant window resizing
+
+# Comparisons~
+
+- 'akinsho/toggleterm.nvim':
+   - This was the main inspiriation for this plugin and the design of using
+     a `Terminal` object was based on the `toggleterm` design
+   - The downside of this plugin is it's inability to easily make terminals
+     that are local to buffers, windows, or tabs for quickly sending text
+     from specific buffers to specific terminals
+- 'nyngwang/NeoTerm.lua':
+   - This plugin focuses on buffer specific terminals but with very few
+     features
+- 'caenrique/nvim-toggle-terminal':
+   - Has great features and toggles tab specific and window specific
+     terminals (but replaced by 'caenrique/buffer-term.nvim')
+
+
+------------------------------------------------------------------------------
+                                                             *Nuiterm.terminals*
+                              `Nuiterm.terminals`
+Nuiterm data storage
+
+>
+  Nuiterm.terminals = {
+    editor = {},
+    tab = {},
+    window = {},
+    buffer = {}
+  }
+  Nuiterm.data = {}
+  Nuiterm.menu_mounted = false
+  Nuiterm.menu_shown = false
+
+<
+
+------------------------------------------------------------------------------
+                                                               *Nuiterm.setup()*
+                           `Nuiterm.setup`({config})
+Plugin setup
+
+Parameters~
+{config} `(table|nil)` Plugin config table. See |Nuiterm.config|.
+
+Usage~
+`require('nuiterm').setup({})` (replace `{}` with your `config` table)
+
+------------------------------------------------------------------------------
+                                                     *Nuiterm.create_new_term()*
+                       `Nuiterm.create_new_term`({opts})
+Create new terminal
+
+Parameters~
+{opts} `(table|nil)` Terminal config table. See |Nuiterm.config|
+
+Usage~
+`Nuiterm.create_new_term({})` (replace `{}` with your `config` table)
+
+Return~
+|Terminal|
+
+------------------------------------------------------------------------------
+                                                      *Nuiterm.hide_all_terms()*
+                           `Nuiterm.hide_all_terms`()
+Hide all visible terminals
+
+Usage~
+`Nuiterm.hide_all_terms()`
+
+------------------------------------------------------------------------------
+                                                              *Nuiterm.toggle()*
+                        `Nuiterm.toggle`({type}, {num})
+Toggle terminal
+
+Note: if the cursor is in a terminal, that terminal will be hidden
+
+Parameters~
+{type} `(string|nil)` the type of terminal to toggle (see |Nuiterm.config|)
+{num} `(int|nil)` the id of the terminal to toggle
+
+Usage~
+`Nuiterm.toggle('buffer', 12)` (toggle the terminal bound to buffer 12)
+Usage~
+`Nuiterm.toggle('editor', 2)` (toggle the global terminal number 2)
+Usage~
+`Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
+
+------------------------------------------------------------------------------
+                                                       *Nuiterm.find_terminal()*
+                        `Nuiterm.find_terminal`({bufnr})
+Retrieve Terminal object and info from terminal buffer number
+
+Parameters~
+{bufnr} `(number|nil)` the buffer number of the desired terminal
+
+Return~
+Terminal the Terminal object
+Return~
+`(string)` the type of terminal it is
+Return~
+`(number)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                           *Nuiterm.focus_buffer_for_terminal()*
+                  `Nuiterm.focus_buffer_for_terminal`({bufnr})
+Focus the buffer tied to the terminal under cursor in window 1
+
+Parameters~
+{bufnr} `(number|nil)` the buffer number of the terminal
+
+------------------------------------------------------------------------------
+                                                                *Nuiterm.send()*
+                      `Nuiterm.send`({cmd}, {type}, {num})
+Send text to a terminal
+
+Parameters~
+{cmd} `(string)` the command to send to the terminal
+{type} `(string|nil)` the type of terminal to send to (or default)
+{num} `(number|nil)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                                           *Nuiterm.send_line()*
+                       `Nuiterm.send_line`({type}, {num})
+Send current line in buffer to a terminal
+
+Parameters~
+{type} `(string|nil)` the type of terminal to send to (or default)
+{num} `(number|nil)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                                          *Nuiterm.send_lines()*
+         `Nuiterm.send_lines`({start_line}, {end_line}, {type}, {num})
+Send multiple lines in buffer to a terminal
+
+Parameters~
+{start_line} `(string|nil)` the line number at which to start sending
+{end_line} `(string|nil)` the line number at which to end sending
+{type} `(string|nil)` the type of terminal to send to (or default)
+{num} `(number|nil)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                                      *Nuiterm.send_selection()*
+    `Nuiterm.send_selection`({line}, {start_col}, {end_col}, {type}, {num})
+Send selection in line in buffer to a terminal
+
+Note: this is robust to reverse selections
+
+Parameters~
+{line} `(string|nil)` the line number at which to send
+{start_col} `(string|nil)` the column number at which to start sending
+{end_col} `(string|nil)` the column number at which to end sending
+{type} `(string|nil)` the type of terminal to send to (or default)
+{num} `(number|nil)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                                         *Nuiterm.send_visual()*
+                      `Nuiterm.send_visual`({type}, {num})
+Send visual selection
+
+Note: this is robust to reverse selections
+
+Parameters~
+{type} `(string|nil)` the type of terminal to send to (or default)
+{num} `(number|nil)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                                           *Nuiterm.send_file()*
+                       `Nuiterm.send_file`({type}, {num})
+Send file contents to terminal
+
+Parameters~
+{type} `(string|nil)` the type of terminal to send to (or default)
+{num} `(number|nil)` the id of the terminal (type specific)
+
+------------------------------------------------------------------------------
+                                                         *Nuiterm.toggle_menu()*
+                            `Nuiterm.toggle_menu`()
+Toggle terminal menu to select (and toggle) terminals
+
+
+------------------------------------------------------------------------------
+                                                  *Nuiterm.show_terminal_menu()*
+                         `Nuiterm.show_terminal_menu`()
+Show terminal menu to select (and toggle) terminals
+
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                *Nuiterm.config*
+                                `Nuiterm.config`
+
+Plugin config
+
+Default values:
+>
+  Nuiterm.config = {
+    -- Default type of terminal
+    -- could be "buffer", "window", "tab", or "editor"
+    type = "buffer",
+    show_on_send = true,
+    focus_on_open = true,
+    focus_on_send = false,
+    -- Whether to use vim cwd for terminal directory
+    open_at_cwd = false,
+    -- Whether to only allow terminal buffer to use terminal window
+    terminal_win_fixed = true,
+    keymaps = {},
+    ui = {
+      type = "split",
+      split_opts = {
+        enter = true,
+        focusable = true,
+        border = {
+          style = "rounded",
+        },
+        position = "right",
+        size = "40%",
+        relative = "editor",
+      },
+      popup_opts = {
+        enter = true,
+        focusable = true,
+        border = {
+          style = "rounded",
+        },
+        position = "50%",
+        size = {
+          width = "80%",
+          height = "80%"
+        },
+        relative = "editor",
+      },
+      menu_opts = {
+        relative = "editor",
+        position = '50%',
+        size = '50%',
+        border = {
+          style = "rounded",
+          text = {
+            top = "Terminal Menu",
+            top_align = "center",
+          },
+        },
+        win_options = {
+          winhighlight = "Normal:Normal",
+        }
+      }
+    }
+  }
+<
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                      *Terminal*
+                                   `Terminal`
+
+Class~
+{Terminal}
+
+Fields~
+{bufname} `(string)` name of terminal buffer (uses nuiterm:... pattern)
+{bufnr} `(integer)` buffer number of terminal buffer
+{cwd} `(string)` directory of terminal
+{keymaps} `(table)` table of keymaps that are set for terminal buffer
+{repl} `(boolean)` whether repl active or not (not currently used)
+{type} `(string)` type of terminal (see |Nuiterm.config|)
+{type_id} `(integer)` id number of terminal (specific to type)
+{ui} `(table)` ui details for terminal
+{ui.type} `(string)` type of nui object to use for window
+{ui.mounted} `(boolean)` whether terminal window is created
+{ui.shown} `(boolean)` whether terminal buffer is being shown
+{ui.object} nui.object terminal nui object
+
+------------------------------------------------------------------------------
+                                                                *Terminal:new()*
+                           `Terminal:new`({options})
+Create new terminal object
+
+Parameters~
+{options} `(table|nil)` config options for terminal (see |Nuiterm.config|)
+
+------------------------------------------------------------------------------
+                                                        *Terminal:set_keymaps()*
+                            `Terminal:set_keymaps`()
+Create keymaps in terminal buffer
+
+
+------------------------------------------------------------------------------
+                                                               *Terminal:show()*
+                        `Terminal:show`({focus}, {cmd})
+Show the terminal window
+
+Parameters~
+{focus} `(boolean|nil)` whether to put cursor in terminal when showing
+{cmd} `(string|nil)` cmd to send to terminal upon showing
+
+------------------------------------------------------------------------------
+                                                               *Terminal:hide()*
+                               `Terminal:hide`()
+Hide the terminal window
+
+
+------------------------------------------------------------------------------
+                                                               *Terminal:send()*
+                             `Terminal:send`({cmd})
+Send command to the terminal
+
+Parameters~
+{cmd} `(string|nil)` command to run in terminal
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
