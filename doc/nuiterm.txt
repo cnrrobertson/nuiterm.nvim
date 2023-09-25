@@ -159,7 +159,7 @@ Usage~
 
 ------------------------------------------------------------------------------
                                                               *Nuiterm.toggle()*
-                        `Nuiterm.toggle`({type}, {num})
+                     `Nuiterm.toggle`({type}, {num}, {cmd})
 Toggle terminal
 
 Note: if the cursor is in a terminal, that terminal will be hidden
@@ -167,6 +167,7 @@ Note: if the cursor is in a terminal, that terminal will be hidden
 Parameters~
 {type} `(string|nil)` the type of terminal to toggle (see |Nuiterm.config|)
 {num} `(int|nil)` the id of the terminal to toggle
+{cmd} `(string|nil)` a command to run in terminal (if opening for the first time)
 
 Usage~
 `Nuiterm.toggle('buffer', 12)` (toggle the terminal bound to buffer 12)
@@ -174,6 +175,8 @@ Usage~
 `Nuiterm.toggle('editor', 2)` (toggle the global terminal number 2)
 Usage~
 `Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
+Usage~
+`Nuiterm.toggle('editor', 2, 'python')` (run python in global terminal 2 - if opening)
 
 ------------------------------------------------------------------------------
                                                        *Nuiterm.find_terminal()*

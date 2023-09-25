@@ -168,11 +168,13 @@ end
 ---
 ---@param type string|nil the type of terminal to toggle (see |Nuiterm.config|)
 ---@param num int|nil the id of the terminal to toggle
+---@param cmd string|nil a command to run in terminal (if opening for the first time)
 ---
 ---@usage `Nuiterm.toggle('buffer', 12)` (toggle the terminal bound to buffer 12)
 ---@usage `Nuiterm.toggle('editor', 2)` (toggle the global terminal number 2)
 ---@usage `Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
-function Nuiterm.toggle(type,num)
+---@usage `Nuiterm.toggle('editor', 2, 'python')` (run python in global terminal 2 - if opening)
+function Nuiterm.toggle(type,num,cmd)
   type = type or Nuiterm.config.type
   local ft = vim.bo.filetype
   local term = {}
@@ -187,7 +189,7 @@ function Nuiterm.toggle(type,num)
     term:hide()
   else
     Nuiterm.hide_all_terms()
-    term:show(Nuiterm.config.focus_on_open)
+    term:show(Nuiterm.config.focus_on_open,cmd)
   end
 end
 
