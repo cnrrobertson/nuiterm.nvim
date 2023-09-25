@@ -56,6 +56,14 @@ See |Nuiterm.config| for available config settings.
   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 <
 
+## Usage as repl
+A terminal connected to the current buffer can be easily made a REPL by
+just adjusting the keymap to send a REPL command on toggle (python for
+example):
+>
+  vim.keymap.set({'n','t'},'<c-n>',function() Nuiterm.toggle(nil,nil,"python") end)
+<
+
 ## Telescope integration~
 `telescope.nvim` can be used to find and pick terminals to toggle via
 keymap as:
