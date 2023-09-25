@@ -1,7 +1,7 @@
 local utils = {}
 
 function utils.get_type_id(type,num)
-  if num then
+  if num and num >= 0 then
     return num
   else
     local type_id = 1

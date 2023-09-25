@@ -62,6 +62,14 @@
 ---   vim.keymap.set({'n','t'},'<c-n>',function() Nuiterm.toggle(nil,nil,"python") end)
 --- <
 ---
+--- ## Opening new global terminal
+--- If a new, unused global terminal is desired, you can pass in -1 as the id
+--- for an "editor" type terminal:
+--- >
+---   -- Open a new global terminal
+---   vim.keymap.set('n', '<c-n>', function() Nuiterm.toggle("editor",-1) end)
+--- <
+---
 --- ## Telescope integration~
 --- `telescope.nvim` can be used to find and pick terminals to toggle via
 --- keymap as:
