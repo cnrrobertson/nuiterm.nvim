@@ -35,7 +35,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
     -- (For buffer-type terminals) show connected buffer in window 1
     vim.keymap.set({'n','t'},'<c-p>',Nuiterm.focus_buffer_for_terminal)
     -- Toggle global terminal number 1
-    vim.keymap.set('n','<leader>N',function()Nuiterm.toggle("editor",1)end)
+    vim.keymap.set('n','<leader>n',function()Nuiterm.toggle("editor",1)end)
 
     -- Toggle terminal menu
     vim.keymap.set('n','<leader>tm',Nuiterm.toggle_menu)

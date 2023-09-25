@@ -36,6 +36,19 @@
 ---     focus_on_open = false,
 ---     focus_on_send = false,
 ---   })
+---   -- Toggle terminal of default type
+---   vim.keymap.set({'n','t'},'<c-n>',Nuiterm.toggle)
+---   -- (For buffer-type terminals) show connected buffer in window 1
+---   vim.keymap.set({'n','t'},'<c-p>',Nuiterm.focus_buffer_for_terminal)
+---   -- Toggle global terminal number 1
+---   vim.keymap.set('n','<leader>n',function()Nuiterm.toggle("editor",1)end)
+---
+---   -- Toggle terminal menu
+---   vim.keymap.set('n','<leader>tm',Nuiterm.toggle_menu)
+---   vim.keymap.set('t','<c-t>',Nuiterm.toggle_menu)
+---   vim.keymap.set('n','<leader>ft',require('nuiterm.telescope').picker)
+---
+---   -- Sending lines to terminal
 ---   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
 ---   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
 ---   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
