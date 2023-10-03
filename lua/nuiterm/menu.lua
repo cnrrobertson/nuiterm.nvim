@@ -5,7 +5,7 @@ local menu = {}
 function menu.get_mounted_terms(group)
   local terms = {}
   for _,t in pairs(Nuiterm.terminals[group]) do
-    if t.ui.mounted == true then
+    if t.ui.object._.mounted == true then
       table.insert(terms, t)
     end
   end

@@ -17,7 +17,6 @@ local utils = require("nuiterm.utils")
 ---@field type_id integer id number of terminal (specific to type)
 ---@field ui table ui details for terminal
 ---@field ui.type string type of nui object to use for window
----@field ui.mounted boolean whether terminal window is created
 ---@field ui.shown boolean whether terminal buffer is being shown
 ---@field ui.object nui.object terminal nui object
 local Terminal = {}
@@ -49,7 +48,6 @@ function Terminal:new(options)
   end
   options.ui = {
     type = options.ui.type,
-    mounted = false,
     shown = false,
     object = ui_object
   }
@@ -75,9 +73,8 @@ end
 function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
-  if self.ui.mounted == false then
+  if self.ui.object._.mounted == false then
     self.ui.object:mount()
-    self.ui.mounted = true
     self.ui.shown = true
     if self.bufnr == nil then
       self.bufnr = vim.api.nvim_create_buf(false,false)

@@ -6,7 +6,7 @@ function utils.get_type_id(type,num)
   else
     local type_id = 1
     if type == "editor" then
-      type_id = num or utils.table_length(Nuiterm.terminals[type])+1
+      type_id = num or utils.find_first_unmounted(Nuiterm.terminals[type])
     elseif type == "tab" then
       type_id = vim.api.nvim_get_current_tabpage()
     elseif type == "window" then
@@ -24,6 +24,15 @@ function utils.table_length(t)
     length = length + 1
   end
   return length
+end
+
+function utils.find_first_unmounted(terminals)
+  for id,term in pairs(terminals) do
+    if term.ui.object._.mounted == false then
+      return id
+    end
+  end
+  return utils.table_length(terminals)+1
 end
 
 return utils
