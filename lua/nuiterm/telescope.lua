@@ -52,7 +52,7 @@ terminal_finder.picker = function(opts)
   })
 
 	pickers.new(opts, {
-		prompt_title = "Select a terminal",
+		prompt_title = "Select a terminal (* denotes active terminal)",
 		results_title = "Nuiterms",
 		finder = nuiterm_finder(),
 		sorter = conf.generic_sorter(opts),

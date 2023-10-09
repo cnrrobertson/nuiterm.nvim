@@ -51,8 +51,10 @@ local config = {
       border = {
         style = "rounded",
         text = {
-          top = "Terminal Menu",
+          top = "Terminals",
           top_align = "center",
+          bottom = "* denotes active terminal",
+          bottom_align = "left",
         },
       },
       win_options = {

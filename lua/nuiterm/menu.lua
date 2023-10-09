@@ -19,7 +19,11 @@ function menu.add_editor_terms(lines,remove_header)
       lines[#lines+1] = Menu.separator("Editor")
     end
     for _,t in pairs(editor_terms) do
-      local display = "Editor "..t.type_id
+      local pre_str = ""
+      if t.ui.shown then
+        pre_str = "* "
+      end
+      local display = pre_str.."Editor "..t.type_id
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -39,7 +43,11 @@ function menu.add_tab_terms(lines,remove_header)
       for _,win in pairs(vim.api.nvim_tabpage_list_wins(t.type_id)) do
         buf_names = buf_names.." "..vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
       end
-      local display = "Tab "..t.type_id.."- Buffers in tab: "..buf_names
+      local pre_str = ""
+      if t.ui.shown then
+        pre_str = "* "
+      end
+      local display = pre_str.."Tab "..t.type_id.."- Buffers in tab: "..buf_names
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -56,7 +64,11 @@ function menu.add_window_terms(lines,remove_header)
     end
     for _,t in pairs(window_terms) do
       local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(t.type_id))
-      local display = "Window "..t.type_id.."- Buffer in window: "..buf_name
+      local pre_str = ""
+      if t.ui.shown then
+        pre_str = "* "
+      end
+      local display = pre_str.."Window "..t.type_id.."- Buffer in window: "..buf_name
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -73,7 +85,11 @@ function menu.add_buffer_terms(lines,remove_header)
     end
     for _,t in pairs(buffer_terms) do
       local buf_name = vim.api.nvim_buf_get_name(t.type_id)
-      local display = "Buffer "..t.type_id..": "..buf_name
+      local pre_str = ""
+      if t.ui.shown then
+        pre_str = "* "
+      end
+      local display = pre_str.."Buffer "..t.type_id..": "..buf_name
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
