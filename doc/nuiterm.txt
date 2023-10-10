@@ -353,8 +353,10 @@ Default values:
         border = {
           style = "rounded",
           text = {
-            top = "Terminal Menu",
+            top = "Terminals",
             top_align = "center",
+            bottom = "* denotes active terminal",
+            bottom_align = "left",
           },
         },
         win_options = {
@@ -414,6 +416,12 @@ Parameters~
                                                                *Terminal:hide()*
                                `Terminal:hide`()
 Hide the terminal window
+
+
+------------------------------------------------------------------------------
+                                                            *Terminal:unmount()*
+                              `Terminal:unmount`()
+Unmount the terminal window
 
 
 ------------------------------------------------------------------------------

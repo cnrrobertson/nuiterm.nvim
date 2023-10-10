@@ -74,13 +74,13 @@ function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
   if self.ui.object._.mounted == false then
-    self.ui.object:mount()
+    vim.wait(100,function()self.ui.object:mount()end)
     self.ui.shown = true
     if self.bufnr == nil then
       self.bufnr = vim.api.nvim_create_buf(false,false)
     end
     self:set_keymaps()
-    vim.api.nvim_win_set_buf(0,self.bufnr)
+    vim.api.nvim_win_set_buf(self.ui.object.winid,self.bufnr)
     if cmd then
       self.chan = vim.fn.termopen(cmd, {
         on_exit=function()vim.api.nvim_feedkeys("i","n","t")end,
@@ -93,14 +93,10 @@ function Terminal:show(focus,cmd)
       })
     end
     vim.api.nvim_buf_set_option(self.bufnr,"filetype","terminal")
-    vim.api.nvim_win_set_option(0,"number",false)
+    vim.api.nvim_win_set_option(self.ui.object.winid,"number",false)
     vim.api.nvim_buf_set_name(self.bufnr,self.bufname)
-    if focus then
-      -- Ensure insert mode on mount
-      vim.api.nvim_feedkeys("i",'t',false)
-    end
   elseif self.ui.shown == false then
-    self.ui.object:show()
+    vim.wait(100,function()self.ui.object:show()end)
     vim.api.nvim_win_set_buf(0,self.bufnr)
     self.ui.shown = true
   end
@@ -113,7 +109,14 @@ end
 --- Hide the terminal window
 ---
 function Terminal:hide()
-  self.ui.object:hide()
+  vim.wait(100,function()self.ui.object:hide()end)
+  self.ui.shown = false
+end
+
+--- Unmount the terminal window
+---
+function Terminal:unmount()
+  vim.wait(100,function()self.ui.object:unmount()end)
   self.ui.shown = false
 end
 

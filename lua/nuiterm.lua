@@ -391,7 +391,7 @@ function Nuiterm.show_terminal_menu()
       Nuiterm.menu_shown = false
     end
   })
-  Nuiterm.terminal_menu:mount()
+  vim.wait(100,function()Nuiterm.terminal_menu:mount()end)
   Nuiterm.menu_shown = true
 end
 
@@ -401,10 +401,10 @@ vim.api.nvim_create_autocmd({"BufUnload"}, {
   callback = function(ev)
     local _,term_group,term_id = Nuiterm.find_terminal(ev.buf)
     if Nuiterm.terminals then
-      Nuiterm.terminals[term_group][term_id].ui.object:unmount()
-      Nuiterm.terminals[term_group][term_id].ui.mounted = false
-      Nuiterm.terminals[term_group][term_id].ui.shown = false
-      Nuiterm.terminals[term_group][term_id].bufnr = nil
+      local term = Nuiterm.terminals[term_group][term_id]
+      term:unmount()
+      term.ui.shown = false
+      term.bufnr = nil
     end
   end
 })
