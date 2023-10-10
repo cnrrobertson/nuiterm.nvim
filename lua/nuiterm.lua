@@ -411,20 +411,13 @@ vim.api.nvim_create_autocmd({"BufUnload"}, {
 
 -- Only allow terminals in terminal windows
 if Nuiterm.config.terminal_win_fixed then
-  vim.api.nvim_create_autocmd({"BufLeave"}, {
-    pattern = {"Nuiterm:*"},
-    callback = function(ev)
-      Nuiterm.data['term_win_id'] = vim.api.nvim_get_current_win()
-      Nuiterm.data['last_term_bufnr'] = ev.buf
-    end
-  })
-  vim.api.nvim_create_autocmd({"BufEnter"}, {
+  vim.api.nvim_create_autocmd({"BufWinEnter"}, {
     pattern = {"*"},
-    callback = function(ev)
-      if vim.api.nvim_get_current_win() == Nuiterm.data['term_win_id'] then
-        if string.match(ev.file, "Nuiterm:") == nil then
-          vim.api.nvim_win_set_buf(Nuiterm.data['term_win_id'], Nuiterm.data['last_term_bufnr'])
-        end
+    callback = function()
+      local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "Nuiterm:"')
+      local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "Nuiterm:"')
+      if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) then
+        vim.cmd[[b#]]
       end
     end
   })
