@@ -58,7 +58,7 @@ See |Nuiterm.config| for available config settings.
 
 ## Usage as repl
 A terminal connected to the current buffer can be easily made a REPL by
-just adjusting the keymap to send a REPL command on toggle (python for
+adjusting the keymap to send a REPL setup command on toggle (python for
 example):
 >
   vim.keymap.set({'n','t'},'<c-n>',function() Nuiterm.toggle(nil,nil,"python") end)
@@ -219,28 +219,28 @@ Parameters~
 
 ------------------------------------------------------------------------------
                                                                 *Nuiterm.send()*
-                `Nuiterm.send`({cmd}, {type}, {num}, {pre_cmd})
+               `Nuiterm.send`({cmd}, {type}, {num}, {setup_cmd})
 Send text to a terminal
 
 Parameters~
 {cmd} `(string)` the command to send to the terminal
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
-{pre_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------
                                                            *Nuiterm.send_line()*
-                 `Nuiterm.send_line`({type}, {num}, {pre_cmd})
+                `Nuiterm.send_line`({type}, {num}, {setup_cmd})
 Send current line in buffer to a terminal
 
 Parameters~
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
-{pre_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------
                                                           *Nuiterm.send_lines()*
-    `Nuiterm.send_lines`({start_line}, {end_line}, {type}, {num}, {pre_cmd})
+   `Nuiterm.send_lines`({start_line}, {end_line}, {type}, {num}, {setup_cmd})
 Send multiple lines in buffer to a terminal
 
 Parameters~
@@ -248,11 +248,11 @@ Parameters~
 {end_line} `(string|nil)` the line number at which to end sending
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
-{pre_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------
                                                       *Nuiterm.send_selection()*
-`Nuiterm.send_selection`({line}, {start_col}, {end_col}, {type}, {num}, {pre_cmd})
+`Nuiterm.send_selection`({line}, {start_col}, {end_col}, {type}, {num}, {setup_cmd})
 Send selection in line in buffer to a terminal
 
 Note: this is robust to reverse selections
@@ -263,11 +263,11 @@ Parameters~
 {end_col} `(string|nil)` the column number at which to end sending
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
-{pre_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------
                                                          *Nuiterm.send_visual()*
-                `Nuiterm.send_visual`({type}, {num}, {pre_cmd})
+               `Nuiterm.send_visual`({type}, {num}, {setup_cmd})
 Send visual selection
 
 Note: this is robust to reverse selections
@@ -275,17 +275,17 @@ Note: this is robust to reverse selections
 Parameters~
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
-{pre_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------
                                                            *Nuiterm.send_file()*
-                 `Nuiterm.send_file`({type}, {num}, {pre_cmd})
+                `Nuiterm.send_file`({type}, {num}, {setup_cmd})
 Send file contents to terminal
 
 Parameters~
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
-{pre_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------
                                                          *Nuiterm.toggle_menu()*
