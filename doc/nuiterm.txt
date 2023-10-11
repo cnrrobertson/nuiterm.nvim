@@ -135,8 +135,6 @@ Nuiterm data storage
     buffer = {}
   }
   Nuiterm.data = {}
-  Nuiterm.menu_mounted = false
-  Nuiterm.menu_shown = false
 
 <
 
@@ -182,7 +180,7 @@ Note: if the cursor is in a terminal, that terminal will be hidden
 
 Parameters~
 {type} `(string|nil)` the type of terminal to toggle (see |Nuiterm.config|)
-{num} `(int|nil)` the id of the terminal to toggle
+{num} `(integer|nil)` the id of the terminal to toggle
 {cmd} `(string|nil)` a command to run in terminal (if opening for the first time)
 
 Usage~
@@ -386,7 +384,6 @@ Fields~
 {type_id} `(integer)` id number of terminal (specific to type)
 {ui} `(table)` ui details for terminal
 {ui.type} `(string)` type of nui object to use for window
-{ui.shown} `(boolean)` whether terminal buffer is being shown
 {ui.object} nui.object terminal nui object
 
 ------------------------------------------------------------------------------
@@ -411,18 +408,6 @@ Show the terminal window
 Parameters~
 {focus} `(boolean|nil)` whether to put cursor in terminal when showing
 {cmd} `(string|nil)` cmd to send to terminal upon showing
-
-------------------------------------------------------------------------------
-                                                               *Terminal:hide()*
-                               `Terminal:hide`()
-Hide the terminal window
-
-
-------------------------------------------------------------------------------
-                                                            *Terminal:unmount()*
-                              `Terminal:unmount`()
-Unmount the terminal window
-
 
 ------------------------------------------------------------------------------
                                                                *Terminal:send()*

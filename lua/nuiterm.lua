@@ -138,8 +138,6 @@ Nuiterm.terminals = {
   buffer = {}
 }
 Nuiterm.data = {}
-Nuiterm.menu_mounted = false
-Nuiterm.menu_shown = false
 
 --- Plugin setup
 ---
@@ -171,8 +169,8 @@ end
 function Nuiterm.hide_all_terms()
   for group,_ in pairs(Nuiterm.terminals) do
     for _,other_term in pairs(Nuiterm.terminals[group]) do
-      if other_term.ui.shown == true then
-        other_term:hide()
+      if other_term.ui.object.winid then
+        other_term.ui.object:hide()
       end
     end
   end
@@ -183,7 +181,7 @@ end
 --- Note: if the cursor is in a terminal, that terminal will be hidden
 ---
 ---@param type string|nil the type of terminal to toggle (see |Nuiterm.config|)
----@param num int|nil the id of the terminal to toggle
+---@param num integer|nil the id of the terminal to toggle
 ---@param cmd string|nil a command to run in terminal (if opening for the first time)
 ---
 ---@usage `Nuiterm.toggle('buffer', 12)` (toggle the terminal bound to buffer 12)
@@ -201,8 +199,8 @@ function Nuiterm.toggle(type,num,cmd)
     term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
   end
 
-  if term.ui.shown then
-    term:hide()
+  if term.ui.object.winid then
+    term.ui.object:hide()
   else
     Nuiterm.hide_all_terms()
     term:show(Nuiterm.config.focus_on_open,cmd)
@@ -220,7 +218,7 @@ function Nuiterm.find_terminal(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   for group,_ in pairs(Nuiterm.terminals) do
     for id,term in pairs(Nuiterm.terminals[group]) do
-      if term.bufnr == bufnr then
+      if term.ui.object.bufnr == bufnr then
         return term,group,id
       end
     end
@@ -260,7 +258,7 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
   term:show(Nuiterm.config.focus_on_send,setup_cmd)
   term:send(cmd..'\n')
   if not Nuiterm.config.show_on_send then
-    term:hide()
+    term.ui.object:hide()
     -- Strange bug: deal with entering insert mode if terminal is hidden
     -- vim.api.nvim_input[[<c-c>]]
   end
@@ -356,9 +354,8 @@ end
 --- Toggle terminal menu to select (and toggle) terminals
 ---
 function Nuiterm.toggle_menu()
-  if Nuiterm.menu_shown then
+  if Nuiterm.terminal_menu and Nuiterm.terminal_menu.winid then
     Nuiterm.terminal_menu:unmount()
-    Nuiterm.menu_shown = false
   else
     Nuiterm.show_terminal_menu()
   end
@@ -385,29 +382,10 @@ function Nuiterm.show_terminal_menu()
       if item then
         Nuiterm.toggle(item.type,item.type_id)
       end
-      Nuiterm.menu_shown = false
     end,
-    on_close = function()
-      Nuiterm.menu_shown = false
-    end
   })
   vim.wait(100,function()Nuiterm.terminal_menu:mount()end)
-  Nuiterm.menu_shown = true
 end
-
--- Ensure terminal is left properly
-vim.api.nvim_create_autocmd({"BufUnload"}, {
-  pattern = {"Nuiterm:*"},
-  callback = function(ev)
-    local _,term_group,term_id = Nuiterm.find_terminal(ev.buf)
-    if Nuiterm.terminals then
-      local term = Nuiterm.terminals[term_group][term_id]
-      term:unmount()
-      term.ui.shown = false
-      term.bufnr = nil
-    end
-  end
-})
 
 -- Only allow terminals in terminal windows
 if Nuiterm.config.terminal_win_fixed then
