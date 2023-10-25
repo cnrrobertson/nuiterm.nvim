@@ -170,7 +170,7 @@ function Nuiterm.hide_all_terms()
   for group,_ in pairs(Nuiterm.terminals) do
     for _,other_term in pairs(Nuiterm.terminals[group]) do
       if other_term.ui.object.winid then
-        other_term.ui.object:hide()
+        vim.schedule(function()other_term.ui.object:hide()end)
       end
     end
   end
@@ -200,10 +200,10 @@ function Nuiterm.toggle(type,num,cmd)
   end
 
   if term.ui.object.winid then
-    term.ui.object:hide()
+    vim.schedule(function()term.ui.object:hide()end)
   else
     Nuiterm.hide_all_terms()
-    term:show(Nuiterm.config.focus_on_open,cmd)
+    vim.schedule(function()term:show(Nuiterm.config.focus_on_open,cmd)end)
   end
 end
 
@@ -255,8 +255,8 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
     term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
   end
   Nuiterm.hide_all_terms()
-  term:show(Nuiterm.config.focus_on_send,setup_cmd)
-  term:send(cmd..'\n')
+  vim.schedule(function()term:show(Nuiterm.config.focus_on_send,setup_cmd)end)
+  vim.schedule(function()term:send(cmd..'\n')end)
   if not Nuiterm.config.show_on_send then
     term.ui.object:hide()
     -- Strange bug: deal with entering insert mode if terminal is hidden
@@ -355,7 +355,7 @@ end
 ---
 function Nuiterm.toggle_menu()
   if Nuiterm.terminal_menu and Nuiterm.terminal_menu.winid then
-    Nuiterm.terminal_menu:unmount()
+    vim.schedule(function()Nuiterm.terminal_menu:unmount()end)
   else
     Nuiterm.show_terminal_menu()
   end
@@ -384,7 +384,7 @@ function Nuiterm.show_terminal_menu()
       end
     end,
   })
-  vim.wait(100,function()Nuiterm.terminal_menu:mount()end)
+  vim.schedule(function()Nuiterm.terminal_menu:mount()end)
 end
 
 -- Only allow terminals in terminal windows

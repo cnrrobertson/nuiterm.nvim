@@ -67,24 +67,20 @@ function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
   if self.ui.object._.mounted == false then
-    vim.wait(100,function()self.ui.object:mount()end)
-    self:set_keymaps()
-    if cmd then
-      self.chan = vim.fn.termopen(cmd, {
-        on_exit=function()self.ui.object:unmount()end,
+    self.ui.object:mount()
+    vim.schedule(function()
+      self:set_keymaps()
+      local term_cmd = cmd or vim.o.shell
+      self.chan = vim.fn.termopen(term_cmd, {
+        on_exit=vim.schedule_wrap(function()self.ui.object:unmount()end),
         cwd=self.cwd
       })
-    else
-      self.chan = vim.fn.termopen(vim.o.shell, {
-        on_exit=function()self.ui.object:unmount()end,
-        cwd=self.cwd
-      })
-    end
-    vim.api.nvim_buf_set_option(self.ui.object.bufnr,"filetype","terminal")
-    vim.api.nvim_buf_set_name(self.ui.object.bufnr,self.bufname)
-    vim.api.nvim_win_set_option(self.ui.object.winid,"number",false)
+        vim.api.nvim_buf_set_option(self.ui.object.bufnr,"filetype","terminal")
+        vim.api.nvim_buf_set_name(self.ui.object.bufnr,self.bufname)
+        vim.api.nvim_win_set_option(self.ui.object.winid,"number",false)
+    end)
   elseif self.ui.object.winid == nil then
-    vim.wait(100,function()self.ui.object:show()end)
+    vim.schedule(function()self.ui.object:show()end)
   end
   if not focus then
     vim.api.nvim_set_current_win(start_win)
