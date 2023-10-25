@@ -35,4 +35,14 @@ function utils.find_first_unmounted(terminals)
   return utils.table_length(terminals)+1
 end
 
+function utils.find_shown()
+  for type,terminals in pairs(Nuiterm.terminals) do
+    for id,term in pairs(terminals) do
+      if term.ui.object.winid then
+        return {type,id}
+      end
+    end
+  end
+end
+
 return utils

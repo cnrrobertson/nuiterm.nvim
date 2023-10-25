@@ -254,13 +254,23 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
     local type_id = utils.get_type_id(type,num)
     term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
   end
+  local term_shown = utils.find_shown()
   Nuiterm.hide_all_terms()
   vim.schedule(function()term:show(Nuiterm.config.focus_on_send,setup_cmd)end)
   vim.schedule(function()term:send(cmd..'\n')end)
   if not Nuiterm.config.show_on_send then
-    term.ui.object:hide()
-    -- Strange bug: deal with entering insert mode if terminal is hidden
-    -- vim.api.nvim_input[[<c-c>]]
+    vim.schedule(function()term.ui.object:hide()end)
+    if term_shown then
+      local same_term = (term_shown[1] == term.type) and (term_shown[2] == term.type_id)
+      local temp_term = Nuiterm.terminals[term_shown[1]][term_shown[2]]
+      local focus = false
+      if same_term then
+        if Nuiterm.config.focus_on_send then
+          focus = true
+        end
+      end
+      vim.schedule(function()temp_term:show(focus)end)
+    end
   end
 end
 
