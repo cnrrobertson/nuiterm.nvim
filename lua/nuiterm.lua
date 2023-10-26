@@ -21,7 +21,7 @@
 ---
 --- This plugin needs to be setup with `require('nuiterm').setup({})` (replace
 --- `{}` with you `config` table). It will create a global Lua table `Nuiterm`
---- which contains the `terminals` and `data`.
+--- which contains the `terminals`.
 ---
 --- See |Nuiterm.config| for available config settings.
 ---
@@ -137,7 +137,6 @@ Nuiterm.terminals = {
   window = {},
   buffer = {}
 }
-Nuiterm.data = {}
 
 --- Plugin setup
 ---
@@ -170,7 +169,7 @@ function Nuiterm.hide_all_terms()
   for group,_ in pairs(Nuiterm.terminals) do
     for _,other_term in pairs(Nuiterm.terminals[group]) do
       if other_term.ui.object.winid then
-        other_term.ui.object:hide()
+        other_term:hide()
       end
     end
   end
@@ -200,7 +199,7 @@ function Nuiterm.toggle(type,num,cmd)
   end
 
   if term.ui.object.winid then
-    term.ui.object:hide()
+    term:hide()
   else
     Nuiterm.hide_all_terms()
     term:show(Nuiterm.config.focus_on_open,cmd)
@@ -259,7 +258,7 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
   term:show(Nuiterm.config.focus_on_send,setup_cmd)
   term:send(cmd..'\n')
   if not Nuiterm.config.show_on_send then
-    term.ui.object:hide()
+    term:hide()
     if term_shown then
       local same_term = (term_shown[1] == term.type) and (term_shown[2] == term.type_id)
       local temp_term = Nuiterm.terminals[term_shown[1]][term_shown[2]]

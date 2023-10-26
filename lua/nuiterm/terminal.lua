@@ -62,11 +62,25 @@ end
 --- Show the terminal window
 ---
 ---@param focus boolean|nil whether to put cursor in terminal when showing
----@param cmd string|nil cmd to send to terminal upon showing
+---@param cmd string|nil cmd to run immediately in terminal (if not shown before)
 function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
   if self.ui.object._.mounted == false then
+    self:mount(cmd)
+  elseif self.ui.object.winid == nil then
+    self.ui.object:show()
+  end
+  if not focus then
+    vim.api.nvim_set_current_win(start_win)
+    vim.api.nvim_win_set_cursor(start_win,start_cursor)
+  end
+end
+
+--- Mount the terminal
+---
+---@param cmd string|nil cmd to send to the terminal upon mounting
+function Terminal:mount(cmd)
     self.ui.object:mount()
     self:set_keymaps()
     local term_cmd = cmd or vim.o.shell
@@ -80,13 +94,12 @@ function Terminal:show(focus,cmd)
     vim.api.nvim_buf_set_option(self.ui.object.bufnr,"filetype","terminal")
     vim.api.nvim_buf_set_name(self.ui.object.bufnr,self.bufname)
     vim.api.nvim_win_set_option(self.ui.object.winid,"number",false)
-  elseif self.ui.object.winid == nil then
-    self.ui.object:show()
-  end
-  if not focus then
-    vim.api.nvim_set_current_win(start_win)
-    vim.api.nvim_win_set_cursor(start_win,start_cursor)
-  end
+end
+
+--- Hide the terminal
+---
+function Terminal:hide()
+  self.ui.object:hide()
 end
 
 --- Send command to the terminal

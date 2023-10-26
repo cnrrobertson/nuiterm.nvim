@@ -23,7 +23,7 @@ Key features:
 
 This plugin needs to be setup with `require('nuiterm').setup({})` (replace
 `{}` with you `config` table). It will create a global Lua table `Nuiterm`
-which contains the `terminals` and `data`.
+which contains the `terminals`.
 
 See |Nuiterm.config| for available config settings.
 
@@ -134,7 +134,6 @@ Nuiterm data storage
     window = {},
     buffer = {}
   }
-  Nuiterm.data = {}
 
 <
 
@@ -407,7 +406,21 @@ Show the terminal window
 
 Parameters~
 {focus} `(boolean|nil)` whether to put cursor in terminal when showing
-{cmd} `(string|nil)` cmd to send to terminal upon showing
+{cmd} `(string|nil)` cmd to run immediately in terminal (if not shown before)
+
+------------------------------------------------------------------------------
+                                                              *Terminal:mount()*
+                            `Terminal:mount`({cmd})
+Mount the terminal
+
+Parameters~
+{cmd} `(string|nil)` cmd to send to the terminal upon mounting
+
+------------------------------------------------------------------------------
+                                                               *Terminal:hide()*
+                               `Terminal:hide`()
+Hide the terminal
+
 
 ------------------------------------------------------------------------------
                                                                *Terminal:send()*
