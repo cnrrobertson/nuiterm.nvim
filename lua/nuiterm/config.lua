@@ -20,6 +20,8 @@ local config = {
   terminal_win_fixed = true,
   -- Whether to persist changes to terminal window size
   persist_size = true,
+  -- Whether to hide terminal when leaving window
+  hide_on_leave = false,
   keymaps = {},
   ui = {
     type = "split",

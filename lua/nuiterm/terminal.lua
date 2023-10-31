@@ -1,7 +1,7 @@
 local Split = require("nui.split")
 local Popup = require("nui.Popup")
-local config = require("nuiterm.config")
 local utils = require("nuiterm.utils")
+local event = require("nui.utils.autocmd").event
 
 ---@tag Terminal
 ---@signature Terminal
@@ -25,7 +25,7 @@ local Terminal = {}
 ---@param options table|nil config options for terminal (see |Nuiterm.config|)
 function Terminal:new(options)
   options = options or {}
-  options = vim.tbl_deep_extend("force",config,options)
+  options = vim.tbl_deep_extend("force",Nuiterm.config,options)
   self.__index = self
   options.type = options.type
   if not options.open_at_cwd then
@@ -70,6 +70,11 @@ function Terminal:show(focus,cmd)
     self:mount(cmd)
   elseif self.ui.object.winid == nil then
     self.ui.object:show()
+  end
+  if Nuiterm.config.hide_on_leave then
+    self.ui.object:on({event.WinLeave}, function()
+      self:hide(Nuiterm.config.persist_size)
+    end, {})
   end
   if not focus then
     vim.api.nvim_set_current_win(start_win)
