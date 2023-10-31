@@ -98,7 +98,20 @@ end
 
 --- Hide the terminal
 ---
-function Terminal:hide()
+---@param persist_size boolean|nil whether to save changes to window size
+function Terminal:hide(persist_size)
+  if persist_size then
+    if self.ui.object._.size.width then
+      local new_width = vim.api.nvim_win_get_width(self.ui.object.winid)
+      self.ui.object._.size.width = new_width
+      self.ui.object._.win_config.width = new_width
+    end
+    if self.ui.object._.size.height then
+      local new_height = vim.api.nvim_win_get_height(self.ui.object.winid)
+      self.ui.object._.size.height = new_height
+      self.ui.object._.win_config.height = new_height
+    end
+  end
   self.ui.object:hide()
 end
 

@@ -18,6 +18,8 @@ local config = {
   open_at_cwd = false,
   -- Whether to only allow terminal buffer to use terminal window
   terminal_win_fixed = true,
+  -- Whether to persist changes to terminal window size
+  persist_size = true,
   keymaps = {},
   ui = {
     type = "split",
