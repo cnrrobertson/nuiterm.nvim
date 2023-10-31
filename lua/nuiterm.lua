@@ -257,6 +257,10 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
   Nuiterm.hide_all_terms()
   term:show(Nuiterm.config.focus_on_send,setup_cmd)
   term:send(cmd..'\n')
+  vim.api.nvim_win_call(term.ui.object.winid, function()
+    local buf_len = vim.api.nvim_buf_line_count(term.ui.object.bufnr)
+    vim.api.nvim_win_set_cursor(term.ui.object.winid, {buf_len,0})
+  end)
   if not Nuiterm.config.show_on_send then
     term:hide(Nuiterm.config.persist_size)
     if term_shown then
