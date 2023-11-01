@@ -382,15 +382,19 @@ function Nuiterm.show_terminal_menu()
   menu.add_tab_terms(lines)
   menu.add_window_terms(lines)
   menu.add_buffer_terms(lines)
+  local keys = {
+    focus_next = {},focus_prev = {},submit = {},
+    close = { "<Esc>", "<C-c>", "q" },
+  }
+  if #lines > 0 then
+    keys.focus_next = { "j", "<Down>", "<Tab>" }
+    keys.focus_prev = { "k", "<Up>", "<S-Tab>" }
+    keys.submit = { "<CR>", "<Space>" }
+  end
   Nuiterm.terminal_menu = Menu(Nuiterm.config.ui.menu_opts, {
     lines = lines,
     max_width = 20,
-    keymap = {
-      focus_next = { "j", "<Down>", "<Tab>" },
-      focus_prev = { "k", "<Up>", "<S-Tab>" },
-      close = { "<Esc>", "<C-c>", "q" },
-      submit = { "<CR>", "<Space>" },
-    },
+    keymap = keys,
     on_submit = function(item)
       if item then
         Nuiterm.toggle(item.type,item.type_id)
