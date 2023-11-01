@@ -402,6 +402,7 @@ function Nuiterm.show_terminal_menu()
     end,
   })
   Nuiterm.terminal_menu:mount()
+  menu.set_mappings()
 end
 
 -- Only allow terminals in terminal windows

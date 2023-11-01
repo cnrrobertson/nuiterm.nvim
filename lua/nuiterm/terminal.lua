@@ -91,14 +91,20 @@ function Terminal:mount(cmd)
     local term_cmd = cmd or vim.o.shell
     self.chan = vim.fn.termopen(term_cmd, {
       on_exit=function()
-        self.ui.object:unmount()
-        Nuiterm.terminals[self.type][self.type_id] = nil
+        self:unmount()
       end,
       cwd=self.cwd
     })
     vim.api.nvim_buf_set_option(self.ui.object.bufnr,"filetype","terminal")
     vim.api.nvim_buf_set_name(self.ui.object.bufnr,self.bufname)
     vim.api.nvim_win_set_option(self.ui.object.winid,"number",false)
+end
+
+--- Unmount the terminal
+---
+function Terminal:unmount()
+    self.ui.object:unmount()
+    Nuiterm.terminals[self.type][self.type_id] = nil
 end
 
 --- Hide the terminal

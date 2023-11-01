@@ -98,4 +98,17 @@ function menu.add_buffer_terms(lines,remove_header)
   end
 end
 
+function menu.set_mappings()
+  -- Close terminal
+  Nuiterm.terminal_menu:map("n", "d", function()
+    local tree = Nuiterm.terminal_menu.tree
+    local node = tree:get_node()
+    local term = Nuiterm.terminals[node.type][node.type_id]
+    term:unmount()
+    tree:remove_node(node._id)
+    tree:render()
+  end, {noremap=true})
+  -- Show help
+end
+
 return menu
