@@ -57,7 +57,7 @@ local config = {
         text = {
           top = "Terminals",
           top_align = "center",
-          bottom = "j=down  k=up  q=quit  d=close  (* denotes active terminal)",
+          bottom = "j=down  k=up  q=exit  d=destroy  (* denotes active terminal)",
           bottom_align = "left",
         },
       },

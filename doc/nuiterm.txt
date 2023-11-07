@@ -356,7 +356,7 @@ Default values:
           text = {
             top = "Terminals",
             top_align = "center",
-            bottom = "* denotes active terminal",
+            bottom = "j=down  k=up  q=exit  d=destroy  (* denotes active terminal)",
             bottom_align = "left",
           },
         },
