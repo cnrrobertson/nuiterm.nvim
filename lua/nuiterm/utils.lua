@@ -45,4 +45,20 @@ function utils.find_shown()
   end
 end
 
+function utils.find_mounted()
+  local all_mounted = {}
+  for type,terminals in pairs(Nuiterm.terminals) do
+    for id,term in pairs(terminals) do
+      if term.ui.object._.mounted then
+        table.insert(all_mounted, {type,id})
+      end
+    end
+  end
+  if #all_mounted > 0 then
+    return all_mounted
+  else
+    return nil
+  end
+end
+
 return utils

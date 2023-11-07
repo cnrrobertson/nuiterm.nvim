@@ -149,6 +149,23 @@ function Nuiterm.setup(config)
 
   -- Setup config
   Nuiterm.config = vim.tbl_deep_extend('force', Nuiterm.config, config or {})
+
+  -- Add autocommands
+  Nuiterm.augroup = vim.api.nvim_create_augroup("Nuiterm", {clear = true})
+
+  -- Clean up terminals on exit (helps session management)
+  vim.api.nvim_create_autocmd({"ExitPre"}, {
+    pattern="*",
+    callback = function()
+      local terms_mounted = utils.find_mounted()
+      if terms_mounted then
+        for _,term_info in ipairs(terms_mounted) do
+          local term = Nuiterm.terminals[term_info[1]][term_info[2]]
+          term:unmount()
+        end
+      end
+    end
+  })
 end
 
 --- Create new terminal
