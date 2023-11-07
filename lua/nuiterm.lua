@@ -166,6 +166,14 @@ function Nuiterm.setup(config)
       end
     end
   })
+
+  -- Abbreviations
+  if Nuiterm.config.confirm_quit == true then
+    vim.cmd[[cnoreabbrev <expr> q getcmdtype() == ":" && getcmdline() == 'q' ? 'lua Nuiterm.confirm_quit(false, false)' : 'q']]
+    vim.cmd[[cnoreabbrev <expr> qa getcmdtype() == ":" && getcmdline() == 'qa' ? 'lua Nuiterm.confirm_quit(false, true)' : 'qa']]
+    vim.cmd[[cnoreabbrev <expr> wq getcmdtype() == ":" && getcmdline() == 'wq' ? 'lua Nuiterm.confirm_quit(true, false)' : 'wq']]
+    vim.cmd[[cnoreabbrev <expr> wqa getcmdtype() == ":" && getcmdline() == 'wqa' ? 'lua Nuiterm.confirm_quit(true, true)' : 'wqa']]
+  end
 end
 
 --- Create new terminal
@@ -420,6 +428,46 @@ function Nuiterm.show_terminal_menu()
   })
   Nuiterm.terminal_menu:mount()
   menu.set_mappings()
+end
+
+--- Confirm quit commands when terminals are mounted
+---
+---@param write boolean|nil whether to write before quitting
+---@param all boolean|nil if all windows are being quit
+function Nuiterm.confirm_quit(write, all)
+  local terms_mounted = utils.find_mounted()
+  local num_windows = #vim.api.nvim_list_wins()
+
+  if terms_mounted then
+    if all == false and num_windows > 1 then
+      -- Only closing one of multiple windows
+      if write and vim.o.modified then
+        vim.cmd[[write]]
+      end
+      vim.cmd[[quit]]
+    else
+      -- Closing all windows or the only window
+      vim.ui.input({prompt = "Active terminals. Exit? (y/n/[show]) "}, function(input)
+        if input == "y" then
+          if write and vim.o.modified then
+            vim.cmd[[write]]
+          end
+          vim.cmd[[quitall]]
+        elseif input == "" or input == "show" then
+          Nuiterm.show_terminal_menu()
+        end
+      end)
+    end
+  else
+    if write and vim.o.modified then
+      vim.cmd[[write]]
+    end
+    if all then
+      vim.cmd[[quitall]]
+    else
+      vim.cmd[[quit]]
+    end
+  end
 end
 
 -- Only allow terminals in terminal windows

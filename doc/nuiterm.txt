@@ -296,6 +296,15 @@ Toggle terminal menu to select (and toggle) terminals
 Show terminal menu to select (and toggle) terminals
 
 
+------------------------------------------------------------------------------
+                                                        *Nuiterm.confirm_quit()*
+                     `Nuiterm.confirm_quit`({write}, {all})
+Confirm quit commands when terminals are mounted
+
+Parameters~
+{write} `(boolean|nil)` whether to write before quitting
+{all} `(boolean|nil)` if all windows are being quit
+
 
 ==============================================================================
 ------------------------------------------------------------------------------
@@ -321,6 +330,8 @@ Default values:
     persist_size = true,
     -- Whether to hide terminal when leaving window
     hide_on_leave = false,
+    -- Whether to confirm exit when mounted terminals
+    confirm_quit = true,
     keymaps = {},
     ui = {
       type = "split",
@@ -419,6 +430,12 @@ Mount the terminal
 
 Parameters~
 {cmd} `(string|nil)` cmd to send to the terminal upon mounting
+
+------------------------------------------------------------------------------
+                                                            *Terminal:unmount()*
+                              `Terminal:unmount`()
+Unmount the terminal
+
 
 ------------------------------------------------------------------------------
                                                                *Terminal:hide()*

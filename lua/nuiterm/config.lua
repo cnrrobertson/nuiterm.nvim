@@ -22,6 +22,8 @@ local config = {
   persist_size = true,
   -- Whether to hide terminal when leaving window
   hide_on_leave = false,
+  -- Whether to confirm exit when mounted terminals
+  confirm_quit = true,
   keymaps = {},
   ui = {
     type = "split",
