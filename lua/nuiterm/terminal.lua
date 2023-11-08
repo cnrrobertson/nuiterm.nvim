@@ -77,6 +77,7 @@ function Terminal:show(focus,cmd)
     end, {})
   end
   if not focus then
+    vim.cmd[[stopinsert]]
     vim.api.nvim_set_current_win(start_win)
     vim.api.nvim_win_set_cursor(start_win,start_cursor)
   end

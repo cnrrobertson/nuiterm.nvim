@@ -24,6 +24,8 @@ local config = {
   hide_on_leave = false,
   -- Whether to confirm exit when mounted terminals
   confirm_quit = true,
+  -- Whether to set insert mode on entering nuiterm terminal buffer
+  insert_on_enter = true,
   keymaps = {},
   ui = {
     type = "split",

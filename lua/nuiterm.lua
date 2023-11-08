@@ -167,6 +167,16 @@ function Nuiterm.setup(config)
     end
   })
 
+  -- Automatically enter insert mode when entering terminal
+  if Nuiterm.config.insert_on_enter == true then
+    vim.api.nvim_create_autocmd({"BufEnter"}, {
+      pattern="nuiterm:*",
+      callback = function()
+        vim.cmd[[startinsert]]
+      end
+    })
+  end
+
   -- Abbreviations
   if Nuiterm.config.confirm_quit == true then
     vim.cmd[[cnoreabbrev <expr> q getcmdtype() == ":" && getcmdline() == 'q' ? 'lua Nuiterm.confirm_quit(false, false)' : 'q']]
