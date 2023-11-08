@@ -11,24 +11,30 @@ local config = {
   -- Default type of terminal
   -- could be "buffer", "window", "tab", or "editor"
   type = "buffer",
+  -- Show terminal window (if hidden) when sending code
   show_on_send = true,
+  -- Move cursor to terminal window when opening
   focus_on_open = true,
+  -- Move cursor to terminal window when sending code
   focus_on_send = false,
-  -- Whether to use vim cwd for terminal directory
+  -- Use vim cwd for terminal directory
   open_at_cwd = false,
-  -- Whether to only allow terminal buffer to use terminal window
+  -- Only allow terminal buffer to use terminal window
   terminal_win_fixed = true,
-  -- Whether to persist changes to terminal window size
+  -- Persist changes to terminal window size
   persist_size = true,
-  -- Whether to hide terminal when leaving window
+  -- Hide terminal when leaving window
   hide_on_leave = false,
-  -- Whether to confirm exit when mounted terminals
+  -- Confirm exit when mounted terminals exist
   confirm_quit = true,
-  -- Whether to set insert mode on entering nuiterm terminal buffer
+  -- Set insert mode on entering nuiterm terminal buffer
   insert_on_enter = true,
   keymaps = {},
   ui = {
+    -- Default ui type of terminal
+    -- could be "split" or "popup"
     type = "split",
+    -- Default split ui options
     split_opts = {
       enter = true,
       focusable = true,
@@ -39,6 +45,7 @@ local config = {
       size = "40%",
       relative = "editor",
     },
+    -- Default popup ui options
     popup_opts = {
       enter = true,
       focusable = true,
@@ -52,6 +59,7 @@ local config = {
       },
       relative = "editor",
     },
+    -- Default terminal menu popup ui options
     menu_opts = {
       relative = "editor",
       position = '50%',
