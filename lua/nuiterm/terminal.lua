@@ -1,5 +1,5 @@
 local Split = require("nui.split")
-local Popup = require("nui.Popup")
+local Popup = require("nui.popup")
 local utils = require("nuiterm.utils")
 local event = require("nui.utils.autocmd").event
 
