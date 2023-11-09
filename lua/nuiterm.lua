@@ -153,6 +153,20 @@ function Nuiterm.setup(config)
   -- Add autocommands
   Nuiterm.augroup = vim.api.nvim_create_augroup("Nuiterm", {clear = true})
 
+  -- Only allow terminals in terminal windows
+  if Nuiterm.config.terminal_win_fixed then
+    vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+      pattern = {"*"},
+      callback = function()
+        local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "Nuiterm:"')
+        local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "Nuiterm:"')
+        if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) then
+          vim.cmd[[b#]]
+        end
+      end
+    })
+  end
+
   -- Clean up terminals on exit (helps session management)
   vim.api.nvim_create_autocmd({"ExitPre"}, {
     pattern="*",
@@ -465,20 +479,6 @@ function Nuiterm.confirm_quit(write, all)
   else
     utils.write_quit(write, all)
   end
-end
-
--- Only allow terminals in terminal windows
-if Nuiterm.config.terminal_win_fixed then
-  vim.api.nvim_create_autocmd({"BufWinEnter"}, {
-    pattern = {"*"},
-    callback = function()
-      local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "Nuiterm:"')
-      local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "Nuiterm:"')
-      if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) then
-        vim.cmd[[b#]]
-      end
-    end
-  })
 end
 
 return Nuiterm
