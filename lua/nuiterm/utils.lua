@@ -61,4 +61,15 @@ function utils.find_mounted()
   end
 end
 
+function utils.write_quit(write, all)
+  if write and vim.o.modified then
+    vim.cmd[[write]]
+  end
+  if all then
+    vim.cmd[[quitall]]
+  else
+    vim.cmd[[quit]]
+  end
+end
+
 return utils

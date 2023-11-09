@@ -451,32 +451,19 @@ function Nuiterm.confirm_quit(write, all)
   if terms_mounted then
     if all == false and num_windows > 1 then
       -- Only closing one of multiple windows
-      if write and vim.o.modified then
-        vim.cmd[[write]]
-      end
-      vim.cmd[[quit]]
+      utils.write_quit(write, false)
     else
       -- Closing all windows or the only window
-      vim.ui.input({prompt = "Active terminals. Exit? (y/n/[show]) "}, function(input)
+      vim.ui.input({prompt = "Active terminals. Exit? (y/n/[s]how) "}, function(input)
         if input == "y" then
-          if write and vim.o.modified then
-            vim.cmd[[write]]
-          end
-          vim.cmd[[quitall]]
-        elseif input == "" or input == "show" then
+          utils.write_quit(write, true)
+        elseif input == "" or input == "s" or input == "show" then
           Nuiterm.show_terminal_menu()
         end
       end)
     end
   else
-    if write and vim.o.modified then
-      vim.cmd[[write]]
-    end
-    if all then
-      vim.cmd[[quitall]]
-    else
-      vim.cmd[[quit]]
-    end
+    utils.write_quit(write, all)
   end
 end
 
