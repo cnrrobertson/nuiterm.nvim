@@ -400,6 +400,7 @@ function Nuiterm.send_visual(type,num,setup_cmd)
       Nuiterm.send_lines(start_line,end_line,type,num,setup_cmd)
     end
   end
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', false, true, true), 'nx', false)
 end
 
 --- Send file contents to terminal
