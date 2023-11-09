@@ -32,6 +32,9 @@ function Terminal:new(options)
     options.cwd = vim.fn.expand("%:p:h")
   end
   options.type_id = utils.get_type_id(options.type)
+  if options.type == "buffer" then
+    options.type_name = vim.api.nvim_buf_get_name(options.type_id)
+  end
   options.bufname = "nuiterm:" .. options.type .. ":" .. tostring(options.type_id)
   options.repl = false
   local ui_object = {}

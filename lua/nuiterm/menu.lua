@@ -84,7 +84,7 @@ function menu.add_buffer_terms(lines,remove_header)
       lines[#lines+1] = Menu.separator("Buffer")
     end
     for _,t in pairs(buffer_terms) do
-      local buf_name = vim.api.nvim_buf_get_name(t.type_id)
+      local buf_name = t.type_name
       local pre_str = ""
       if t.ui.object.winid then
         pre_str = "* "
