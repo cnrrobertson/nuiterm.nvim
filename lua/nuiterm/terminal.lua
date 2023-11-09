@@ -87,24 +87,31 @@ end
 ---
 ---@param cmd string|nil cmd to send to the terminal upon mounting
 function Terminal:mount(cmd)
+  if self.bufnr then
+    self.ui.object.bufnr = self.bufnr
     self.ui.object:mount()
+  else
+    self.ui.object:mount()
+    self.bufnr = self.ui.object.bufnr
     self:set_keymaps()
     local term_cmd = cmd or vim.o.shell
     self.chan = vim.fn.termopen(term_cmd, {
       on_exit=function()
-        self:unmount()
+        self:unmount(); self.bufnr = nil
       end,
       cwd=self.cwd
     })
     vim.api.nvim_buf_set_option(self.ui.object.bufnr,"filetype","terminal")
     vim.api.nvim_buf_set_name(self.ui.object.bufnr,self.bufname)
     vim.api.nvim_win_set_option(self.ui.object.winid,"number",false)
+  end
 end
 
 --- Unmount the terminal
 ---
 function Terminal:unmount()
     self.ui.object:unmount()
+    self.bufnr = nil
     Nuiterm.terminals[self.type][self.type_id] = nil
 end
 
