@@ -158,10 +158,11 @@ function Nuiterm.setup(config)
     vim.api.nvim_create_autocmd({"BufWinEnter"}, {
       pattern = {"*"},
       callback = function()
-        local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "Nuiterm:"')
-        local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "Nuiterm:"')
-        if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) then
-          vim.cmd[[b#]]
+        local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "nuiterm:"')
+        local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "nuiterm:"')
+        local prev_bufwin = vim.api.nvim_eval('win_findbuf(bufnr("#"))')
+        if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) and (#prev_bufwin == 0) then
+          vim.schedule(function()vim.cmd[[b#]]end)
         end
       end
     })

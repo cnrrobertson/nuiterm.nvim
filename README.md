@@ -180,4 +180,3 @@ Here are the closest:
       - [ ] Floating notification like output window in corner of screen (that can disappear after a given time)
     - [ ] Display results inline with `nui.text` and `nui.line`
   - [ ] If editing a remote file (either via scp or with fuse), option to open repl on remote machine
-- [ ] Don't allow terminal to be the last window if it doesn't allow changing buffer
