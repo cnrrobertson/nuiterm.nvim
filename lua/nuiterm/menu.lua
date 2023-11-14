@@ -1,4 +1,5 @@
 local Menu = require("nui.menu")
+local event = require("nui.utils.autocmd").event
 local utils = require("nuiterm.utils")
 local menu = {}
 
@@ -109,6 +110,13 @@ function menu.set_mappings()
     tree:render()
   end, {noremap=true})
   -- Show help
+end
+
+function menu.set_autocmds()
+  -- Close terminal
+  Nuiterm.terminal_menu:on({event.BufLeave}, function()
+    Nuiterm.terminal_menu:unmount()
+  end, {once = true})
 end
 
 return menu
