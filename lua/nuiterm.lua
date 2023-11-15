@@ -190,6 +190,12 @@ function Nuiterm.setup(config)
         vim.cmd[[startinsert]]
       end
     })
+    vim.api.nvim_create_autocmd({"BufLeave"}, {
+      pattern="nuiterm:*",
+      callback = function()
+        vim.cmd[[stopinsert]]
+      end
+    })
   end
 
   -- Abbreviations
@@ -238,12 +244,12 @@ end
 ---@usage `Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
 ---@usage `Nuiterm.toggle('editor', 2, 'python')` (run python in global terminal 2 - if opening)
 function Nuiterm.toggle(type,num,cmd)
-  type = type or Nuiterm.config.type
   local ft = vim.bo.filetype
   local term = {}
-  if ft == "terminal" then
+  if (ft == "terminal") and (not type) then
     term,_,_ = Nuiterm.find_terminal()
   else
+    type = type or Nuiterm.config.type
     local type_id = utils.get_type_id(type,num)
     term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
   end
