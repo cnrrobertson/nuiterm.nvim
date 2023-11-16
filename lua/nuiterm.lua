@@ -251,7 +251,7 @@ function Nuiterm.toggle(type,num,cmd)
   else
     type = type or Nuiterm.config.type
     local type_id = utils.get_type_id(type,num)
-    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
+    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type,type_id=type_id})
   end
 
   if term.ui.object.winid then
@@ -307,7 +307,7 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
     term,_,_ = Nuiterm.find_terminal()
   else
     local type_id = utils.get_type_id(type,num)
-    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type})
+    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type,type_id=type_id})
   end
   local term_shown = utils.find_shown()
   Nuiterm.hide_all_terms()

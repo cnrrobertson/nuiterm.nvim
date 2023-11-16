@@ -1,8 +1,8 @@
 local utils = {}
 
 function utils.get_type_id(type,num)
-  if num and num >= 0 then
-    return num
+  if num and tonumber(num) >= 0 then
+    return tostring(num)
   else
     local type_id = 1
     if type == "editor" then
@@ -14,7 +14,7 @@ function utils.get_type_id(type,num)
     elseif type == "buffer" then
       type_id = vim.api.nvim_get_current_buf()
     end
-    return type_id
+    return tostring(type_id)
   end
 end
 

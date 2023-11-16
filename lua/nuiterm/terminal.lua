@@ -14,7 +14,7 @@ local event = require("nui.utils.autocmd").event
 ---@field keymaps table table of keymaps that are set for terminal buffer
 ---@field repl boolean whether repl active or not (not currently used)
 ---@field type string type of terminal (see |Nuiterm.config|)
----@field type_id integer id number of terminal (specific to type)
+---@field type_id string id number of terminal as string (specific to type)
 ---@field ui table ui details for terminal
 ---@field ui.type string type of nui object to use for window
 ---@field ui.object nui.object terminal nui object
@@ -31,11 +31,15 @@ function Terminal:new(options)
   if not options.open_at_cwd then
     options.cwd = vim.fn.expand("%:p:h")
   end
-  options.type_id = utils.get_type_id(options.type)
-  if options.type == "buffer" then
-    options.type_name = vim.api.nvim_buf_get_name(options.type_id)
+  if not options.type_id then
+    options.type_id = utils.get_type_id(options.type)
+  else
+    options.type_id = tostring(options.type_id)
   end
-  options.bufname = "nuiterm:" .. options.type .. ":" .. tostring(options.type_id)
+  if options.type == "buffer" then
+    options.type_name = vim.api.nvim_buf_get_name(tonumber(options.type_id))
+  end
+  options.bufname = "nuiterm:" .. options.type .. ":" .. options.type_id
   options.repl = false
   local ui_object = {}
   if options.ui.type == "split" then

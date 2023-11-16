@@ -41,14 +41,14 @@ function menu.add_tab_terms(lines,remove_header)
     end
     for _,t in pairs(tab_terms) do
       local buf_names = ""
-      for _,win in pairs(vim.api.nvim_tabpage_list_wins(t.type_id)) do
+      for _,win in pairs(vim.api.nvim_tabpage_list_wins(tonumber(t.type_id))) do
         buf_names = buf_names.." "..vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
       end
       local pre_str = ""
       if t.ui.object.winid then
         pre_str = "* "
       end
-      local display = pre_str.."Tab "..t.type_id.."- Buffers in tab: "..buf_names
+      local display = pre_str.."Tab "..t.type_id.." - Buffers in tab: "..buf_names
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
@@ -64,12 +64,12 @@ function menu.add_window_terms(lines,remove_header)
       lines[#lines+1] = Menu.separator("Window")
     end
     for _,t in pairs(window_terms) do
-      local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(t.type_id))
+      local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(tonumber(t.type_id)))
       local pre_str = ""
       if t.ui.object.winid then
         pre_str = "* "
       end
-      local display = pre_str.."Window "..t.type_id.."- Buffer in window: "..buf_name
+      local display = pre_str.."Window "..t.type_id.." - Buffer in window: "..buf_name
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )

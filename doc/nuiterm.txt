@@ -405,7 +405,7 @@ Fields~
 {keymaps} `(table)` table of keymaps that are set for terminal buffer
 {repl} `(boolean)` whether repl active or not (not currently used)
 {type} `(string)` type of terminal (see |Nuiterm.config|)
-{type_id} `(integer)` id number of terminal (specific to type)
+{type_id} `(string)` id number of terminal as string (specific to type)
 {ui} `(table)` ui details for terminal
 {ui.type} `(string)` type of nui object to use for window
 {ui.object} nui.object terminal nui object
