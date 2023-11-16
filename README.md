@@ -1,23 +1,23 @@
 # nuiterm.nvim
 
 
-Nuiterm provides an easy way to toggle and send code to terminals which are local to your buffer, window, tab, or editor.
+A Neovim plugin to toggle and send code to terminals which are local to your buffer, window, tab, or editor.
 
-The key design motivation for this plugin was to connect a REPL to each file buffer rather than having a single REPL for all buffers or each filetype.
-With this, it mimics the experience of using [Jupyter Interactive windows](https://code.visualstudio.com/docs/python/jupyter-support-py) in VSCode.
+The key design motivation in this plugin was to facilitate a terminal/REPL for individual file buffers rather than having a single terminal/REPL for all buffers or each filetype.
+With this, it mimics the REPL experience of using [Jupyter Interactive windows](https://code.visualstudio.com/docs/python/jupyter-support-py) in VSCode.
 The UI is all done with [nui.nvim](https://github.com/MunifTanjim/nui.nvim) to allow for ease of use and expansion.
 
-Some features of the nuiterm:
+Some features of `nuiterm`:
 
-    - Toggle a split/floating terminal for each buffer/window/tab
-    - Toggle any number of global/editor terminals
-    - Send commands, lines from the buffer, or visual selections to any terminal
-    - Quickly toggle/delete terminals from a popup menu (or with telescope - see [Telescope integration](#telescope-integration))
-    - Easily create and toggle task-specific terminals (such as for [lazygit](https://github.com/jesseduffield/lazygit) or [btop](https://github.com/aristocratos/btop))
+- Toggle a split/floating terminal for each buffer/window/tab
+- Toggle any number of global/editor split/floating terminals
+- Send commands, lines from the buffer, or visual selections to any terminal
+- Quickly toggle/delete terminals from a popup menu (or with telescope - see [Telescope integration](#telescope-integration))
+- Easily create and toggle task-specific terminals (such as for [lazygit](https://github.com/jesseduffield/lazygit) or [btop](https://github.com/aristocratos/btop))
 
 Some oddities about the `nuiterm` (that may change in the future):
 
-    - Only display one terminal at a time
+- Can only display one terminal at a time
 
 ## Installation
 
@@ -31,12 +31,19 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   },
   config = function()
     require("nuiterm").setup()
+
+    ---------------------
+    -- EXAMPLE KEYMAPS --
+    ---------------------
     -- Toggle terminal of default type
     vim.keymap.set({'n','t'},'<c-n>',Nuiterm.toggle)
+
     -- (For buffer-type terminals) show connected buffer in window 1
     vim.keymap.set({'n','t'},'<c-p>',Nuiterm.focus_buffer_for_terminal)
+
     -- Toggle a global terminal number 1
     vim.keymap.set('n','<leader>tt',function()Nuiterm.toggle("editor",1)end)
+
     -- Toggle a new global terminal
     vim.keymap.set('n','<leader>tn',function()Nuiterm.toggle("editor",-1)end)
 
@@ -51,9 +58,9 @@ After `setup` is run, a global `Nuiterm` lua table is exposed from which methods
 ### Telescope integration
 The telescope picker to toggle terminals can be called via:
 ```lua
-    require('nuiterm.telescope').picker
+    require('nuiterm.telescope').picker()
 ```
-*It is not registered as a telescope extension*
+**Note:** It is not registered as a telescope extension
 
 ## Configuration
 
@@ -159,7 +166,7 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 There are almost infinite other terminal management plugins for neovim, yet I couldn't seem to find one that did what I needed.
 Here are the closest:
 - [akinsho/toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim):
-   - This was the main inspiriation for this plugin and the design of using
+   - This was the main inspiration for this plugin and the design of using
      a `Terminal` object was based on the `toggleterm` design
    - The downside of this plugin is its inability to easily make terminals
      that are local to buffers, windows, or tabs for quickly sending text
@@ -170,6 +177,8 @@ Here are the closest:
 - [caenrique/nvim-toggle-terminal](https://github.com/caenrique/nvim-toggle-terminal):
    - Has great features and toggles tab specific and window specific
      terminals (but replaced by [caenrique/buffer-term.nvim](https://github.com/caenrique/buffer-term.nvim))
+- [milanglacier/yarepl.nvim](https://github.com/milanglacier/yarepl.nvim#replstart)
+    - Allows for general numbers of REPLs that can be attached to any buffer
 
 ## Future possibilities
 
