@@ -162,6 +162,49 @@ end
 vim.keymap.set('n','<leader>g',lazygit_terminal)
 ```
 
+## Available commands
+
+```vim
+:Nuiterm [[type=]...] [[num=]...] [[cmd=]...]
+:[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
+:NuitermHideAll
+:NuitermMenu
+```
+
+**Note:** Commands can be used with or without keyword arguments. i.e. `Nuiterm type=editor` is the same as `Nuiterm editor`.
+
+### Examples
+
+```vim
+" Toggle a terminal of default type and number
+:Nuiterm
+
+" Toggle a terminal for buffer 10
+:Nuiterm type=buffer num=10
+
+" Toggle a terminal for buffer 10 and start it with command `lua` if it doesn't already exist
+:Nuiterm type=buffer num=10 cmd=lua
+
+" Send the current line to the terminal of default type and number
+:NuitermSend
+
+" Send `lua` to the terminal associated with tab 2
+:NuitermSend cmd=lua type=tab num=2
+
+" Send the line 10 to the terminal associated with tab 2
+:10NuitermSend type=tab num=2
+
+" Send lines 10 to 20 to the terminal associated with tab 2
+:10,20NuitermSend type=tab num=2
+
+" Send visual selection to the terminal associated with tab 2
+:'<,'>NuitermSend type=tab num=2
+
+" Send print("hello") to the terminal associated with tab 2
+" and if it hasn't been started before, send python first
+:NuitermSend cmd=print("hello") type=tab num=2 setup_cmd=python
+```
+
 ## Comparisons
 There are almost infinite other terminal management plugins for neovim, yet I couldn't seem to find one that did what I needed.
 Here are the closest:

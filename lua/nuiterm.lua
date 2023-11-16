@@ -98,6 +98,49 @@
 ---   vim.keymap.set('n','<leader>g',lazygit_terminal)
 --- <
 ---
+--- # Available commands
+---
+--- ```vim
+--- :Nuiterm [[type=]...] [[num=]...] [[cmd=]...]
+--- :[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
+--- :NuitermHideAll
+--- :NuitermMenu
+--- ```
+---
+--- **Note:** Commands can be used with or without keyword arguments. i.e. `Nuiterm type=editor` is the same as `Nuiterm editor`.
+---
+--- ### Examples
+---
+--- ```vim
+--- " Toggle a terminal of default type and number
+--- :Nuiterm
+---
+--- " Toggle a terminal for buffer 10
+--- :Nuiterm type=buffer num=10
+---
+--- " Toggle a terminal for buffer 10 and start it with command `lua` if it doesn't already exist
+--- :Nuiterm type=buffer num=10 cmd=lua
+---
+--- " Send the current line to the terminal of default type and number
+--- :NuitermSend
+---
+--- " Send `lua` to the terminal associated with tab 2
+--- :NuitermSend cmd=lua type=tab num=2
+---
+--- " Send the line 10 to the terminal associated with tab 2
+--- :10NuitermSend type=tab num=2
+---
+--- " Send lines 10 to 20 to the terminal associated with tab 2
+--- :10,20NuitermSend type=tab num=2
+---
+--- " Send visual selection to the terminal associated with tab 2
+--- :'<,'>NuitermSend type=tab num=2
+---
+--- " Send print("hello") to the terminal associated with tab 2
+--- " and if it hasn't been started before, send python first
+--- :NuitermSend cmd=print("hello") type=tab num=2 setup_cmd=python
+--- ```
+---
 --- # Tips~
 ---
 --- - Given that most terminals are implemented as vim `splits` and are opened
@@ -126,6 +169,7 @@ local Menu = require("nui.menu")
 local Terminal = require("nuiterm.terminal")
 local utils = require("nuiterm.utils")
 local menu = require("nuiterm.menu")
+local user_commands = require("nuiterm.user_commands")
 Nuiterm.config = require("nuiterm.config")
 
 --- Nuiterm data storage
@@ -149,6 +193,9 @@ function Nuiterm.setup(config)
 
   -- Setup config
   Nuiterm.config = vim.tbl_deep_extend('force', Nuiterm.config, config or {})
+
+  -- Add user commands
+  user_commands.create_commands()
 
   -- Add autocommands
   Nuiterm.augroup = vim.api.nvim_create_augroup("Nuiterm", {clear = true})
