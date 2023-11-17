@@ -34,30 +34,28 @@ local config = {
     -- Default ui type of terminal
     -- could be "split" or "popup"
     type = "split",
-    -- Default split ui options
-    split_opts = {
-      enter = true,
-      focusable = true,
-      border = {
-        style = "rounded",
+    -- Default layouts to cycle through (see nui.popup:update_layout)
+    default_layouts = {
+      split = {
+        {relative = "editor", size = "40%", position = "right"},
+        {relative = "editor", size = "40%", position = "bottom"},
       },
-      position = "right",
-      size = "40%",
-      relative = "editor",
+      popup = {
+        {relative = "editor", size = "80%", position = "50%"},
+        {relative = "editor", size = {height = "90%", width = "40%"},
+          position = {col = "95%", row = "40%"}},
+        {relative = "editor", size = {height = "40%", width = "40%"},
+          position = {col = "95%", row = "10%"}},
+      },
     },
-    -- Default popup ui options
-    popup_opts = {
+    -- Default nui ui options
+    nui_opts = {
       enter = true,
       focusable = true,
       border = {
         style = "rounded",
       },
-      position = "50%",
-      size = {
-        width = "80%",
-        height = "80%"
-      },
-      relative = "editor",
+    },
     -- Number of parent directories to show for buffers in terminal menu
     menu_buf_depth = 1,
     -- Confirm destruction of terminals
@@ -70,6 +68,8 @@ local config = {
       close = {"<Esc>", "<C-c>", "q"},
       new = {"n"},
       destroy = {"d"},
+      change_style = {"s"},
+      change_layout = {"e"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {

@@ -1,18 +1,17 @@
 # nuiterm.nvim
 
-
 A Neovim plugin to toggle and send code to terminals which are local to your buffer, window, tab, or editor.
 
 The key design motivation in this plugin was to facilitate a terminal/REPL for individual file buffers rather than having a single terminal/REPL for all buffers or each filetype.
 With this, it mimics the REPL experience of using [Jupyter Interactive windows](https://code.visualstudio.com/docs/python/jupyter-support-py) in VSCode.
 The UI is all done with [nui.nvim](https://github.com/MunifTanjim/nui.nvim) to allow for ease of use and expansion.
 
-Some features of `nuiterm`:
+Some core features of `nuiterm`:
 
 - Toggle a split/floating terminal for each buffer/window/tab
 - Toggle any number of global/editor split/floating terminals
 - Send commands, lines from the buffer, or visual selections to any terminal
-- Quickly toggle/delete terminals from a popup menu (or with telescope - see [Telescope integration](#telescope-integration))
+- Quickly create/toggle/delete/adjust terminals from a popup menu (or with [telescope](https://github.com/nvim-telescope/telescope.nvim) - see [Telescope integration](#telescope-integration))
 - Easily create and toggle task-specific terminals (such as for [lazygit](https://github.com/jesseduffield/lazygit) or [btop](https://github.com/aristocratos/btop))
 
 Some oddities about the `nuiterm` (that may change in the future):
@@ -37,6 +36,8 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
     ---------------------
     -- Toggle terminal of default type
     vim.keymap.set({'n','t'},'<c-n>',Nuiterm.toggle)
+    -- to always make it a Python REPL:
+    -- vim.keymap.set({'n','t'},'<c-n>',function()Nuiterm.toggle(nil,nil,"python")end)
 
     -- (For buffer-type terminals) show connected buffer in window 1
     vim.keymap.set({'n','t'},'<c-p>',Nuiterm.focus_buffer_for_terminal)
@@ -93,30 +94,27 @@ The default plugin configuration is:
     -- Default ui type of terminal
     -- could be "split" or "popup"
     type = "split",
-    -- Default split ui options
-    split_opts = {
-      enter = true,
-      focusable = true,
-      border = {
-        style = "rounded",
+    -- Default layouts to cycle through (see nui.popup:update_layout)
+    default_layouts = {
+      split = {
+        {relative = "editor", size = "40%", position = "right"},
+        {relative = "editor", size = "40%", position = "bottom"},
       },
-      position = "right",
-      size = "40%",
-      relative = "editor",
+      popup = {
+        {relative = "editor", size = "80%", position = "50%"},
+        {relative = "editor", size = {height = "90%", width = "40%"},
+          position = {col = "95%", row = "40%"}},
+        {relative = "editor", size = {height = "40%", width = "40%"},
+          position = {col = "95%", row = "10%"}},
+      },
     },
-    -- Default popup ui options
-    popup_opts = {
+    -- Default nui ui options
+    nui_opts = {
       enter = true,
       focusable = true,
       border = {
         style = "rounded",
       },
-      position = "50%",
-      size = {
-        width = "80%",
-        height = "80%"
-      },
-      relative = "editor",
     },
     -- Number of parent directories to show for buffers in terminal menu
     menu_buf_depth = 1,
@@ -130,6 +128,8 @@ The default plugin configuration is:
       close = {"<Esc>", "<C-c>", "q"},
       new = {"n"},
       destroy = {"d"},
+      change_style = {"s"},
+      change_layout = {"e"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {
@@ -152,7 +152,7 @@ The default plugin configuration is:
 }
 ```
 
-**Note:** By default terminals are opened in `splits` and are toggled often. It can thus helpful to set the vim option `:noequalalways` or `:lua vim.o.equalalways = false` to avoid constant resizing of windows.
+**Note:** By default terminals are opened in `splits` and are toggled often, so it can be helpful to set the vim option `:noequalalways` or `:lua vim.o.equalalways = false` to avoid constant window resizing.
 
 ## Task-specific terminals
 A common use case for the floating/popup terminals provided with this plugin is to quickly open a TUI such as `lazygit`.
@@ -179,6 +179,8 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 ```vim
 :Nuiterm [[type=]...] [[num=]...] [[cmd=]...]
 :[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
+:NuitermChangeStyle [[style=]...] [[type=]...] [[num=]...]
+:NuitermChangeLayout [[type=]...] [[num=]...]
 :NuitermHideAll
 :NuitermMenu
 ```
@@ -215,6 +217,13 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 " Send print("hello") to the terminal associated with tab 2
 " and if it hasn't been started before, send python first
 :NuitermSend cmd=print("hello") type=tab num=2 setup_cmd=python
+
+" Change to popup style for terminal associated with tab 2
+:NuitermChangeStyle style=popup type=tab num=2
+
+" Change layout to next layout in config for terminal associated with tab 2
+" (see help docs for fine grained control in lua interface)
+:NuitermChangeLayout type=tab num=2
 ```
 
 ## Comparisons
@@ -238,9 +247,8 @@ Here are the closest:
 ## Future possibilities
 
 - [ ] Display multiple terminals simultaneously in `nui.layout`
-- [ ] Implement distinction for REPL terminals with new display options
+- [ ] Implement distinction for terminals running a REPL with new display options
   - [ ] Separate display from output
     - [ ] Output only the REPL output not the input
-      - [ ] Floating notification like output window in corner of screen (that can disappear after a given time)
     - [ ] Display results inline with `nui.text` and `nui.line`
   - [ ] If editing a remote file (either via scp or with fuse), option to open repl on remote machine

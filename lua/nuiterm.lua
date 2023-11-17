@@ -103,6 +103,8 @@
 --- ```vim
 --- :Nuiterm [[type=]...] [[num=]...] [[cmd=]...]
 --- :[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
+--- :NuitermChangeStyle [[style=]...] [[type=]...] [[num=]...]
+--- :NuitermChangeLayout [[type=]...] [[num=]...]
 --- :NuitermHideAll
 --- :NuitermMenu
 --- ```
@@ -139,6 +141,13 @@
 --- " Send print("hello") to the terminal associated with tab 2
 --- " and if it hasn't been started before, send python first
 --- :NuitermSend cmd=print("hello") type=tab num=2 setup_cmd=python
+---
+--- " Change to popup style for terminal associated with tab 2
+--- :NuitermChangeStyle style=popup type=tab num=2
+---
+--- " Change layout to next layout in config for terminal associated with tab 2
+--- " (see help docs for fine grained control in lua interface)
+--- :NuitermChangeLayout type=tab num=2
 --- ```
 ---
 --- # Tips~
@@ -283,7 +292,7 @@ end
 --- Note: if the cursor is in a terminal, that terminal will be hidden
 ---
 ---@param type string|nil the type of terminal to toggle (see |Nuiterm.config|)
----@param num integer|nil the id of the terminal to toggle
+---@param num integer|string|nil the id of the terminal to toggle
 ---@param cmd string|nil a command to run in terminal (if opening for the first time)
 ---
 ---@usage `Nuiterm.toggle('buffer', 12)` (toggle the terminal bound to buffer 12)
@@ -305,9 +314,44 @@ function Nuiterm.toggle(type,num,cmd)
   end
 end
 
+--- Change terminal UI style
 ---
+---@param style string|nil the ui style to change to (or swap if nil)
+---@param type string|nil the type of terminal to toggle (see |Nuiterm.config|)
+---@param num integer|nil the id of the terminal to toggle
+function Nuiterm.change_style(style,type,num)
+  local term,_,_ = utils.find_by_type_and_num(type,num)
+
+  if term ~= nil then
+    if style == nil then
+      if term.ui.type == "split" then
+        style = "popup"
+      else
+        style = "split"
       end
+      term.ui.num_layout = 1
     end
+    term:change_style(style)
+  end
+end
+
+--- Change terminal UI layout
+---
+---@param layout table|nil see nui.popup:update_layout
+---@param type string|nil the type of terminal to toggle (see |Nuiterm.config|)
+---@param num integer|nil the id of the terminal to toggle
+function Nuiterm.change_layout(layout,type,num)
+  local term,_,_ = utils.find_by_type_and_num(type,num)
+
+  if term ~= nil then
+    if layout == nil then
+      local num_layout = term.ui.num_layout + 1
+      local style = term.ui.type
+      if num_layout > #Nuiterm.config.ui.default_layouts[style] then num_layout = 1 end
+      layout = Nuiterm.config.ui.default_layouts[style][num_layout]
+      term.ui.num_layout = num_layout
+    end
+    term:change_layout(layout)
   end
 end
 

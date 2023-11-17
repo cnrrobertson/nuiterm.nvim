@@ -41,15 +41,21 @@ function Terminal:new(options)
   end
   options.bufname = "nuiterm:" .. options.type .. ":" .. options.type_id
   options.repl = false
+  local nui_opts = Nuiterm.config.ui.nui_opts
   local ui_object = {}
   if options.ui.type == "split" then
-    ui_object = Split(options.ui.split_opts)
+    local style_opts = Nuiterm.config.ui.default_layouts.split[1]
+    local object_opts = vim.tbl_deep_extend("force",nui_opts,style_opts)
+    ui_object = Split(object_opts)
   else
-    ui_object = Popup(options.ui.popup_opts)
+    local style_opts = Nuiterm.config.ui.default_layouts.popup[1]
+    local object_opts = vim.tbl_deep_extend("force",nui_opts,style_opts)
+    ui_object = Popup(object_opts)
   end
   options.ui = {
     type = options.ui.type,
-    object = ui_object
+    object = ui_object,
+    num_layout = 1
   }
   local term = setmetatable(options,self)
   Nuiterm.terminals[options.type][options.type_id] = term
@@ -159,4 +165,35 @@ end
 function Terminal:ismounted()
   return self.ui.object._.mounted
 end
+
+--- Change UI style of terminal
+---
+---@param style string|nil split or popup
+function Terminal:change_style(style)
+  local bufnr = self.bufnr
+  local was_shown = self:isshown()
+  self.ui.object.bufnr = nil
+  self.ui.object:unmount()
+  local new_object = {}
+  if style == "popup" then
+    local object_opts = vim.tbl_deep_extend("force",Nuiterm.config.ui.nui_opts,Nuiterm.config.ui.default_layouts.popup[1])
+    new_object = Popup(object_opts)
+  else
+    local object_opts = vim.tbl_deep_extend("force",Nuiterm.config.ui.nui_opts,Nuiterm.config.ui.default_layouts.split[1])
+    new_object = Split(object_opts)
+  end
+  self.ui.type = style
+  new_object.bufnr = bufnr
+  self.ui.object = new_object
+  self:mount()
+  if was_shown == false then self:hide() end
+end
+
+--- Change UI layout of terminal
+---
+---@param layout table|nil see nui.popup:update_layout() for details
+function Terminal:change_layout(layout)
+  self.ui.object:update_layout(layout)
+end
+
 return Terminal

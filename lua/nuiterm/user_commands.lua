@@ -36,6 +36,18 @@ function user_commands.create_commands()
     end
   end, {nargs="*", range=true})
 
+  vim.api.nvim_create_user_command("NuitermChangeStyle", function(input)
+    local keys = {"style", "type", "num"}
+    local fargs = user_commands.parse(input.fargs, keys)
+    Nuiterm.change_style(fargs.style, fargs.type, fargs.num)
+  end, {nargs="*"})
+
+  vim.api.nvim_create_user_command("NuitermChangeLayout", function(input)
+    local keys = {"type", "num"}
+    local fargs = user_commands.parse(input.fargs, keys)
+    Nuiterm.change_layout(nil, fargs.type, fargs.num)
+  end, {nargs="*"})
+
   vim.api.nvim_create_user_command("NuitermHideAll",
     Nuiterm.hide_all_terms, {nargs=0})
 

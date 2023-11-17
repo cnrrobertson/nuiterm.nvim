@@ -113,6 +113,12 @@ function menu.set_mappings(keys)
   for _,k in ipairs(keys.destroy) do
     Nuiterm.terminal_menu:map("n", k, menu.destroy_terminal, {noremap=true})
   end
+  for _,k in ipairs(keys.change_style) do
+    Nuiterm.terminal_menu:map("n", k, menu.change_style, {noremap=true})
+  end
+  for _,k in ipairs(keys.change_layout) do
+    Nuiterm.terminal_menu:map("n", k, menu.change_layout, {noremap=true})
+  end
 end
 
 function menu.set_autocmds()
@@ -171,6 +177,38 @@ function menu.destroy_terminal()
         term:show(Nuiterm.config.focus_on_open)
       end
     end)
+  end
+end
+
+function menu.change_style()
+  local tree = Nuiterm.terminal_menu.tree
+  local node = tree:get_node()
+  local shown_info = utils.find_shown()
+  if shown_info then
+    local term = Nuiterm.terminals[shown_info[1]][shown_info[2]]
+    Nuiterm.terminal_menu:unmount()
+    term:hide()
+    Nuiterm.change_style(nil, node.type, node.type_id)
+    term:show()
+    Nuiterm.show_terminal_menu()
+  else
+    Nuiterm.change_style(nil, node.type, node.type_id)
+  end
+end
+
+function menu.change_layout()
+  local tree = Nuiterm.terminal_menu.tree
+  local node = tree:get_node()
+  local shown_info = utils.find_shown()
+  if shown_info then
+    local term = Nuiterm.terminals[shown_info[1]][shown_info[2]]
+    Nuiterm.terminal_menu:unmount()
+    term:hide()
+    Nuiterm.change_layout(nil, node.type, node.type_id)
+    term:show()
+    Nuiterm.show_terminal_menu()
+  else
+    Nuiterm.change_layout(nil, node.type, node.type_id)
   end
 end
 
