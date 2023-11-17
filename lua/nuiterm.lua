@@ -464,28 +464,30 @@ function Nuiterm.show_terminal_menu()
   menu.add_tab_terms(lines)
   menu.add_window_terms(lines)
   menu.add_buffer_terms(lines)
-  local keys = {
-    focus_next = {},focus_prev = {},submit = {},
-    close = { "<Esc>", "<C-c>", "q" },
-  }
-  if #lines > 0 then
-    keys.focus_next = { "j", "<Down>", "<Tab>" }
-    keys.focus_prev = { "k", "<Up>", "<S-Tab>" }
-    keys.submit = { "<CR>", "<Space>" }
+  local keys = Nuiterm.config.ui.menu_keys
+  if #lines == 0 then
+    keys.focus_next = {}
+    keys.focus_prev = {}
+    keys.submit = {}
   end
   Nuiterm.terminal_menu = Menu(Nuiterm.config.ui.menu_opts, {
+    zindex = 500,
+    enter = true,
     lines = lines,
     max_width = 20,
     keymap = keys,
     on_submit = function(item)
       if item then
-        Nuiterm.toggle(item.type,item.type_id)
+        local term,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
+        local was_shown = term:isshown()
+        Nuiterm.toggle(type,type_id)
+        if was_shown then Nuiterm.show_terminal_menu() end
       end
     end,
   })
   Nuiterm.terminal_menu:mount()
   menu.set_autocmds()
-  menu.set_mappings()
+  menu.set_mappings(keys)
 end
 
 --- Confirm quit commands when terminals are mounted

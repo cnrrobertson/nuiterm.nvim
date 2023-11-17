@@ -58,6 +58,18 @@ local config = {
         height = "80%"
       },
       relative = "editor",
+    -- Number of parent directories to show for buffers in terminal menu
+    menu_buf_depth = 1,
+    -- Confirm destruction of terminals
+    menu_confirm_destroy = true,
+    -- Default terminal menu keybindings
+    menu_keys = {
+      focus_next = {"j", "<Down>", "<Tab>"},
+      focus_prev = {"k", "<Up>", "<S-Tab>"},
+      submit = {"<CR>", "<Space>"},
+      close = {"<Esc>", "<C-c>", "q"},
+      new = {"n"},
+      destroy = {"d"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {
@@ -69,14 +81,13 @@ local config = {
         text = {
           top = "Terminals",
           top_align = "center",
-          bottom = "j=down  k=up  q=exit  d=destroy  (* denotes active terminal)",
           bottom_align = "left",
         },
       },
       win_options = {
         winhighlight = "Normal:Normal",
       }
-    }
+    },
   }
 }
 --minidoc_afterlines_end
