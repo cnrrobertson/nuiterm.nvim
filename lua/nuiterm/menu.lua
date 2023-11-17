@@ -3,25 +3,17 @@ local event = require("nui.utils.autocmd").event
 local utils = require("nuiterm.utils")
 local menu = {}
 
-function menu.get_mounted_terms(group)
-  local terms = {}
-  for _,t in pairs(Nuiterm.terminals[group]) do
-    if t.ui.object._.mounted == true then
-      table.insert(terms, t)
-    end
-  end
-  return terms
 end
 
 function menu.add_editor_terms(lines,remove_header)
-  local editor_terms = menu.get_mounted_terms("editor")
-  if utils.table_length(editor_terms) > 0 then
+  local editor_terms = utils.get_mounted("editor")
+  if utils.dict_length(editor_terms) > 0 then
     if not remove_header then
       lines[#lines+1] = Menu.separator("Editor")
     end
     for _,t in pairs(editor_terms) do
       local pre_str = ""
-      if t.ui.object.winid then
+      if t:isshown() then
         pre_str = "* "
       end
       local display = pre_str.."Editor "..t.type_id
@@ -34,8 +26,8 @@ function menu.add_editor_terms(lines,remove_header)
 end
 
 function menu.add_tab_terms(lines,remove_header)
-  local tab_terms = menu.get_mounted_terms("tab")
-  if utils.table_length(tab_terms) > 0 then
+  local tab_terms = utils.get_mounted("tab")
+  if utils.dict_length(tab_terms) > 0 then
     if not remove_header then
       lines[#lines+1] = Menu.separator("Tab")
     end
@@ -45,7 +37,7 @@ function menu.add_tab_terms(lines,remove_header)
         buf_names = buf_names.." "..vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
       end
       local pre_str = ""
-      if t.ui.object.winid then
+      if t:isshown() then
         pre_str = "* "
       end
       local display = pre_str.."Tab "..t.type_id.." - Buffers in tab: "..buf_names
@@ -58,15 +50,15 @@ function menu.add_tab_terms(lines,remove_header)
 end
 
 function menu.add_window_terms(lines,remove_header)
-  local window_terms = menu.get_mounted_terms("window")
-  if utils.table_length(window_terms) > 0 then
+  local window_terms = utils.get_mounted("window")
+  if utils.dict_length(window_terms) > 0 then
     if not remove_header then
       lines[#lines+1] = Menu.separator("Window")
     end
     for _,t in pairs(window_terms) do
       local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(tonumber(t.type_id)))
       local pre_str = ""
-      if t.ui.object.winid then
+      if t:isshown() then
         pre_str = "* "
       end
       local display = pre_str.."Window "..t.type_id.." - Buffer in window: "..buf_name
@@ -79,15 +71,15 @@ function menu.add_window_terms(lines,remove_header)
 end
 
 function menu.add_buffer_terms(lines,remove_header)
-  local buffer_terms = menu.get_mounted_terms("buffer")
-  if utils.table_length(buffer_terms) > 0 then
+  local buffer_terms = utils.get_mounted("buffer")
+  if utils.dict_length(buffer_terms) > 0 then
     if not remove_header then
       lines[#lines+1] = Menu.separator("Buffer")
     end
     for _,t in pairs(buffer_terms) do
       local buf_name = t.type_name
       local pre_str = ""
-      if t.ui.object.winid then
+      if t:isshown() then
         pre_str = "* "
       end
       local display = pre_str.."Buffer "..t.type_id..": "..buf_name

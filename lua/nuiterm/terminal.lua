@@ -73,9 +73,9 @@ end
 function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
-  if self.ui.object._.mounted == false then
+  if self:ismounted() == false then
     self:mount(cmd)
-  elseif self.ui.object.winid == nil then
+  elseif self:isshown() == false then
     self.ui.object:show()
   end
   if Nuiterm.config.hide_on_leave then
@@ -148,4 +148,15 @@ function Terminal:send(cmd)
   vim.api.nvim_chan_send(self.chan, cmd)
 end
 
+--- Check if terminal UI is displayed
+---
+function Terminal:isshown()
+  return self.ui.object.winid ~= nil
+end
+
+--- Check if terminal UI is mounted
+---
+function Terminal:ismounted()
+  return self.ui.object._.mounted
+end
 return Terminal

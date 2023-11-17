@@ -6,7 +6,7 @@ function utils.get_type_id(type,num)
   else
     local type_id = 1
     if type == "editor" then
-      type_id = num or utils.find_first_unmounted(Nuiterm.terminals[type])
+      type_id = utils.find_first_unmounted(Nuiterm.terminals[type])
     elseif type == "tab" then
       type_id = vim.api.nvim_get_current_tabpage()
     elseif type == "window" then
@@ -18,7 +18,7 @@ function utils.get_type_id(type,num)
   end
 end
 
-function utils.table_length(t)
+function utils.dict_length(t)
   local length = 0
   for _,_ in pairs(t) do
     length = length + 1
@@ -28,21 +28,45 @@ end
 
 function utils.find_first_unmounted(terminals)
   for id,term in pairs(terminals) do
-    if term.ui.object._.mounted == false then
+    if term:ismounted() == false then
       return id
     end
   end
-  return utils.table_length(terminals)+1
+  return utils.dict_length(terminals)+1
+end
+
+function utils.find_by_bufnr(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  for group,_ in pairs(Nuiterm.terminals) do
+    for id,term in pairs(Nuiterm.terminals[group]) do
+      if term.ui.object.bufnr == bufnr then
+        return term,group,id
+      end
+    end
+  end
 end
 
 function utils.find_shown()
   for type,terminals in pairs(Nuiterm.terminals) do
     for id,term in pairs(terminals) do
-      if term.ui.object.winid then
+      if term:isshown() then
         return {type,id}
       end
     end
   end
+end
+
+function utils.find_by_type_and_num(type,num)
+  local ft = vim.bo.filetype
+  local term = {}
+  if (ft == "terminal") and (not type) then
+    term,_,_ = utils.find_by_bufnr()
+  else
+    type = type or Nuiterm.config.type
+    num = utils.get_type_id(type,num)
+    term = Nuiterm.terminals[type][num]
+  end
+  return term,type,num
 end
 
 function utils.find_mounted()
@@ -59,6 +83,20 @@ function utils.find_mounted()
   else
     return nil
   end
+end
+
+function utils.get_mounted(type)
+  local mounted_terms = {}
+  for _,terminals in pairs(Nuiterm.terminals) do
+    for _,term in pairs(terminals) do
+      if term:ismounted() then
+        if type == nil or type == term.type then
+          table.insert(mounted_terms, term)
+        end
+      end
+    end
+  end
+  return mounted_terms
 end
 
 function utils.write_quit(write, all)

@@ -271,7 +271,7 @@ end
 function Nuiterm.hide_all_terms()
   for group,_ in pairs(Nuiterm.terminals) do
     for _,other_term in pairs(Nuiterm.terminals[group]) do
-      if other_term.ui.object.winid then
+      if other_term:isshown() then
         other_term:hide(Nuiterm.config.persist_size)
       end
     end
@@ -290,38 +290,22 @@ end
 ---@usage `Nuiterm.toggle('editor', 2)` (toggle the global terminal number 2)
 ---@usage `Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
 ---@usage `Nuiterm.toggle('editor', 2, 'python')` (run python in global terminal 2 - if opening)
+---@usage `Nuiterm.toggle('editor', -1)` (open a new global terminal)
 function Nuiterm.toggle(type,num,cmd)
-  local ft = vim.bo.filetype
-  local term = {}
-  if (ft == "terminal") and (not type) then
-    term,_,_ = Nuiterm.find_terminal()
-  else
-    type = type or Nuiterm.config.type
-    local type_id = utils.get_type_id(type,num)
-    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type,type_id=type_id})
-  end
+  local term,type,type_id = utils.find_by_type_and_num(type,num)
 
-  if term.ui.object.winid then
+  if term and term:isshown() then
     term:hide(Nuiterm.config.persist_size)
   else
     Nuiterm.hide_all_terms()
+    if term == nil then
+      term = Nuiterm.create_new_term({type=type,type_id=type_id})
+    end
     term:show(Nuiterm.config.focus_on_open,cmd)
   end
 end
 
---- Retrieve Terminal object and info from terminal buffer number
 ---
----@param bufnr number|nil the buffer number of the desired terminal
----
----@return Terminal the Terminal object
----@return string the type of terminal it is
----@return number the id of the terminal (type specific)
-function Nuiterm.find_terminal(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  for group,_ in pairs(Nuiterm.terminals) do
-    for id,term in pairs(Nuiterm.terminals[group]) do
-      if term.ui.object.bufnr == bufnr then
-        return term,group,id
       end
     end
   end
@@ -332,7 +316,7 @@ end
 ---@param bufnr number|nil the buffer number of the terminal
 function Nuiterm.focus_buffer_for_terminal(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local _,group,id = Nuiterm.find_terminal(bufnr)
+  local _,group,id = utils.find_by_bufnr(bufnr)
   if group == "buffer" then
     local winid = vim.fn.win_getid(1)
     vim.api.nvim_win_set_buf(winid,id)
@@ -347,17 +331,11 @@ end
 ---@param num number|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
 function Nuiterm.send(cmd,type,num,setup_cmd)
-  type = type or Nuiterm.config.type
-  local ft = vim.bo.filetype
-  local term = {}
-  if ft == "terminal" then
-    term,_,_ = Nuiterm.find_terminal()
-  else
-    local type_id = utils.get_type_id(type,num)
-    term = Nuiterm.terminals[type][type_id] or Nuiterm.create_new_term({type=type,type_id=type_id})
-  end
+  local term,type,type_id = utils.find_by_type_and_num(type,num)
+
   local term_shown = utils.find_shown()
   Nuiterm.hide_all_terms()
+  if term == nil then term = Nuiterm.create_new_term({type=type,type_id=type_id}) end
   term:show(Nuiterm.config.focus_on_send,setup_cmd)
   term:send(cmd..'\n')
   vim.api.nvim_win_call(term.ui.object.winid, function()
@@ -393,8 +371,8 @@ end
 
 --- Send multiple lines in buffer to a terminal
 ---
----@param start_line string|nil the line number at which to start sending
----@param end_line string|nil the line number at which to end sending
+---@param start_line number|nil the line number at which to start sending
+---@param end_line number|nil the line number at which to end sending
 ---@param type string|nil the type of terminal to send to (or default)
 ---@param num number|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)

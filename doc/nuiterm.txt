@@ -233,21 +233,13 @@ Usage~
 `Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
 Usage~
 `Nuiterm.toggle('editor', 2, 'python')` (run python in global terminal 2 - if opening)
+Usage~
+`Nuiterm.toggle('editor', -1)` (open a new global terminal)
 
 ------------------------------------------------------------------------------
-                                                       *Nuiterm.find_terminal()*
-                        `Nuiterm.find_terminal`({bufnr})
-Retrieve Terminal object and info from terminal buffer number
 
 Parameters~
-{bufnr} `(number|nil)` the buffer number of the desired terminal
 
-Return~
-Terminal the Terminal object
-Return~
-`(string)` the type of terminal it is
-Return~
-`(number)` the id of the terminal (type specific)
 
 ------------------------------------------------------------------------------
                                            *Nuiterm.focus_buffer_for_terminal()*
@@ -284,8 +276,8 @@ Parameters~
 Send multiple lines in buffer to a terminal
 
 Parameters~
-{start_line} `(string|nil)` the line number at which to start sending
-{end_line} `(string|nil)` the line number at which to end sending
+{start_line} `(number|nil)` the line number at which to start sending
+{end_line} `(number|nil)` the line number at which to end sending
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
@@ -505,6 +497,17 @@ Send command to the terminal
 
 Parameters~
 {cmd} `(string|nil)` command to run in terminal
+
+------------------------------------------------------------------------------
+                                                            *Terminal:isshown()*
+                              `Terminal:isshown`()
+Check if terminal UI is displayed
+
+
+------------------------------------------------------------------------------
+                                                          *Terminal:ismounted()*
+                             `Terminal:ismounted`()
+Check if terminal UI is mounted
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:

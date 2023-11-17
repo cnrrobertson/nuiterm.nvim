@@ -10,7 +10,6 @@ function user_commands.create_commands()
   vim.api.nvim_create_user_command("NuitermSend", function(input)
     local keys = {"cmd", "type", "num", "setup_cmd"}
     local fargs = user_commands.parse(input.fargs, keys)
-    vim.print(fargs)
     if fargs.cmd then
       -- Specified command
       Nuiterm.send(fargs.cmd, fargs.type, fargs.num, fargs.setup_cmd)
