@@ -29,6 +29,11 @@ local config = {
   confirm_quit = true,
   -- Set insert mode on entering nuiterm terminal buffer
   insert_on_enter = true,
+  -- Number of parent directories to show for buffers in terminal menu
+  menu_buf_depth = 1,
+  -- Confirm destruction of terminals
+  menu_confirm_destroy = true,
+  -- Keymaps for terminals (see nui.popup for more info)
   keymaps = {},
   ui = {
     -- Default ui type of terminal
@@ -56,10 +61,6 @@ local config = {
         style = "rounded",
       },
     },
-    -- Number of parent directories to show for buffers in terminal menu
-    menu_buf_depth = 1,
-    -- Confirm destruction of terminals
-    menu_confirm_destroy = true,
     -- Default terminal menu keybindings
     menu_keys = {
       focus_next = {"j", "<Down>", "<Tab>"},
@@ -70,24 +71,15 @@ local config = {
       destroy = {"d"},
       change_style = {"s"},
       change_layout = {"e"},
+      toggle = {"w"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {
       relative = "editor",
       position = '50%',
       size = '50%',
-      border = {
-        style = "rounded",
-        text = {
-          top = "Terminals",
-          top_align = "center",
-          bottom_align = "left",
-        },
-      },
-      win_options = {
-        winhighlight = "Normal:Normal",
-      }
-    },
+      zindex = 500
+    }
   }
 }
 --minidoc_afterlines_end

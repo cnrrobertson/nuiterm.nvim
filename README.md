@@ -136,18 +136,8 @@ The default plugin configuration is:
       relative = "editor",
       position = '50%',
       size = '50%',
-      border = {
-        style = "rounded",
-        text = {
-          top = "Terminals",
-          top_align = "center",
-          bottom_align = "left",
-        },
-      },
-      win_options = {
-        winhighlight = "Normal:Normal",
-      }
-    },
+      zindex = 500
+    }
   }
 }
 ```
@@ -252,3 +242,4 @@ Here are the closest:
     - [ ] Output only the REPL output not the input
     - [ ] Display results inline with `nui.text` and `nui.line`
   - [ ] If editing a remote file (either via scp or with fuse), option to open repl on remote machine
+- [ ] Display additional terminal info in terminal menu

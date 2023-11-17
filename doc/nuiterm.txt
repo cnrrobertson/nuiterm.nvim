@@ -350,12 +350,6 @@ Toggle terminal menu to select (and toggle) terminals
 
 
 ------------------------------------------------------------------------------
-                                                  *Nuiterm.show_terminal_menu()*
-                         `Nuiterm.show_terminal_menu`()
-Show terminal menu to select (and toggle) terminals
-
-
-------------------------------------------------------------------------------
                                                         *Nuiterm.confirm_quit()*
                      `Nuiterm.confirm_quit`({write}, {all})
 Confirm quit commands when terminals are mounted
@@ -443,18 +437,8 @@ Default values:
         relative = "editor",
         position = '50%',
         size = '50%',
-        border = {
-          style = "rounded",
-          text = {
-            top = "Terminals",
-            top_align = "center",
-            bottom_align = "left",
-          },
-        },
-        win_options = {
-          winhighlight = "Normal:Normal",
-        }
-      },
+        zindex = 500
+      }
     }
   }
 <

@@ -174,7 +174,6 @@
 -- Plugin definition ==========================================================
 local Nuiterm = {}
 
-local Menu = require("nui.menu")
 local Terminal = require("nuiterm.terminal")
 local utils = require("nuiterm.utils")
 local menu = require("nuiterm.menu")
@@ -493,45 +492,11 @@ end
 --- Toggle terminal menu to select (and toggle) terminals
 ---
 function Nuiterm.toggle_menu()
-  if Nuiterm.terminal_menu and Nuiterm.terminal_menu.winid then
-    Nuiterm.terminal_menu:unmount()
+  if menu.menu_layout and menu.menu_layout.winid then
+    menu.menu_layout:unmount()
   else
-    Nuiterm.show_terminal_menu()
+    menu.show_menu()
   end
-end
-
---- Show terminal menu to select (and toggle) terminals
----
-function Nuiterm.show_terminal_menu()
-  local lines = {}
-  menu.add_editor_terms(lines)
-  menu.add_tab_terms(lines)
-  menu.add_window_terms(lines)
-  menu.add_buffer_terms(lines)
-  local keys = Nuiterm.config.ui.menu_keys
-  if #lines == 0 then
-    keys.focus_next = {}
-    keys.focus_prev = {}
-    keys.submit = {}
-  end
-  Nuiterm.terminal_menu = Menu(Nuiterm.config.ui.menu_opts, {
-    zindex = 500,
-    enter = true,
-    lines = lines,
-    max_width = 20,
-    keymap = keys,
-    on_submit = function(item)
-      if item then
-        local term,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
-        local was_shown = term:isshown()
-        Nuiterm.toggle(type,type_id)
-        if was_shown then Nuiterm.show_terminal_menu() end
-      end
-    end,
-  })
-  Nuiterm.terminal_menu:mount()
-  menu.set_autocmds()
-  menu.set_mappings(keys)
 end
 
 --- Confirm quit commands when terminals are mounted
@@ -552,7 +517,7 @@ function Nuiterm.confirm_quit(write, all)
         if input == "y" then
           utils.write_quit(write, true)
         elseif input == "" or input == "s" or input == "show" then
-          Nuiterm.show_terminal_menu()
+          menu.show_menu()
         end
       end)
     end
