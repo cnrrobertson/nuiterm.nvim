@@ -74,10 +74,12 @@ function menu.create_help(keys)
         Menu.item(Text("  "..menu.join_keys(keys.new), "SpecialKey")),
         Menu.item(Text("Destroy terminal", "Title")),
         Menu.item(Text("  "..menu.join_keys(keys.destroy), "SpecialKey")),
-        Menu.item(Text("Change style", "Title")),
+        Menu.item(Text("Change terminal style", "Title")),
         Menu.item(Text("  "..menu.join_keys(keys.change_style), "SpecialKey")),
-        Menu.item(Text("Change layout", "Title")),
+        Menu.item(Text("Change terminal layout", "Title")),
         Menu.item(Text("  "..menu.join_keys(keys.change_layout), "SpecialKey")),
+        Menu.item(Text("Toggle terminal visibility", "Title")),
+        Menu.item(Text("  "..menu.join_keys(keys.toggle), "SpecialKey")),
       Menu.separator("Hint"),
         Menu.item(Text("* denotes active terminal", "SpecialKey")),
     },
@@ -119,6 +121,9 @@ function menu.set_mappings(terminal_menu, keys)
   end
   for _,k in ipairs(keys.change_layout) do
     terminal_menu:map("n", k, menu.change_layout, {noremap=true})
+  end
+  for _,k in ipairs(keys.toggle) do
+    terminal_menu:map("n", k, menu.toggle_terminal, {noremap=true})
   end
 end
 
@@ -304,6 +309,17 @@ function menu.destroy_terminal()
         end
       end)
     end
+  end
+end
+
+function menu.toggle_terminal()
+  local tree = menu.terminal_menu.tree
+  local node = tree:get_node()
+  if node then
+    local _,type,type_id = utils.find_by_type_and_num(node.type,node.type_id)
+    menu.terminal_menu:unmount()
+    Nuiterm.toggle(type,type_id)
+    menu.show_menu()
   end
 end
 

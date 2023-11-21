@@ -130,6 +130,7 @@ The default plugin configuration is:
       destroy = {"d"},
       change_style = {"s"},
       change_layout = {"e"},
+      toggle = {"w"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {
