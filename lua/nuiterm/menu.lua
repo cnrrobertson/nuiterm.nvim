@@ -144,7 +144,7 @@ function menu.resize_bufname(buf_name)
     local buf_parts = {}
     for part in buf_name:gmatch("([^/]+)/?") do table.insert(buf_parts, part) end
     local num_parts = #buf_parts
-    buf_parts = {unpack(buf_parts, num_parts-Nuiterm.config.ui.menu_buf_depth, num_parts)}
+    buf_parts = {unpack(buf_parts, num_parts-Nuiterm.config.menu_buf_depth, num_parts)}
     return table.concat(buf_parts, "/")
 end
 
@@ -293,7 +293,7 @@ function menu.destroy_terminal()
   local node = tree:get_node()
   if node then
     local term = Nuiterm.terminals[node.type][node.type_id]
-    if Nuiterm.config.ui.menu_confirm_destroy then
+    if Nuiterm.config.menu_confirm_destroy then
       vim.ui.input({prompt = "Destroy terminal? (y/n/[s]how) "}, function(input)
         if input == "y" then
           term:unmount()

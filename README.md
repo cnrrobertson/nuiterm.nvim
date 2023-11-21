@@ -89,6 +89,10 @@ The default plugin configuration is:
   confirm_quit = true,
   -- Set insert mode on entering nuiterm terminal buffer
   insert_on_enter = true,
+  -- Number of parent directories to show for buffers in terminal menu
+  menu_buf_depth = 1,
+  -- Confirm destruction of terminals
+  menu_confirm_destroy = true,
   keymaps = {},
   ui = {
     -- Default ui type of terminal
@@ -116,10 +120,6 @@ The default plugin configuration is:
         style = "rounded",
       },
     },
-    -- Number of parent directories to show for buffers in terminal menu
-    menu_buf_depth = 1,
-    -- Confirm destruction of terminals
-    menu_confirm_destroy = true,
     -- Default terminal menu keybindings
     menu_keys = {
       focus_next = {"j", "<Down>", "<Tab>"},
