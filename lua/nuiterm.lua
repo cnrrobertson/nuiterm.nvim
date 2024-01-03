@@ -211,6 +211,7 @@ function Nuiterm.setup(config)
   -- Only allow terminals in terminal windows
   if Nuiterm.config.terminal_win_fixed then
     vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+      group = "Nuiterm",
       pattern = {"*"},
       callback = function()
         local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "nuiterm:"')
@@ -225,6 +226,7 @@ function Nuiterm.setup(config)
 
   -- Clean up terminals on exit (helps session management)
   vim.api.nvim_create_autocmd({"ExitPre"}, {
+    group = "Nuiterm",
     pattern="*",
     callback = function()
       local terms_mounted = utils.find_mounted()
@@ -240,12 +242,14 @@ function Nuiterm.setup(config)
   -- Automatically enter insert mode when entering terminal
   if Nuiterm.config.insert_on_enter == true then
     vim.api.nvim_create_autocmd({"BufEnter"}, {
+      group = "Nuiterm",
       pattern="nuiterm:*",
       callback = function()
         vim.cmd[[startinsert]]
       end
     })
     vim.api.nvim_create_autocmd({"BufLeave"}, {
+      group = "Nuiterm",
       pattern="nuiterm:*",
       callback = function()
         vim.cmd[[stopinsert]]

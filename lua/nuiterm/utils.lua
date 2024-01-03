@@ -59,7 +59,7 @@ end
 function utils.find_by_type_and_num(type,num)
   local ft = vim.bo.filetype
   local term = {}
-  if (ft == "terminal") and (not type) then
+  if (ft == "terminal") then
     term,_,_ = utils.find_by_bufnr()
   else
     type = type or Nuiterm.config.type

@@ -81,7 +81,7 @@ function menu.create_help(keys)
         Menu.item(Text("Toggle terminal visibility", "Title")),
         Menu.item(Text("  "..menu.join_keys(keys.toggle), "SpecialKey")),
       Menu.separator("Hint"),
-        Menu.item(Text("* denotes active terminal", "SpecialKey")),
+        Menu.item(Text(" * = displayed terminal", "SpecialKey")),
     },
   })
   return help_menu

@@ -14,9 +14,10 @@ Some core features of `nuiterm`:
 - Quickly create/toggle/delete/adjust terminals from a popup menu (or with [telescope](https://github.com/nvim-telescope/telescope.nvim) - see [Telescope integration](#telescope-integration))
 - Easily create and toggle task-specific terminals (such as for [lazygit](https://github.com/jesseduffield/lazygit) or [btop](https://github.com/aristocratos/btop))
 
-Some oddities about the `nuiterm` (that may change in the future):
+Some oddities about `nuiterm` (that may change in the future):
 
 - Can only display one terminal at a time
+- Displaying the same terminal in multiple tabpages is not supported
 
 ## Installation
 
@@ -235,6 +236,16 @@ Here are the closest:
 - [milanglacier/yarepl.nvim](https://github.com/milanglacier/yarepl.nvim#replstart)
     - Allows for general numbers of REPLs that can be attached to any buffer
 
+## Contributing
+
+Ideas/issues/pull requests are welcome.
+
+If you would like to submit a pull request, please ensure you update the documentation and tests accordingly.
+The plugins `mini.doc` and `mini.test` are used for documentation and testing respectively.
+Docs can be generated with `make docs` from the root of the repository and `make test` to run the tests.
+
+When running the documentation or tests, [`mini.nvim`](https://github.com/echasnovski/mini.nvim) and [`nui.nvim`](https://github.com/MunifTanjim/nui.nvim) will be installed in a `deps/` directory.
+
 ## Future possibilities
 
 - [ ] Display multiple terminals simultaneously in `nui.layout`
@@ -244,3 +255,5 @@ Here are the closest:
     - [ ] Display results inline with `nui.text` and `nui.line`
   - [ ] If editing a remote file (either via scp or with fuse), option to open repl on remote machine
 - [ ] Display additional terminal info in terminal menu
+- [ ] Add ability to open buffer connected to terminal in a specific window (maybe number, or left, right, top, bottom, etc?)
+- [ ] Add ability to "pin" terminal (don't close when toggling others)

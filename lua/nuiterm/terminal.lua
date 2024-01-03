@@ -38,6 +38,14 @@ function Terminal:new(options)
   end
   if options.type == "buffer" then
     options.type_name = vim.api.nvim_buf_get_name(tonumber(options.type_id))
+  elseif options.type == "window" then
+    if not vim.api.nvim_win_is_valid(tonumber(options.type_id)) then
+      error("Invalid window")
+    end
+  elseif options.type == "tab" then
+    if not vim.api.nvim_tabpage_is_valid(tonumber(options.type_id)) then
+      error("Invalid tabpage")
+    end
   end
   options.bufname = "nuiterm:" .. options.type .. ":" .. options.type_id
   options.repl = false
