@@ -308,6 +308,10 @@ function menu.destroy_terminal()
           term:show(Nuiterm.config.focus_on_open)
         end
       end)
+    else
+      term:unmount()
+      tree:remove_node(node._id)
+      tree:render()
     end
   end
 end
@@ -331,7 +335,7 @@ function menu.change_style()
     if shown_info then
       local term = Nuiterm.terminals[shown_info[1]][shown_info[2]]
       menu.terminal_menu:unmount()
-      term:hide()
+      Nuiterm.hide_all_terms()
       Nuiterm.change_style(nil, node.type, node.type_id)
       term:show()
       menu.show_menu()
@@ -349,7 +353,7 @@ function menu.change_layout()
     if shown_info then
       local term = Nuiterm.terminals[shown_info[1]][shown_info[2]]
       menu.terminal_menu:unmount()
-      term:hide()
+      Nuiterm.hide_all_terms()
       Nuiterm.change_layout(nil, node.type, node.type_id)
       term:show()
       menu.show_menu()

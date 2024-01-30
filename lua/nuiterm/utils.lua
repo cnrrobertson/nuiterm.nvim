@@ -39,7 +39,7 @@ function utils.find_by_bufnr(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   for group,_ in pairs(Nuiterm.terminals) do
     for id,term in pairs(Nuiterm.terminals[group]) do
-      if term.ui.object.bufnr == bufnr then
+      if term.bufnr == bufnr then
         return term,group,id
       end
     end
@@ -73,7 +73,7 @@ function utils.find_mounted()
   local all_mounted = {}
   for type,terminals in pairs(Nuiterm.terminals) do
     for id,term in pairs(terminals) do
-      if term.ui.object._.mounted then
+      if term:ismounted() then
         table.insert(all_mounted, {type,id})
       end
     end

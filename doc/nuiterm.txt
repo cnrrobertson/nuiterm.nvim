@@ -186,6 +186,7 @@ Nuiterm data storage
     window = {},
     buffer = {}
   }
+  Nuiterm.window = nil
 
 <
 
@@ -199,6 +200,28 @@ Parameters~
 
 Usage~
 `require('nuiterm').setup({})` (replace `{}` with your `config` table)
+
+------------------------------------------------------------------------------
+                                                     *Nuiterm.create_term_win()*
+                       `Nuiterm.create_term_win`({opts})
+Create terminal window
+
+Parameters~
+{opts} `(table|nil)` Terminal UI config table
+
+Usage~
+`Nuiterm.create_term_win({})` (replace `{}` with UI `config` table)
+
+Return~
+|nui.object|
+
+------------------------------------------------------------------------------
+                                                       *Nuiterm.show_term_win()*
+                        `Nuiterm.show_term_win`({term})
+Show terminal window
+
+Parameters~
+{term} `(Terminal|nil)` Terminal to be displayed in window
 
 ------------------------------------------------------------------------------
                                                      *Nuiterm.create_new_term()*
@@ -464,7 +487,8 @@ Fields~
 {type_id} `(string)` id number of terminal as string (specific to type)
 {ui} `(table)` ui details for terminal
 {ui.type} `(string)` type of nui object to use for window
-{ui.object} nui.object terminal nui object
+{ui.options} `(table)` nui.object terminal nui options
+{ui.num_layout} `(integer)` which layout the terminal should be in
 
 ------------------------------------------------------------------------------
                                                                 *Terminal:new()*
@@ -473,6 +497,38 @@ Create new terminal object
 
 Parameters~
 {options} `(table|nil)` config options for terminal (see |Nuiterm.config|)
+
+------------------------------------------------------------------------------
+                                                      *init_funcs.get_type_id()*
+                      `init_funcs.get_type_id`({options})
+Get type id
+
+Parameters~
+{options} `(table)` terminal options table
+
+------------------------------------------------------------------------------
+                                               *init_funcs.generate_type_name()*
+                   `init_funcs.generate_type_name`({options})
+Create type name for terminal (if tied to buffer)
+
+Parameters~
+{options} `(table)` terminal options table
+
+------------------------------------------------------------------------------
+                                                     *init_funcs.get_term_cwd()*
+                      `init_funcs.get_term_cwd`({options})
+Get term cwd
+
+Parameters~
+{options} `(table)` terminal options table
+
+------------------------------------------------------------------------------
+                                                      *init_funcs.get_ui_opts()*
+                      `init_funcs.get_ui_opts`({ui_type})
+Get UI options
+
+Parameters~
+{ui_type} `(string)` terminal ui style
 
 ------------------------------------------------------------------------------
                                                         *Terminal:set_keymaps()*
@@ -492,7 +548,7 @@ Parameters~
 ------------------------------------------------------------------------------
                                                               *Terminal:mount()*
                             `Terminal:mount`({cmd})
-Mount the terminal
+Create a terminal buffer
 
 Parameters~
 {cmd} `(string|nil)` cmd to send to the terminal upon mounting
@@ -502,14 +558,6 @@ Parameters~
                               `Terminal:unmount`()
 Unmount the terminal
 
-
-------------------------------------------------------------------------------
-                                                               *Terminal:hide()*
-                        `Terminal:hide`({persist_size})
-Hide the terminal
-
-Parameters~
-{persist_size} `(boolean|nil)` whether to save changes to window size
 
 ------------------------------------------------------------------------------
                                                                *Terminal:send()*
@@ -537,7 +585,7 @@ Check if terminal UI is mounted
 Change UI style of terminal
 
 Parameters~
-{style} `(string|nil)` split or popup
+{style} `(string)` split or popup
 
 ------------------------------------------------------------------------------
                                                       *Terminal:change_layout()*
