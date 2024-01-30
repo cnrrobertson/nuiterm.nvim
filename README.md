@@ -257,3 +257,6 @@ When running the documentation or tests, [`mini.nvim`](https://github.com/echasn
 - [ ] Display additional terminal info in terminal menu
 - [ ] Add ability to open buffer connected to terminal in a specific window (maybe number, or left, right, top, bottom, etc?)
 - [ ] Add ability to "pin" terminal (don't close when toggling others)
+- [ ] Showing terminal from menu (when trying to close) doesn't hide currently shown terminal
+- [ ] Use common UI for terminals (with ability to pin a terminal in that UI to keep showing when toggling others)
+- [ ] Give option to send to a terminal selected from the menu
