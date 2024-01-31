@@ -86,7 +86,7 @@ end
 ---@param options table terminal options table
 function init_funcs.get_term_cwd(options)
   local cwd = nil
-  if not options.open_at_cwd then
+  if options.open_at_cur_buf then
     cwd = vim.fn.expand("%:p:h")
   end
   return cwd

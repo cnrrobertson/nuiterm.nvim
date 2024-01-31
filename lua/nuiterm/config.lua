@@ -17,8 +17,8 @@ local config = {
   focus_on_open = true,
   -- Move cursor to terminal window when sending code
   focus_on_send = false,
-  -- Use vim cwd for terminal directory
-  open_at_cwd = false,
+  -- Use current buffer location for terminal directory (will use cwd otherwise)
+  open_at_cur_buf = true,
   -- Only allow terminal buffer to use terminal window
   terminal_win_fixed = true,
   -- Persist changes to terminal window size
