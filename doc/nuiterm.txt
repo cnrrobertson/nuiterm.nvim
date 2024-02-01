@@ -89,7 +89,7 @@ accomplished with nuiterm via:
   local function lazygit_terminal()
    local term = require("nuiterm").create_new_term({
      type = "editor",
-     type_id = 100,
+     type_id = "lazygit", -- Can only use string `type_id` for "editor" terminals
       keymaps = {{'t', '<esc>', '<esc>'}},
      ui = {
        type = "float",
@@ -296,6 +296,16 @@ Parameters~
 {num} `(integer|nil)` the id of the terminal to toggle
 
 ------------------------------------------------------------------------------
+                                                     *Nuiterm.rename_terminal()*
+                `Nuiterm.rename_terminal`({name}, {type}, {num})
+Rename terminal (only works for "editor" terminals)
+
+Parameters~
+{name} `(string)` name for terminal (set as `type_id` in Terminal)
+{type} `(string|nil)` the type of terminal to rename (see |Nuiterm.config|)
+{num} `(integer|nil)` the id of the terminal to rename
+
+------------------------------------------------------------------------------
                                            *Nuiterm.focus_buffer_for_terminal()*
                   `Nuiterm.focus_buffer_for_terminal`({bufnr})
 Focus the buffer tied to the terminal under cursor in window 1
@@ -311,7 +321,7 @@ Send text to a terminal
 Parameters~
 {cmd} `(string)` the command to send to the terminal
 {type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu
-{num} `(number|nil)` the id of the terminal (type specific)
+{num} `(number|string|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
 ------------------------------------------------------------------------------

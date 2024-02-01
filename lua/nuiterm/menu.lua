@@ -148,7 +148,7 @@ end
 function menu.send_submit(item,cmd,setup_cmd)
   if item then
     local _,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
-    Nuiterm.send(cmd, type, tonumber(type_id), setup_cmd)
+    Nuiterm.send(cmd, type, type_id, setup_cmd)
   end
 end
 

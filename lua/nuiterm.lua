@@ -87,7 +87,7 @@
 ---   local function lazygit_terminal()
 ---    local term = require("nuiterm").create_new_term({
 ---      type = "editor",
----      type_id = 100,
+---      type_id = "lazygit", -- Can only use string `type_id` for "editor" terminals
 ---       keymaps = {{'t', '<esc>', '<esc>'}},
 ---      ui = {
 ---        type = "float",
@@ -429,6 +429,24 @@ function Nuiterm.change_layout(layout,type,num)
   end
 end
 
+--- Rename terminal (only works for "editor" terminals)
+---
+---@param name string name for terminal (set as `type_id` in Terminal)
+---@param type string|nil the type of terminal to rename (see |Nuiterm.config|)
+---@param num integer|nil the id of the terminal to rename
+function Nuiterm.rename_terminal(name,type,num)
+  local term,type,type_id = utils.find_by_type_and_num(type,num)
+  type = type or term.type
+  type_id = type_id or term.type_id
+  if type == "editor" then
+    Nuiterm.terminals[type][type_id] = nil
+    Nuiterm.terminals[type][name] = term
+    term.type_id = name
+  else
+    vim.print("Renaming only works for 'editor' type terminals")
+  end
+end
+
 --- Focus the buffer tied to the terminal under cursor in window 1
 ---
 ---@param bufnr number|nil the buffer number of the terminal
@@ -446,7 +464,7 @@ end
 ---
 ---@param cmd string the command to send to the terminal
 ---@param type string|nil the type of terminal to send to (or default). "select" to select from menu
----@param num number|nil the id of the terminal (type specific)
+---@param num number|string|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
 function Nuiterm.send(cmd,type,num,setup_cmd)
   local term,_,type_id = utils.find_by_type_and_num(type,num)

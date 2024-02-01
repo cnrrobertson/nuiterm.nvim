@@ -1,8 +1,14 @@
 local utils = {}
 
 function utils.get_type_id(type,num)
-  if num and tonumber(num) >= 0 then
-    return tostring(num)
+  if num then
+    if type == "editor" then
+      if tonumber(num) and (tonumber(num) == -1) then
+        -- Continue to get next available terminal number
+      else
+        return tostring(num)
+      end
+    end
   else
     local type_id = 1
     if type == "editor" then
