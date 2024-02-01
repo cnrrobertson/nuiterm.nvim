@@ -53,6 +53,7 @@ See |Nuiterm.config| for available config settings.
   -- Sending lines to terminal
   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
+  vim.keymap.set('v', '<localleader>R', function() require('nuiterm').send_visual("select") end)
   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 <
 
@@ -133,6 +134,12 @@ accomplished with nuiterm via:
 
 " Send the line 10 to the terminal associated with tab 2
 :10NuitermSend type=tab num=2
+
+" Send `lua` to the terminal of your choosing from terminal menu
+:NuitermSend cmd=lua type=select
+
+" Send `lua` to the terminal of your choosing from terminal menu
+:NuitermSend cmd=lua num=select
 
 " Send lines 10 to 20 to the terminal associated with tab 2
 :10,20NuitermSend type=tab num=2
@@ -303,7 +310,18 @@ Send text to a terminal
 
 Parameters~
 {cmd} `(string)` the command to send to the terminal
-{type} `(string|nil)` the type of terminal to send to (or default)
+{type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu
+{num} `(number|nil)` the id of the terminal (type specific)
+{setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
+
+------------------------------------------------------------------------------
+                                                         *Nuiterm.send_select()*
+            `Nuiterm.send_select`({cmd}, {type}, {num}, {setup_cmd})
+Wrap sending text to a terminal to allow for selecting terminal
+
+Parameters~
+{cmd} `(string)` the command to send to the terminal
+{type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu
 {num} `(number|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 

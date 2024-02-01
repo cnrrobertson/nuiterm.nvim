@@ -52,6 +52,14 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
     -- Toggle terminal menu
     vim.keymap.set('n','<leader>tm',Nuiterm.toggle_menu)
     vim.keymap.set('n','<leader>ft',require('nuiterm.telescope').picker)
+
+   -- Sending lines to terminal
+   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
+   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
+   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
+
+   -- Sending visually selected lines to terminal selected from menu
+   vim.keymap.set('v', '<localleader>R', function() require('nuiterm').send_visual("select") end)
   end,
 }
 ```
@@ -197,6 +205,12 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 " Send `lua` to the terminal associated with tab 2
 :NuitermSend cmd=lua type=tab num=2
 
+" Send `lua` to the terminal of your choosing from terminal menu
+:NuitermSend cmd=lua type=select
+
+" Send `lua` to the terminal of your choosing from terminal menu
+:NuitermSend cmd=lua num=select
+
 " Send the line 10 to the terminal associated with tab 2
 :10NuitermSend type=tab num=2
 
@@ -256,7 +270,9 @@ When running the documentation or tests, [`mini.nvim`](https://github.com/echasn
   - [ ] If editing a remote file (either via scp or with fuse), option to open repl on remote machine
 - [ ] Display additional terminal info in terminal menu
 - [ ] Add ability to open buffer connected to terminal in a specific window (maybe number, or left, right, top, bottom, etc?)
+- [ ] Add a terminal window for each tab (to allow the same terminal to be open in different tabs)
 - [ ] Add ability to "pin" terminal (don't close when toggling others)
-- [ ] Showing terminal from menu (when trying to close) doesn't hide currently shown terminal
-- [ ] Use common UI for terminals (with ability to pin a terminal in that UI to keep showing when toggling others)
-- [ ] Give option to send to a terminal selected from the menu
+- [ ] Allow for manually labeling "editor" terminals (so they show up with a name in terminal menu)
+- [ ] Ensure cursor stays in terminal if changing style while cursor in terminal
+- [ ] Don't let cursor go to insert mode if changing layout while in terminal menu
+- [ ] BUG: Why does destroying terminal in menu have trouble with buf_delete?

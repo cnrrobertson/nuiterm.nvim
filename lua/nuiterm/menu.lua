@@ -9,7 +9,7 @@ local menu = {}
 -------------------------------------------------------------------------------
 -- Menu creation
 -------------------------------------------------------------------------------
-function menu.create_menu(lines, keys)
+function menu.create_menu(lines, keys, on_submit)
   local terminal_menu = Menu({
       relative = "editor",
       size = "100%",
@@ -31,14 +31,7 @@ function menu.create_menu(lines, keys)
     lines = lines,
     max_width = 20,
     keymap = keys,
-    on_submit = function(item)
-      if item then
-        local term,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
-        local was_shown = term:isshown()
-        Nuiterm.toggle(type,type_id)
-        if was_shown then menu.show_menu() end
-      end
-    end,
+    on_submit = on_submit,
   })
   return terminal_menu
 end
@@ -87,14 +80,15 @@ function menu.create_help(keys)
   return help_menu
 end
 
-function menu.show_menu()
+function menu.show_menu(on_submit)
+  on_submit = on_submit or menu.toggle_submit
   local lines = {}
   menu.add_editor_terms(lines)
   menu.add_tab_terms(lines)
   menu.add_window_terms(lines)
   menu.add_buffer_terms(lines)
   local keys = vim.deepcopy(Nuiterm.config.ui.menu_keys)
-  local terminal_menu = menu.create_menu(lines,keys)
+  local terminal_menu = menu.create_menu(lines,keys,on_submit)
   local help_menu = menu.create_help(keys)
   local menu_layout = Layout(Nuiterm.config.ui.menu_opts,
     Layout.Box({
@@ -139,6 +133,22 @@ function menu.join_keys(keys)
     return table.concat(keys, ", ")
   else
     return ""
+  end
+end
+
+function menu.toggle_submit(item)
+  if item then
+    local term,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
+    local was_shown = term:isshown()
+    Nuiterm.toggle(type,type_id)
+    if was_shown then menu.show_menu() end
+  end
+end
+
+function menu.send_submit(item,cmd,setup_cmd)
+  if item then
+    local _,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
+    Nuiterm.send(cmd, type, tonumber(type_id), setup_cmd)
   end
 end
 

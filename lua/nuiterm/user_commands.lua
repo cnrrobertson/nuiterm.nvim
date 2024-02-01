@@ -12,7 +12,7 @@ function user_commands.create_commands()
     local fargs = user_commands.parse(input.fargs, keys)
     if fargs.cmd then
       -- Specified command
-      Nuiterm.send(fargs.cmd, fargs.type, fargs.num, fargs.setup_cmd)
+      Nuiterm.send_select(fargs.cmd, fargs.type, fargs.num, fargs.setup_cmd)
     else
       keys = {"type", "num", "setup_cmd"}
       fargs = user_commands.parse(input.fargs, keys)

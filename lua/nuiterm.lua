@@ -51,6 +51,7 @@
 ---   -- Sending lines to terminal
 ---   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
 ---   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
+---   vim.keymap.set('v', '<localleader>R', function() require('nuiterm').send_visual("select") end)
 ---   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 --- <
 ---
@@ -131,6 +132,12 @@
 ---
 --- " Send the line 10 to the terminal associated with tab 2
 --- :10NuitermSend type=tab num=2
+---
+--- " Send `lua` to the terminal of your choosing from terminal menu
+--- :NuitermSend cmd=lua type=select
+---
+--- " Send `lua` to the terminal of your choosing from terminal menu
+--- :NuitermSend cmd=lua num=select
 ---
 --- " Send lines 10 to 20 to the terminal associated with tab 2
 --- :10,20NuitermSend type=tab num=2
@@ -438,7 +445,7 @@ end
 --- Send text to a terminal
 ---
 ---@param cmd string the command to send to the terminal
----@param type string|nil the type of terminal to send to (or default)
+---@param type string|nil the type of terminal to send to (or default). "select" to select from menu
 ---@param num number|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
 function Nuiterm.send(cmd,type,num,setup_cmd)
@@ -476,6 +483,22 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
   end
 end
 
+
+--- Wrap sending text to a terminal to allow for selecting terminal
+---
+---@param cmd string the command to send to the terminal
+---@param type string|nil the type of terminal to send to (or default). "select" to select from menu
+---@param num number|nil the id of the terminal (type specific)
+---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
+function Nuiterm.send_select(cmd,type,num,setup_cmd)
+  if (type == "select") or (num == "select") then
+    local on_submit = function(item) menu.send_submit(item, cmd, setup_cmd) end
+    menu.show_menu(on_submit)
+  else
+    Nuiterm.send(cmd,type,num,setup_cmd)
+  end
+end
+
 --- Send current line in buffer to a terminal
 ---
 ---@param type string|nil the type of terminal to send to (or default)
@@ -484,7 +507,7 @@ end
 function Nuiterm.send_line(type,num,setup_cmd)
   local row = vim.api.nvim_win_get_cursor(0)[1]
   local line = vim.api.nvim_buf_get_lines(0,row-1,row,true)
-  Nuiterm.send(line[1],type,num,setup_cmd)
+  Nuiterm.send_select(line[1],type,num,setup_cmd)
 end
 
 --- Send multiple lines in buffer to a terminal
@@ -504,7 +527,7 @@ function Nuiterm.send_lines(start_line,end_line,type,num,setup_cmd)
   end
   no_empty[#no_empty+1] = ""
   local combined = table.concat(no_empty,"\n")
-  Nuiterm.send(combined,type,num,setup_cmd)
+  Nuiterm.send_select(combined,type,num,setup_cmd)
 end
 
 --- Send selection in line in buffer to a terminal
@@ -528,7 +551,7 @@ function Nuiterm.send_selection(line,start_col,end_col,type,num,setup_cmd)
     ec = end_col
   end
   local text = vim.api.nvim_buf_get_text(0,line-1,sc-1,line-1,ec,{})
-  Nuiterm.send(table.concat(text),type,num,setup_cmd)
+  Nuiterm.send_select(table.concat(text),type,num,setup_cmd)
 end
 
 --- Send visual selection
