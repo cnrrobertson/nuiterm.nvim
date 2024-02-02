@@ -134,13 +134,7 @@ function Terminal:show(focus,cmd)
   if Nuiterm.window == nil then
     Nuiterm.create_term_win(self.ui)
   end
-  if Nuiterm.window.winid == nil then
-    Nuiterm.show_term_win(self)
-  end
-  if self:isshown() == false then
-    vim.api.nvim_win_set_buf(Nuiterm.window.winid, self.bufnr)
-    Nuiterm.window.bufnr = self.bufnr
-  end
+  Nuiterm.show_term_win(self)
 
   -- Set keymaps
   self:set_keymaps()

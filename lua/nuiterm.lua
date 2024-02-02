@@ -300,11 +300,15 @@ function Nuiterm.create_term_win(opts)
     if Nuiterm.config.persist_size then
       if Nuiterm.window._.size.width then
         local new_width = vim.api.nvim_win_get_width(Nuiterm.window.winid)
-        term.ui.width = new_width
+        if term then
+          term.ui.width = new_width
+        end
       end
       if Nuiterm.window._.size.height then
         local new_height = vim.api.nvim_win_get_height(Nuiterm.window.winid)
-        term.ui.height = new_height
+        if term then
+          term.ui.height = new_height
+        end
       end
     end
     if Nuiterm.config.hide_on_leave then
@@ -317,7 +321,7 @@ end
 
 --- Show terminal window
 ---
----@param term Terminal|nil Terminal to be displayed in window
+---@param term Terminal Terminal to be displayed in window
 function Nuiterm.show_term_win(term)
   if Nuiterm.window.bufnr == nil then
     local scratch = vim.api.nvim_create_buf(false, true)
@@ -332,6 +336,8 @@ function Nuiterm.show_term_win(term)
   end
   Nuiterm.window:mount()
   vim.api.nvim_win_set_option(Nuiterm.window.winid,"number",false)
+  vim.api.nvim_win_set_buf(Nuiterm.window.winid, term.bufnr)
+  Nuiterm.window.bufnr = term.bufnr
 end
 
 --- Create new terminal
@@ -378,7 +384,7 @@ function Nuiterm.toggle(type,num,cmd)
   local term,type,type_id = utils.find_by_type_and_num(type,num)
 
   if term and term:isshown() then
-    Nuiterm.window:hide()
+    Nuiterm.hide_all_terms()
   else
     Nuiterm.hide_all_terms()
     if term == nil then
