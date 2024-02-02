@@ -8,6 +8,8 @@ function utils.get_type_id(type,num)
       else
         return tostring(num)
       end
+    else
+      return tostring(num)
     end
   else
     local type_id = 1
@@ -64,7 +66,7 @@ end
 
 function utils.find_by_type_and_num(type,num)
   local ft = vim.bo.filetype
-  local term = {}
+  local term = nil
   if (ft == "terminal") then
     term,_,_ = utils.find_by_bufnr()
   else
