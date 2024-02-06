@@ -231,7 +231,7 @@ function Terminal:change_style(style)
   self.ui.type = style
   self.ui.options = init_funcs.get_ui_opts(style)
   if was_shown then
-    self:show()
+    self:show(true)
   end
 end
 
