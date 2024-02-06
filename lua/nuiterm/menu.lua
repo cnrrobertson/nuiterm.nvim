@@ -81,6 +81,8 @@ function menu.create_help(keys)
 end
 
 function menu.show_menu(on_submit)
+  vim.schedule(function() vim.cmd[[stopinsert]] end)
+  vim.cmd[[redraw]]
   on_submit = on_submit or menu.toggle_submit
   local lines = {}
   menu.add_editor_terms(lines)

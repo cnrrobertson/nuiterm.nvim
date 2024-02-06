@@ -272,5 +272,4 @@ When running the documentation or tests, [`mini.nvim`](https://github.com/echasn
 - [ ] Add ability to open buffer connected to terminal in a specific window (maybe number, or left, right, top, bottom, etc?)
 - [ ] Add a terminal window for each tab (to allow the same terminal to be open in different tabs)
 - [ ] Add ability to "pin" terminal (don't close when toggling others)
-- [ ] Don't let cursor go to insert mode if changing layout while in terminal menu
 - [ ] BUG: Why does destroying terminal in menu have trouble with buf_delete?

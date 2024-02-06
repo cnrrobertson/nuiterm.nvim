@@ -256,14 +256,16 @@ function Nuiterm.setup(config)
       group = "Nuiterm",
       pattern="nuiterm:*",
       callback = function()
-        vim.cmd[[startinsert]]
+        vim.schedule(function() vim.cmd[[startinsert]] end)
+        vim.cmd("redraw")
       end
     })
     vim.api.nvim_create_autocmd({"BufLeave"}, {
       group = "Nuiterm",
       pattern="nuiterm:*",
       callback = function()
-        vim.cmd[[stopinsert]]
+        vim.schedule(function() vim.cmd[[stopinsert]] end)
+        vim.cmd("redraw")
       end
     })
   end
