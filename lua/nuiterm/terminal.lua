@@ -169,6 +169,7 @@ function Terminal:mount(cmd)
       return vim.fn.termopen(term_cmd, {
         -- Ensure terminal object is destroyed when closed
         on_exit=function()
+          self.bufnr = nil
           self:unmount()
         end,
         cwd=self.cwd
