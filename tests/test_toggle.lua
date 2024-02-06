@@ -36,7 +36,7 @@ T['toggle_default'] = function()
   nequals(string.find(child.api.nvim_buf_get_name(0), "buffer"), nil)
 
   -- Buffer has active terminal
-  equals(child.api.nvim_get_mode().mode, "t")
+  equals(child.fn.mode(), "t")
 
   -- Buffer number correct
   local term_name = child.api.nvim_buf_get_name(0)

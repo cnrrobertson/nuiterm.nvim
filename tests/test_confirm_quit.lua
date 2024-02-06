@@ -21,7 +21,7 @@ end
 T['confirm_prompt'] = function()
   init_terms()
   child.type_keys(":q<cr>")
-  equals(child.api.nvim_get_mode().mode, "c")
+  equals(child.fn.mode(), "c")
 end
 
 T['confirm_dont_close'] = function()
