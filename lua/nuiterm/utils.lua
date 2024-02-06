@@ -118,4 +118,16 @@ function utils.write_quit(write, all)
   end
 end
 
+function utils.rename_buffer(bufnr, name)
+  vim.api.nvim_buf_set_name(bufnr,name)
+  -- Renaming causes duplication of terminal buffer -> delete old buffer
+  -- https://github.com/neovim/neovim/issues/20349
+  local alt = vim.api.nvim_buf_call(bufnr, function()
+    return vim.fn.bufnr('#')
+  end)
+  if alt ~= bufnr and alt ~= -1 then
+    pcall(vim.api.nvim_buf_delete, alt, {force=true})
+  end
+end
+
 return utils

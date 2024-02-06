@@ -176,7 +176,7 @@ function Terminal:mount(cmd)
       })
     end)
     vim.api.nvim_buf_set_option(self.bufnr,"filetype","terminal")
-    vim.api.nvim_buf_set_name(self.bufnr,self.bufname)
+    utils.rename_buffer(self.bufnr,self.bufname)
   end
 end
 

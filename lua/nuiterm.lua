@@ -325,10 +325,6 @@ end
 ---
 ---@param term Terminal Terminal to be displayed in window
 function Nuiterm.show_term_win(term)
-  if Nuiterm.window.bufnr == nil then
-    local scratch = vim.api.nvim_create_buf(false, true)
-    Nuiterm.window.bufnr = scratch
-  end
   if (term.ui.type == "popup") or (term.ui.type == "float") then
     Nuiterm.hide_all_terms()
     Nuiterm.window = Popup(term.ui.options)
