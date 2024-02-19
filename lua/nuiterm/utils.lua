@@ -69,6 +69,9 @@ function utils.find_by_type_and_num(type,num)
   local term = nil
   if (ft == "terminal") then
     term,_,_ = utils.find_by_bufnr()
+  elseif type == "current" then
+    local tbufnr = Nuiterm.window.bufnr
+    term,type,num = utils.find_by_bufnr(tbufnr)
   else
     type = type or Nuiterm.config.type
     num = utils.get_type_id(type,num)

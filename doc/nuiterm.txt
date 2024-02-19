@@ -53,7 +53,8 @@ See |Nuiterm.config| for available config settings.
   -- Sending lines to terminal
   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
-  vim.keymap.set('v', '<localleader>R', function() require('nuiterm').send_visual("select") end)
+  vim.keymap.set('v', '<localleader>Rs', function() require('nuiterm').send_visual("select") end)
+  vim.keymap.set('v', '<localleader>Rc', function() require('nuiterm').send_visual("current") end)
   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 <
 
@@ -228,7 +229,7 @@ Return~
 Show terminal window
 
 Parameters~
-{term} `(Terminal|nil)` Terminal to be displayed in window
+{term} Terminal Terminal to be displayed in window
 
 ------------------------------------------------------------------------------
                                                      *Nuiterm.create_new_term()*
@@ -320,7 +321,7 @@ Send text to a terminal
 
 Parameters~
 {cmd} `(string)` the command to send to the terminal
-{type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu
+{type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu, "current" to use open terminal
 {num} `(number|string|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 
@@ -331,7 +332,7 @@ Wrap sending text to a terminal to allow for selecting terminal
 
 Parameters~
 {cmd} `(string)` the command to send to the terminal
-{type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu
+{type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu, "current" to use open terminal
 {num} `(number|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
 

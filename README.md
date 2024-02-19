@@ -59,7 +59,10 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
    vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 
    -- Sending visually selected lines to terminal selected from menu
-   vim.keymap.set('v', '<localleader>R', function() require('nuiterm').send_visual("select") end)
+   vim.keymap.set('v', '<localleader>Rs', function() require('nuiterm').send_visual("select") end)
+
+   -- Sending visually selected lines to currently open terminal
+   vim.keymap.set('v', '<localleader>Rc', function() require('nuiterm').send_visual("current") end)
   end,
 }
 ```

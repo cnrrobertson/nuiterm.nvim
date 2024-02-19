@@ -51,7 +51,8 @@
 ---   -- Sending lines to terminal
 ---   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
 ---   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
----   vim.keymap.set('v', '<localleader>R', function() require('nuiterm').send_visual("select") end)
+---   vim.keymap.set('v', '<localleader>Rs', function() require('nuiterm').send_visual("select") end)
+---   vim.keymap.set('v', '<localleader>Rc', function() require('nuiterm').send_visual("current") end)
 ---   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
 --- <
 ---
@@ -467,7 +468,7 @@ end
 --- Send text to a terminal
 ---
 ---@param cmd string the command to send to the terminal
----@param type string|nil the type of terminal to send to (or default). "select" to select from menu
+---@param type string|nil the type of terminal to send to (or default). "select" to select from menu, "current" to use open terminal
 ---@param num number|string|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
 function Nuiterm.send(cmd,type,num,setup_cmd)
@@ -509,7 +510,7 @@ end
 --- Wrap sending text to a terminal to allow for selecting terminal
 ---
 ---@param cmd string the command to send to the terminal
----@param type string|nil the type of terminal to send to (or default). "select" to select from menu
+---@param type string|nil the type of terminal to send to (or default). "select" to select from menu, "current" to use open terminal
 ---@param num number|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
 function Nuiterm.send_select(cmd,type,num,setup_cmd)
