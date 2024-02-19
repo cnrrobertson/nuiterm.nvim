@@ -67,17 +67,21 @@ end
 function utils.find_by_type_and_num(type,num)
   local ft = vim.bo.filetype
   local term = nil
-  local tpage = vim.api.nvim_get_current_tabpage()
   if (ft == "terminal") then
-    term,_,_ = utils.find_by_bufnr()
+    _,type,num = utils.find_by_bufnr()
   elseif type == "current" then
-    local tbufnr = Nuiterm.windows[tpage].bufnr
-    term,type,num = utils.find_by_bufnr(tbufnr)
+    local tpage = vim.api.nvim_get_current_tabpage()
+    if Nuiterm.windows[tpage] and Nuiterm.windows[tpage].bufnr then
+      local tbufnr = Nuiterm.windows[tpage].bufnr
+      _,type,num = utils.find_by_bufnr(tbufnr)
+    else
+      type = Nuiterm.config.type
+    end
   else
     type = type or Nuiterm.config.type
     num = utils.get_type_id(type,num)
-    term = Nuiterm.terminals[type][num]
   end
+  term = Nuiterm.terminals[type][num]
   return term,type,num
 end
 

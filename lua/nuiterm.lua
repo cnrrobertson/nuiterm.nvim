@@ -475,7 +475,7 @@ end
 ---@param num number|string|nil the id of the terminal (type specific)
 ---@param setup_cmd string|nil the first command to send to a freshly opened terminal (if needed)
 function Nuiterm.send(cmd,type,num,setup_cmd)
-  local term,_,type_id = utils.find_by_type_and_num(type,num)
+  local term,type,type_id = utils.find_by_type_and_num(type,num)
 
   -- Ensure term exists and is shown with setup_cmd
   local term_shown = utils.find_shown()

@@ -68,5 +68,37 @@ T['send_to_current'] = function()
   equals(true, utils.is_in_screenshot("terminal two", screenshot))
 end
 
+T['send_to_current_none_exists'] = function()
+  child.cmd("e test.py")
+  child.lua("require('nuiterm').setup()")
+
+  -- Send to current terminal
+  child.loop.sleep(500)
+  child.cmd("lua Nuiterm.send('terminal one', 'current', nil, nil)")
+  child.loop.sleep(100)
+
+  local screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("terminal one", screenshot))
+
+  child.cmd("NuitermSend type=current cmd=usercommand")
+  child.loop.sleep(100)
+
+  screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("usercommand", screenshot))
+
+  -- Send to current terminal from new buffer
+  child.cmd("e test2.py")
+  child.cmd("lua Nuiterm.send('terminal two', 'current', nil, nil)")
+  child.loop.sleep(100)
+
+  screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("terminal one", screenshot))
+  equals(true, utils.is_in_screenshot("usercommand", screenshot))
+  equals(true, utils.is_in_screenshot("terminal two", screenshot))
+
+  child.lua('Nlen = require("nuiterm.utils").dict_length(Nuiterm.windows)')
+  equals(1, child.lua_get('Nlen'))
+end
+
 child.stop()
 return T
