@@ -111,9 +111,10 @@ end
 --- Create keymaps in terminal buffer
 ---
 function Terminal:set_keymaps()
+  local tpage = vim.api.nvim_get_current_tabpage()
   if self.keymaps then
     for _,km in pairs(self.keymaps) do
-      Nuiterm.window:map(unpack(km))
+      Nuiterm.windows[tpage]:map(unpack(km))
     end
   end
 end
@@ -131,7 +132,8 @@ function Terminal:show(focus,cmd)
   end
 
   -- Enusre terminal buffer is displayed
-  if Nuiterm.window == nil then
+  local tpage = vim.api.nvim_get_current_tabpage()
+  if Nuiterm.windows[tpage] == nil then
     Nuiterm.create_term_win(self.ui)
   end
   Nuiterm.show_term_win(self)
@@ -140,18 +142,18 @@ function Terminal:show(focus,cmd)
   self:set_keymaps()
 
   -- Set layout
-  local layout = Nuiterm.window.layout
+  local layout = Nuiterm.windows[tpage].layout
   if self.ui.width then
     layout.size.width = self.ui.width
   end
   if self.ui.height then
     layout.size.height = self.ui.height
   end
-  Nuiterm.window:update_layout(layout)
+  Nuiterm.windows[tpage]:update_layout(layout)
 
   -- Set cursor focus
   if focus then
-    vim.api.nvim_set_current_win(Nuiterm.window.winid)
+    vim.api.nvim_set_current_win(Nuiterm.windows[tpage].winid)
   else
     vim.api.nvim_set_current_win(start_win)
     vim.api.nvim_win_set_cursor(start_win,start_cursor)
@@ -184,10 +186,11 @@ end
 --- Unmount the terminal
 ---
 function Terminal:unmount()
-  if Nuiterm.window then
-    if Nuiterm.window.bufnr == self.bufnr then
+  local tpage = vim.api.nvim_get_current_tabpage()
+  if Nuiterm.windows[tpage] then
+    if Nuiterm.windows[tpage].bufnr == self.bufnr then
       Nuiterm.hide_all_terms()
-      Nuiterm.window.bufnr = nil
+      Nuiterm.windows[tpage].bufnr = nil
     end
   end
   if self.bufnr ~= nil then
@@ -206,9 +209,10 @@ end
 --- Check if terminal UI is displayed
 ---
 function Terminal:isshown()
-  if Nuiterm.window then
-    if Nuiterm.window.winid then
-      if self.bufnr == Nuiterm.window.bufnr then
+  local tpage = vim.api.nvim_get_current_tabpage()
+  if Nuiterm.windows[tpage] then
+    if Nuiterm.windows[tpage].winid then
+      if self.bufnr == Nuiterm.windows[tpage].bufnr then
         return true
       end
     end
@@ -242,7 +246,8 @@ end
 ---@param layout table|nil see nui.popup:update_layout() for details
 function Terminal:change_layout(layout)
   self.ui.options = layout
-  Nuiterm.window:update_layout(layout)
+  local tpage = vim.api.nvim_get_current_tabpage()
+  Nuiterm.windows[tpage]:update_layout(layout)
 end
 
 return Terminal

@@ -3,6 +3,7 @@ local equals = MiniTest.expect.equality
 local nequals = MiniTest.expect.no_equality
 local errors = MiniTest.expect.error
 local nerrors = MiniTest.expect.no_error
+local utils = require("tests.utils")
 local T = MiniTest.new_set({
   hooks = {
     pre_case = function()
@@ -59,10 +60,8 @@ T['toggle_cmd'] = function()
 end
 
 T['toggle_show_hide'] = function()
-  child.cmd("e test.py")
-  child.lua("require('nuiterm').setup()")
+  init_term()
 
-  child.cmd("Nuiterm")
   in_term()
   child.cmd("Nuiterm")
   not_in_term()
@@ -96,13 +95,45 @@ T['toggle_win_from_buf'] = function()
 end
 
 T['toggle_hide_all'] = function()
-  child.cmd("e test.py")
-  child.lua("require('nuiterm').setup()")
+  init_term()
 
-  child.cmd("Nuiterm")
   child.cmd("NuitermHideAll")
 
   nequals(string.find(child.api.nvim_buf_get_name(0), "test.py"), nil)
+end
+
+T['toggle_same_term_on_different_tabs'] = function()
+  init_term()
+
+  child.cmd("tabnew test.py")
+  child.cmd("Nuiterm")
+  child.loop.sleep(500)
+
+  -- Send to terminal
+  child.cmd("NuitermSend cmd=tab2")
+  child.loop.sleep(100)
+  local screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("tab2", screenshot))
+
+  -- Change to new tab and also send to terminal
+  child.cmd("tabprev")
+  child.cmd("NuitermSend cmd=tab1")
+  child.loop.sleep(100)
+  screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("tab2", screenshot))
+  equals(true, utils.is_in_screenshot("tab1", screenshot))
+
+  -- Hide terminals on tab 1
+  child.cmd("Nuiterm")
+  screenshot = child.get_screenshot()
+  nequals(true, utils.is_in_screenshot("tab2", screenshot))
+  nequals(true, utils.is_in_screenshot("tab1", screenshot))
+
+  -- Move to tab 2 and ensure both commmands are present
+  child.cmd("tabnext")
+  screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("tab2", screenshot))
+  equals(true, utils.is_in_screenshot("tab1", screenshot))
 end
 
 child.stop()

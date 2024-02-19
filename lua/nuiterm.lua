@@ -200,7 +200,7 @@ Nuiterm.terminals = {
   window = {},
   buffer = {}
 }
-Nuiterm.window = nil
+Nuiterm.windows = {}
 
 --- Plugin setup
 ---
@@ -289,54 +289,56 @@ end
 ---@return |nui.object|
 function Nuiterm.create_term_win(opts)
   opts = opts or {}
+  local tpage = vim.api.nvim_get_current_tabpage()
   if opts.type == "split" then
-    Nuiterm.window = Split(opts.options)
+    Nuiterm.windows[tpage] = Split(opts.options)
   else
-    Nuiterm.window = Popup(opts.options)
+    Nuiterm.windows[tpage] = Popup(opts.options)
   end
-  Nuiterm.window:mount()
-  vim.api.nvim_win_set_option(Nuiterm.window.winid,"number",false)
+  Nuiterm.windows[tpage]:mount()
+  vim.api.nvim_win_set_option(Nuiterm.windows[tpage].winid,"number",false)
 
   -- Save window info to each terminal
-  Nuiterm.window:on({event.WinLeave}, function()
-    local term = utils.find_by_bufnr(Nuiterm.window.bufnr)
+  Nuiterm.windows[tpage]:on({event.WinLeave}, function()
+    local term = utils.find_by_bufnr(Nuiterm.windows[tpage].bufnr)
     if Nuiterm.config.persist_size then
-      if Nuiterm.window._.size.width then
-        local new_width = vim.api.nvim_win_get_width(Nuiterm.window.winid)
+      if Nuiterm.windows[tpage]._.size.width then
+        local new_width = vim.api.nvim_win_get_width(Nuiterm.windows[tpage].winid)
         if term then
           term.ui.width = new_width
         end
       end
-      if Nuiterm.window._.size.height then
-        local new_height = vim.api.nvim_win_get_height(Nuiterm.window.winid)
+      if Nuiterm.windows[tpage]._.size.height then
+        local new_height = vim.api.nvim_win_get_height(Nuiterm.windows[tpage].winid)
         if term then
           term.ui.height = new_height
         end
       end
     end
     if Nuiterm.config.hide_on_leave then
-      Nuiterm.window:hide()
+      Nuiterm.windows[tpage]:hide()
     end
   end, {})
 
-  return Nuiterm.window
+  return Nuiterm.windows[tpage]
 end
 
 --- Show terminal window
 ---
 ---@param term Terminal Terminal to be displayed in window
 function Nuiterm.show_term_win(term)
+  local tpage = vim.api.nvim_get_current_tabpage()
   if (term.ui.type == "popup") or (term.ui.type == "float") then
     Nuiterm.hide_all_terms()
-    Nuiterm.window = Popup(term.ui.options)
+    Nuiterm.windows[tpage] = Popup(term.ui.options)
   else
     Nuiterm.hide_all_terms()
-    Nuiterm.window = Split(term.ui.options)
+    Nuiterm.windows[tpage] = Split(term.ui.options)
   end
-  Nuiterm.window:mount()
-  vim.api.nvim_win_set_option(Nuiterm.window.winid,"number",false)
-  vim.api.nvim_win_set_buf(Nuiterm.window.winid, term.bufnr)
-  Nuiterm.window.bufnr = term.bufnr
+  Nuiterm.windows[tpage]:mount()
+  vim.api.nvim_win_set_option(Nuiterm.windows[tpage].winid,"number",false)
+  vim.api.nvim_win_set_buf(Nuiterm.windows[tpage].winid, term.bufnr)
+  Nuiterm.windows[tpage].bufnr = term.bufnr
 end
 
 --- Create new terminal
@@ -361,8 +363,9 @@ function Nuiterm.hide_all_terms()
   --     end
   --   end
   -- end
-  if Nuiterm.window then
-    Nuiterm.window:hide()
+  local tpage = vim.api.nvim_get_current_tabpage()
+  if Nuiterm.windows[tpage] then
+    Nuiterm.windows[tpage]:hide()
   end
 end
 
@@ -484,9 +487,10 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
   term:send(cmd..'\n')
 
   -- Put cursor at bottom of terminal buffer
-  vim.api.nvim_win_call(Nuiterm.window.winid, function()
-    local buf_len = vim.api.nvim_buf_line_count(Nuiterm.window.bufnr)
-    vim.api.nvim_win_set_cursor(Nuiterm.window.winid, {buf_len,0})
+  local tpage = vim.api.nvim_get_current_tabpage()
+  vim.api.nvim_win_call(Nuiterm.windows[tpage].winid, function()
+    local buf_len = vim.api.nvim_buf_line_count(Nuiterm.windows[tpage].bufnr)
+    vim.api.nvim_win_set_cursor(Nuiterm.windows[tpage].winid, {buf_len,0})
   end)
 
   -- Hide terminal if it should be hidden

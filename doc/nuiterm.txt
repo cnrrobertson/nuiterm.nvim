@@ -194,7 +194,7 @@ Nuiterm data storage
     window = {},
     buffer = {}
   }
-  Nuiterm.window = nil
+  Nuiterm.windows = {}
 
 <
 
