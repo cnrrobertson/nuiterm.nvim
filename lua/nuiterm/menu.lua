@@ -309,7 +309,7 @@ function menu.destroy_terminal()
   local tree = menu.terminal_menu.tree
   local node = tree:get_node()
   if node then
-    local term = Nuiterm.terminals[node.type][node.type_id]
+    local term,_,_ = utils.find_by_type_and_num(node.type,node.type_id)
     if Nuiterm.config.menu_confirm_destroy then
       vim.ui.input({prompt = "Destroy terminal? (y/n/[s]how) "}, function(input)
         if input == "y" then
@@ -317,6 +317,7 @@ function menu.destroy_terminal()
           tree:remove_node(node._id)
           tree:render()
         elseif input == "" or input == "s" or input == "show" then
+          menu.terminal_menu:unmount()
           term:show(Nuiterm.config.focus_on_open)
         end
       end)

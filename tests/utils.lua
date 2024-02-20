@@ -7,12 +7,19 @@ function M.print_screenshot(screenshot)
   end
 end
 
-function M.find_in_screenshot(pattern, screenshot)
+function M.stack_screenshot(screenshot,s,e)
+  s = s or 1
+  e = e or 0
   local lines = {}
-  for _,line in pairs(screenshot.text) do
+  local text = screenshot.text
+  for _,line in pairs({unpack(text,s,#text-e)}) do
     table.insert(lines, table.concat(line, ""))
   end
-  local text = table.concat(lines, "")
+  return table.concat(lines, "")
+end
+
+function M.find_in_screenshot(pattern, screenshot)
+  local text = M.stack_screenshot(screenshot)
   return string.find(text, pattern, 1, true)
 end
 
