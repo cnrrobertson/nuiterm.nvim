@@ -154,6 +154,13 @@ function menu.send_submit(item,cmd,setup_cmd)
   end
 end
 
+function menu.bind_submit(item)
+  if item then
+    local _,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
+    Nuiterm.bind_buf_to_terminal(type, type_id)
+  end
+end
+
 -------------------------------------------------------------------------------
 -- Populating menu
 -------------------------------------------------------------------------------
@@ -163,6 +170,16 @@ function menu.resize_bufname(buf_name)
     local num_parts = #buf_parts
     buf_parts = {unpack(buf_parts, num_parts-Nuiterm.config.menu_buf_depth, num_parts)}
     return table.concat(buf_parts, "/")
+end
+
+function menu.in_lines(lines, item)
+  local in_lines = false
+  for _,line in ipairs(lines) do
+    if line.text == item.text then
+      in_lines = true
+    end
+  end
+  return in_lines
 end
 
 function menu.add_editor_terms(lines,remove_header)
@@ -183,7 +200,9 @@ function menu.add_editor_terms(lines,remove_header)
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
-      lines[#lines+1] = menu_item
+      if menu.in_lines(lines, menu_item) == false then
+        lines[#lines+1] = menu_item
+      end
     end
   end
 end
@@ -212,7 +231,9 @@ function menu.add_tab_terms(lines,remove_header)
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
-      lines[#lines+1] = menu_item
+      if menu.in_lines(lines, menu_item) == false then
+        lines[#lines+1] = menu_item
+      end
     end
   end
 end
@@ -237,7 +258,9 @@ function menu.add_window_terms(lines,remove_header)
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
-      lines[#lines+1] = menu_item
+      if menu.in_lines(lines, menu_item) == false then
+        lines[#lines+1] = menu_item
+      end
     end
   end
 end
@@ -262,7 +285,9 @@ function menu.add_buffer_terms(lines,remove_header)
       local menu_item = Menu.item(
         display,{type=t.type,type_id=t.type_id}
       )
-      lines[#lines+1] = menu_item
+      if menu.in_lines(lines, menu_item) == false then
+        lines[#lines+1] = menu_item
+      end
     end
   end
 end

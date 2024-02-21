@@ -184,6 +184,7 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 :[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
 :NuitermChangeStyle [[style=]...] [[type=]...] [[num=]...]
 :NuitermChangeLayout [[type=]...] [[num=]...]
+:NuitermBindBuf [[type=]...] [[num=]...]
 :NuitermHideAll
 :NuitermMenu
 ```
@@ -233,6 +234,9 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 " Change layout to next layout in config for terminal associated with tab 2
 " (see help docs for fine grained control in lua interface)
 :NuitermChangeLayout type=tab num=2
+
+" Bind the current buffer to send to the editor 3 terminal
+:NuitermBindBuf type=editor num=3
 ```
 
 ## Comparisons

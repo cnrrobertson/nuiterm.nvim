@@ -3,7 +3,7 @@
 *nuiterm* Neovim terminal manager for terminals local to buffer, window, tab, or editor
 *Nuiterm*
 
-MIT License Copyright (c) 2023 Connor Robertson
+MIT License Copyright (c) 2024 Connor Robertson
 
 ===========================================================================
 
@@ -109,6 +109,7 @@ accomplished with nuiterm via:
 :[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
 :NuitermChangeStyle [[style=]...] [[type=]...] [[num=]...]
 :NuitermChangeLayout [[type=]...] [[num=]...]
+:NuitermBindBuf [[type=]...] [[num=]...]
 :NuitermHideAll
 :NuitermMenu
 ```
@@ -158,6 +159,9 @@ accomplished with nuiterm via:
 " Change layout to next layout in config for terminal associated with tab 2
 " (see help docs for fine grained control in lua interface)
 :NuitermChangeLayout type=tab num=2
+
+" Bind the current buffer to send to the editor 3 terminal
+:NuitermBindBuf type=editor num=3
 ```
 
 # Tips~
@@ -307,12 +311,30 @@ Parameters~
 {num} `(integer|nil)` the id of the terminal to rename
 
 ------------------------------------------------------------------------------
+                                                     *Nuiterm.delete_terminal()*
+                  `Nuiterm.delete_terminal`({type}, {type_id})
+Delete terminal
+
+Parameters~
+{type} `(string|nil)` the type of terminal to delete (see |Nuiterm.config|)
+{type_id} `(integer|nil)` the id of the terminal to delete
+
+------------------------------------------------------------------------------
                                            *Nuiterm.focus_buffer_for_terminal()*
                   `Nuiterm.focus_buffer_for_terminal`({bufnr})
 Focus the buffer tied to the terminal under cursor in window 1
 
 Parameters~
 {bufnr} `(number|nil)` the buffer number of the terminal
+
+------------------------------------------------------------------------------
+                                                *Nuiterm.bind_buf_to_terminal()*
+                 `Nuiterm.bind_buf_to_terminal`({type}, {num})
+Bind current buffer to terminal
+
+Parameters~
+{type} `(string|nil)` the type of terminal to bind to (see |Nuiterm.config|)
+{num} `(integer|nil)` the id of the terminal to rename
 
 ------------------------------------------------------------------------------
                                                                 *Nuiterm.send()*

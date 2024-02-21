@@ -1,7 +1,7 @@
 --- *nuiterm* Neovim terminal manager for terminals local to buffer, window, tab, or editor
 --- *Nuiterm*
 ---
---- MIT License Copyright (c) 2023 Connor Robertson
+--- MIT License Copyright (c) 2024 Connor Robertson
 ---
 --- ===========================================================================
 ---
@@ -107,6 +107,7 @@
 --- :[count|range]NuitermSend [[cmd=]...] [[type=]...] [[num=]...] [[setup_cmd=]...]
 --- :NuitermChangeStyle [[style=]...] [[type=]...] [[num=]...]
 --- :NuitermChangeLayout [[type=]...] [[num=]...]
+--- :NuitermBindBuf [[type=]...] [[num=]...]
 --- :NuitermHideAll
 --- :NuitermMenu
 --- ```
@@ -156,6 +157,9 @@
 --- " Change layout to next layout in config for terminal associated with tab 2
 --- " (see help docs for fine grained control in lua interface)
 --- :NuitermChangeLayout type=tab num=2
+---
+--- " Bind the current buffer to send to the editor 3 terminal
+--- :NuitermBindBuf type=editor num=3
 --- ```
 ---
 --- # Tips~
@@ -443,15 +447,43 @@ end
 ---@param type string|nil the type of terminal to rename (see |Nuiterm.config|)
 ---@param num integer|nil the id of the terminal to rename
 function Nuiterm.rename_terminal(name,type,num)
-  local term,type,type_id = utils.find_by_type_and_num(type,num)
+  local term,_,_ = utils.find_by_type_and_num(type,num)
   type = type or term.type
-  type_id = type_id or term.type_id
+  local type_id = num or term.type_id
   if type == "editor" then
-    Nuiterm.terminals[type][type_id] = nil
     Nuiterm.terminals[type][name] = term
+    Nuiterm.terminals[type][tostring(type_id)] = nil
     term.type_id = name
   else
     vim.print("Renaming only works for 'editor' type terminals")
+  end
+end
+
+--- Delete terminal
+---
+---@param type string|nil the type of terminal to delete (see |Nuiterm.config|)
+---@param type_id integer|nil the id of the terminal to delete
+function Nuiterm.delete_terminal(type,type_id)
+  if type and type_id then
+    local term = Nuiterm.terminals[type][tostring(type_id)]
+    if term then
+      for k,v in pairs(term) do
+        if k == "bufnr" and v ~= nil then
+          vim.api.nvim_buf_delete(v, {force=true, unload=false})
+        end
+        term[k] = nil
+      end
+    end
+  end
+
+  -- Garbage collect (to deal with bound terminals)
+  local types = {"editor", "buffer", "window", "tab"}
+  for _,temp_type in ipairs(types) do
+    for k,temp_term in pairs(Nuiterm.terminals[temp_type]) do
+      if rawequal(next(temp_term), nil) then
+        Nuiterm.terminals[temp_type][k] = nil
+      end
+    end
   end
 end
 
@@ -465,6 +497,23 @@ function Nuiterm.focus_buffer_for_terminal(bufnr)
     local winid = vim.fn.win_getid(1)
     vim.api.nvim_win_set_buf(winid,id)
     vim.api.nvim_set_current_win(winid)
+  end
+end
+
+--- Bind current buffer to terminal
+---
+---@param type string|nil the type of terminal to bind to (see |Nuiterm.config|)
+---@param num integer|nil the id of the terminal to rename
+function Nuiterm.bind_buf_to_terminal(type,num)
+  if type == nil or num == nil then
+    local on_submit = function(item) menu.bind_submit(item) end
+    menu.show_menu(on_submit)
+  else
+    local term,_,_ = utils.find_by_type_and_num(type,num)
+    type = type or term.type
+    local current_buf = vim.api.nvim_get_current_buf()
+    Nuiterm.delete_terminal("buffer", current_buf)
+    Nuiterm.terminals["buffer"][tostring(current_buf)] = term
   end
 end
 

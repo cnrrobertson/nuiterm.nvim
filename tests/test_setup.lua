@@ -25,7 +25,7 @@ T['usercmds'] = function()
       num_ucmds = num_ucmds + 1
     end
   end
-  equals(num_ucmds, 6)
+  equals(num_ucmds, 7)
 end
 
 child.stop()

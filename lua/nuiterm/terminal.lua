@@ -193,10 +193,7 @@ function Terminal:unmount()
       Nuiterm.windows[tpage].bufnr = nil
     end
   end
-  if self.bufnr ~= nil then
-    vim.api.nvim_buf_delete(self.bufnr, {force=true, unload=false})
-  end
-  Nuiterm.terminals[self.type][self.type_id] = nil
+  Nuiterm.delete_terminal(self.type, tonumber(self.type_id))
 end
 
 --- Send command to the terminal

@@ -48,12 +48,17 @@ function user_commands.create_commands()
     Nuiterm.change_layout(nil, fargs.type, fargs.num)
   end, {nargs="*"})
 
+  vim.api.nvim_create_user_command("NuitermBindBuf", function(input)
+    local keys = {"type", "num"}
+    local fargs = user_commands.parse(input.fargs, keys)
+    Nuiterm.bind_buf_to_terminal(fargs.type, fargs.num)
+  end, {nargs="*"})
+
   vim.api.nvim_create_user_command("NuitermHideAll",
     Nuiterm.hide_all_terms, {nargs=0})
 
   vim.api.nvim_create_user_command("NuitermMenu",
     Nuiterm.toggle_menu, {nargs=0})
-
 end
 
 function user_commands.parse(fargs, keys)

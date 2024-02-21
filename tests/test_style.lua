@@ -10,9 +10,13 @@ local T = MiniTest.new_set({
   },
 })
 
-local init_term = function()
+local init_plug = function()
   child.cmd("e test.py")
   child.lua("require('nuiterm').setup()")
+end
+
+local init_term = function()
+  init_plug()
   child.cmd("Nuiterm")
 end
 
@@ -105,6 +109,51 @@ T["change_float_layouts"] = function()
   child.lua("require('nuiterm').change_layout({relative='editor', size={height=12,width=24}, position='50%'})")
   has_height(12)
   has_width(24)
+end
+
+T["rename"] = function()
+  init_plug()
+
+  -- Open editor terminal
+  child.cmd("Nuiterm type=editor")
+
+  -- Ensure it exists
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  equals(term_exists, true)
+
+  -- Rename terminal
+  child.lua("Nuiterm.rename_terminal('check', 'editor', 1)")
+
+  -- Ensure old doesn't exist and new does
+  term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  equals(term_exists, false)
+  term_exists = child.lua_get("Nuiterm.terminals.editor['check']") ~= vim.NIL
+  equals(term_exists, true)
+end
+
+T["rename_w_bind"] = function()
+  init_plug()
+
+  -- Open/hide editor terminal
+  child.cmd("Nuiterm type=editor")
+  child.cmd("Nuiterm")
+
+  -- Bind buffer
+  local file_buf = child.lua_get("vim.api.nvim_get_current_buf()")
+  child.lua("Nuiterm.bind_buf_to_terminal('editor', 1)")
+
+  -- Rename terminal
+  child.lua("Nuiterm.rename_terminal('check', 'editor', 1)")
+
+  -- Ensure old doesn't exist and new does
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  equals(term_exists, false)
+  term_exists = child.lua_get("Nuiterm.terminals.editor['check']") ~= vim.NIL
+  equals(term_exists, true)
+
+  -- Ensure renaming worked for bound terminal
+  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..file_buf.."']") ~= vim.NIL
+  equals(term_exists, true)
 end
 
 child.stop()
