@@ -212,8 +212,8 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 " Send `lua` to the terminal of your choosing from terminal menu
 :NuitermSend cmd=lua type=select
 
-" Send `lua` to the terminal of your choosing from terminal menu
-:NuitermSend cmd=lua num=select
+" Send `lua` to the current terminal of your choosing from terminal menu
+:NuitermSend cmd=lua num=current
 
 " Send the line 10 to the terminal associated with tab 2
 :10NuitermSend type=tab num=2
@@ -246,10 +246,10 @@ Here are the closest:
    - This was the main inspiration for this plugin and the design of using
      a `Terminal` object was based on the `toggleterm` design
    - The downside of this plugin is its inability to easily make terminals
-     that are local to buffers, windows, or tabs for quickly sending text
-     from specific buffers to specific terminals
+     that are local to buffers, windows, or tabs and lack of REPL-like
+     functionality
 - [nyngwang/NeoTerm.lua](https://github.com/nyngwang/NeoTerm.lua):
-   - This plugin focuses on buffer specific terminals but with very few
+   - This plugin focuses on buffer specific terminals but with few
      features
 - [caenrique/nvim-toggle-terminal](https://github.com/caenrique/nvim-toggle-terminal):
    - Has great features and toggles tab specific and window specific
@@ -274,8 +274,7 @@ When running the documentation or tests, [`mini.nvim`](https://github.com/echasn
   - [ ] Separate display from output
     - [ ] Output only the REPL output not the input
     - [ ] Display results inline with `nui.text` and `nui.line`
-  - [ ] If editing a remote file (either via scp or with fuse), option to open repl on remote machine
+  - [ ] If editing a remote file (either via scp or with fuse), option to open terminal/repl on remote machine
 - [ ] Display additional terminal info in terminal menu
 - [ ] Add ability to open buffer connected to terminal in a specific window (maybe number, or left, right, top, bottom, etc?)
-- [ ] Add a terminal window for each tab (to allow the same terminal to be open in different tabs)
 - [ ] Add ability to "pin" terminal (don't close when toggling others)

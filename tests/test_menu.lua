@@ -19,6 +19,18 @@ local init_term = function()
   child.cmd("Nuiterm")
 end
 
+T['menu_populated'] = function()
+  init_term()
+
+  -- TODO: Test if each of the buffer, window, tab, editor terminals are added
+end
+
+T['menu_populated_with_bind'] = function()
+  init_term()
+
+  -- TODO: Ensure no duplicates are added if buffer is bound
+end
+
 T['show_term_on_attempt_destroy'] = function()
   init_term()
   child.loop.sleep(500)
