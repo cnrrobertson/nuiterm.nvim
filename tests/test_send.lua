@@ -100,5 +100,40 @@ T['send_to_current_none_exists'] = function()
   equals(1, child.lua_get('Nlen'))
 end
 
+T['send_line(s)_w_unecessary_whitespace'] = function()
+  child.cmd("e test.py")
+  child.lua([[require('nuiterm').setup({
+    focus_on_open = false,
+    focus_on_send = false
+  })]])
+  child.cmd("startinsert")
+  child.type_keys("       echo 'hello1'")
+  child.type_keys("<cr>")
+  child.type_keys("    echo 'hello2'")
+  child.cmd("stopinsert")
+  child.type_keys("kk")
+
+  -- Send one line to terminal
+  child.loop.sleep(100)
+  child.cmd("lua Nuiterm.send_line()")
+  child.loop.sleep(100)
+
+  -- Ensure leading spaces were removed on send
+  local screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("echo 'hello1'", screenshot, 2))
+  equals(true, utils.is_in_screenshot("       echo 'hello1'", screenshot, 1))
+
+  -- Send two lines to terminal
+  child.loop.sleep(100)
+  child.cmd("lua Nuiterm.send_lines(1, 2)")
+  child.loop.sleep(100)
+
+  -- Ensure leading spaces were removed on send (from both!)
+  screenshot = child.get_screenshot()
+  equals(true, utils.is_in_screenshot("       echo 'hello1'", screenshot, 1))
+  equals(true, utils.is_in_screenshot("           echo 'hello2'", screenshot, 1))
+  equals(true, utils.is_in_screenshot("    echo 'hello2'", screenshot, 2))
+end
+
 child.stop()
 return T

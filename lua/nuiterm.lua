@@ -583,7 +583,8 @@ end
 function Nuiterm.send_line(type,num,setup_cmd)
   local row = vim.api.nvim_win_get_cursor(0)[1]
   local line = vim.api.nvim_buf_get_lines(0,row-1,row,true)
-  Nuiterm.send_select(line[1],type,num,setup_cmd)
+  line = string.gsub(line[1], "^%s+", "")
+  Nuiterm.send_select(line,type,num,setup_cmd)
 end
 
 --- Send multiple lines in buffer to a terminal
@@ -596,9 +597,16 @@ end
 function Nuiterm.send_lines(start_line,end_line,type,num,setup_cmd)
   local lines = vim.api.nvim_buf_get_lines(0,start_line-1,end_line,false)
   local no_empty = {}
-  for _, v in ipairs(lines) do
+  local whitespace = 0
+  for i, v in ipairs(lines) do
     if (string.gsub(v, "%s+", "") ~= "") then
-      no_empty[#no_empty+1] = v
+      if i == 1 then
+        local leading_whitespace = string.match(v, "^%s+")
+        if leading_whitespace then
+          whitespace = leading_whitespace:len()
+        end
+      end
+      no_empty[#no_empty+1] = string.sub(v, whitespace+1)
     end
   end
   no_empty[#no_empty+1] = ""

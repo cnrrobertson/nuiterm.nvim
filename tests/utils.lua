@@ -20,12 +20,17 @@ end
 
 function M.find_in_screenshot(pattern, screenshot)
   local text = M.stack_screenshot(screenshot)
-  return string.find(text, pattern, 1, true)
+  local count = 0
+  for _ in text:gmatch(pattern) do
+    count = count + 1
+  end
+  return count
 end
 
-function M.is_in_screenshot(pattern, screenshot)
+function M.is_in_screenshot(pattern, screenshot, reps)
+  reps = reps or 1
   local result = M.find_in_screenshot(pattern, screenshot)
-  if result then
+  if result == reps then
     return true
   else
     return false
