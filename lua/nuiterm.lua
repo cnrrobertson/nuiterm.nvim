@@ -462,7 +462,7 @@ end
 --- Delete terminal
 ---
 ---@param type string|nil the type of terminal to delete (see |Nuiterm.config|)
----@param type_id integer|nil the id of the terminal to delete
+---@param type_id integer|string|nil the id of the terminal to delete
 function Nuiterm.delete_terminal(type,type_id)
   if type and type_id then
     local term = Nuiterm.terminals[type][tostring(type_id)]

@@ -99,5 +99,31 @@ T["delete_with_bind"] = function()
   equals(tbuf_exists, false)
 end
 
+T["delete_w_str_name"] = function()
+  init_term()
+
+  -- Get bufnr of file
+  local fbufnr = child.lua_get("vim.api.nvim_get_current_buf()")
+
+  -- Create terminal
+  child.cmd("Nuiterm type=editor num=cool")
+
+  -- Get bufnr of terminal
+  local tbufnr = child.lua_get("vim.api.nvim_get_current_buf()")
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['cool']") ~= vim.NIL
+  equals(term_exists, true)
+
+  -- Delete terminal
+  child.lua("Nuiterm.delete_terminal('editor', 'cool')")
+
+  -- Ensure it is not in terminal list
+  term_exists = child.lua_get("Nuiterm.terminals.editor['cool']") ~= vim.NIL
+  equals(term_exists, false)
+
+  -- Ensure buffer is not valid
+  local tbuf_exists = child.lua_get("vim.api.nvim_buf_is_valid("..tbufnr..")")
+  equals(tbuf_exists, false)
+end
+
 child.stop()
 return T

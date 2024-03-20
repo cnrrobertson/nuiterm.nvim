@@ -317,7 +317,7 @@ Delete terminal
 
 Parameters~
 {type} `(string|nil)` the type of terminal to delete (see |Nuiterm.config|)
-{type_id} `(integer|nil)` the id of the terminal to delete
+{type_id} `(integer|string|nil)` the id of the terminal to delete
 
 ------------------------------------------------------------------------------
                                            *Nuiterm.focus_buffer_for_terminal()*

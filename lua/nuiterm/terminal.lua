@@ -193,7 +193,7 @@ function Terminal:unmount()
       Nuiterm.windows[tpage].bufnr = nil
     end
   end
-  Nuiterm.delete_terminal(self.type, tonumber(self.type_id))
+  Nuiterm.delete_terminal(self.type, self.type_id)
 end
 
 --- Send command to the terminal
