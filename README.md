@@ -163,7 +163,7 @@ This can be easily accomplished with `nuiterm` via:
 
 ```lua
 local function lazygit_terminal()
-  local term = require("nuiterm").create_new_term({
+  local term = Nuiterm.terminals["editor"]["lazygit"] or Nuiterm.create_new_term({
     type = "editor",
     type_id = "lazygit", -- Can only use string `type_id` for "editor" terminals
     keymaps = {{'t', '<esc>', '<esc>'}},
