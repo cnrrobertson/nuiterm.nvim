@@ -304,18 +304,30 @@ function Nuiterm.setup(config)
 
   -- Only allow terminals in terminal windows
   if Nuiterm.config.terminal_win_fixed then
-    vim.api.nvim_create_autocmd({"BufWinEnter"}, {
-      group = "Nuiterm",
-      pattern = {"*"},
-      callback = function()
-        local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "nuiterm:"')
-        local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "nuiterm:"')
-        local prev_bufwin = vim.api.nvim_eval('win_findbuf(bufnr("#"))')
-        if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) and (#prev_bufwin == 0) then
-          vim.schedule(function()vim.cmd[[b#]]end)
+    local major = vim.version().major
+    local minor = vim.version().minor
+    if (major < 1) and (minor > 9) then
+      vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+        group = "Nuiterm",
+        pattern = "nuiterm:*",
+        callback = function()
+          vim.o.winfixbuf = true
         end
-      end
-    })
+      })
+    else
+      vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+        group = "Nuiterm",
+        pattern = "*",
+        callback = function()
+          local prev_file_nuiterm = vim.api.nvim_eval('bufname("#") =~ "nuiterm:"')
+          local cur_file_nuiterm = vim.api.nvim_eval('bufname("%") =~ "nuiterm:"')
+          local prev_bufwin = vim.api.nvim_eval('win_findbuf(bufnr("#"))')
+          if (prev_file_nuiterm == 1) and (cur_file_nuiterm == 0) and (#prev_bufwin == 0) then
+            vim.schedule(function()vim.cmd[[b#]]end)
+          end
+        end
+      })
+    end
   end
 
   -- Clean up terminals on exit (helps session management)

@@ -28,5 +28,28 @@ T['usercmds'] = function()
   equals(num_ucmds, 7)
 end
 
+T['fixed_buffer_in_window'] = function()
+  child.cmd("e test.py")
+  child.lua([[require('nuiterm').setup({
+    focus_on_open = true,
+    terminal_win_fixed = true,
+  })]])
+
+  child.cmd("Nuiterm")
+  child.loop.sleep(100)
+  child.cmd("bnext")
+  nequals(string.find(child.api.nvim_buf_get_name(0), "nuiterm:"), nil)
+  child.cmd("bprev")
+  nequals(string.find(child.api.nvim_buf_get_name(0), "nuiterm:"), nil)
+
+  -- Allow for changing buffer in window
+  child.lua([[require('nuiterm').setup({
+    focus_on_open = true,
+    terminal_win_fixed = false,
+  })]])
+  child.cmd("bnext")
+  equals(string.find(child.api.nvim_buf_get_name(0), "nuiterm:"), nil)
+end
+
 child.stop()
 return T
