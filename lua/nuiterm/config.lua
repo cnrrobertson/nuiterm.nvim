@@ -72,6 +72,7 @@ local config = {
       change_style = {"s"},
       change_layout = {"e"},
       toggle = {"w"},
+      change_default_type = {"t"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {

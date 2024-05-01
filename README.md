@@ -143,6 +143,7 @@ The default plugin configuration is:
       change_style = {"s"},
       change_layout = {"e"},
       toggle = {"w"},
+      change_default_type = {"t"},
     },
     -- Default terminal menu popup ui options
     menu_opts = {
@@ -187,6 +188,7 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 :NuitermBindBuf [[type=]...] [[num=]...]
 :NuitermHideAll
 :NuitermMenu
+:NuitermChangeDefaultType [[type=]...]
 ```
 
 **Note:** Commands can be used with or without keyword arguments. i.e. `Nuiterm type=editor` is the same as `Nuiterm editor`.

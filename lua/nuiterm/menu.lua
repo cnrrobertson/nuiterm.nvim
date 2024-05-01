@@ -119,14 +119,14 @@ function menu.show_menu(on_submit)
   local terminal_menu = menu.create_menu(lines,keys,on_submit)
   local help_menu, action_menu, hint_menu = menu.create_help(keys)
   local menu_layout = Layout(Nuiterm.config.ui.menu_opts,
-    Layout.Box({
-      Layout.Box(terminal_menu, {size = "70%"}),
       Layout.Box({
-        Layout.Box(help_menu, {size = "25%"}),
-        Layout.Box(action_menu, {size = "35%"}),
-        Layout.Box(hint_menu, {size = "10%"})
-      }, {dir="col", size = {height = "100%", width = 30}})
-    }, {dir="row"})
+        Layout.Box(terminal_menu, {size = "70%"}),
+        Layout.Box({
+          Layout.Box(help_menu, {size = {height = 10}}),
+          Layout.Box(action_menu, {size = {height = 14}}),
+          Layout.Box(hint_menu, {size = {height = 4}}),
+      }, {dir="col", size = {width = 30}})
+    }, {dir="row", size = "70%"})
   )
   menu_layout:mount()
   menu.set_autocmds(terminal_menu, menu_layout)
@@ -150,6 +150,9 @@ function menu.set_mappings(terminal_menu, keys)
   end
   for _,k in ipairs(keys.toggle) do
     terminal_menu:map("n", k, menu.toggle_terminal, {noremap=true})
+  end
+  for _,k in ipairs(keys.change_default_type) do
+    terminal_menu:map("n", k, menu.change_default_type, {noremap=true})
   end
 end
 
@@ -429,6 +432,12 @@ function menu.change_layout()
       Nuiterm.change_layout(nil, node.type, node.type_id)
     end
   end
+end
+
+function menu.change_default_type()
+  Nuiterm.change_default_type()
+  menu.terminal_menu:unmount()
+  menu.show_menu()
 end
 
 return menu

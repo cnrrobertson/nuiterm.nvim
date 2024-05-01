@@ -97,6 +97,7 @@ See |Nuiterm.config| for available config settings.
         change_style = {"s"},
         change_layout = {"e"},
         toggle = {"w"},
+        change_default_type = {"t"},
       },
       -- Default terminal menu popup ui options
       menu_opts = {
@@ -190,6 +191,7 @@ accomplished with nuiterm via:
 :NuitermBindBuf [[type=]...] [[num=]...]
 :NuitermHideAll
 :NuitermMenu
+:NuitermChangeDefaultType [[type=]...]
 ```
 
 **Note:** Commands can be used with or without keyword arguments. i.e. `Nuiterm type=editor` is the same as `Nuiterm editor`.
@@ -502,6 +504,14 @@ Toggle terminal menu to select (and toggle) terminals
 
 
 ------------------------------------------------------------------------------
+                                                 *Nuiterm.change_default_type()*
+                     `Nuiterm.change_default_type`({type})
+Change default type by cycling through the types
+
+Parameters~
+{type} `(string|nil)` the type to change to (or cycle)
+
+------------------------------------------------------------------------------
                                                         *Nuiterm.confirm_quit()*
                      `Nuiterm.confirm_quit`({write}, {all})
 Confirm quit commands when terminals are mounted
@@ -585,6 +595,7 @@ Default values:
         change_style = {"s"},
         change_layout = {"e"},
         toggle = {"w"},
+        change_default_type = {"t"},
       },
       -- Default terminal menu popup ui options
       menu_opts = {

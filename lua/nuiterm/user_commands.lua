@@ -59,6 +59,12 @@ function user_commands.create_commands()
 
   vim.api.nvim_create_user_command("NuitermMenu",
     Nuiterm.toggle_menu, {nargs=0})
+
+  vim.api.nvim_create_user_command("NuitermChangeDefaultType", function(input)
+    local keys = {"type"}
+    local fargs = user_commands.parse(input.fargs, keys)
+    Nuiterm.change_default_type(fargs.type)
+  end, {nargs="*"})
 end
 
 function user_commands.parse(fargs, keys)

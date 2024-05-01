@@ -95,6 +95,7 @@
 ---         change_style = {"s"},
 ---         change_layout = {"e"},
 ---         toggle = {"w"},
+---         change_default_type = {"t"},
 ---       },
 ---       -- Default terminal menu popup ui options
 ---       menu_opts = {
@@ -188,6 +189,7 @@
 --- :NuitermBindBuf [[type=]...] [[num=]...]
 --- :NuitermHideAll
 --- :NuitermMenu
+--- :NuitermChangeDefaultType [[type=]...]
 --- ```
 ---
 --- **Note:** Commands can be used with or without keyword arguments. i.e. `Nuiterm type=editor` is the same as `Nuiterm editor`.
@@ -768,6 +770,29 @@ function Nuiterm.toggle_menu()
     menu.menu_layout:unmount()
   else
     menu.show_menu()
+  end
+end
+
+--- Change default type by cycling through the types
+---
+---@param type string|nil the type to change to (or cycle)
+function Nuiterm.change_default_type(type)
+  if type then
+    Nuiterm.config.type = type
+  else
+    local types = {"editor", "tab", "window", "buffer"}
+    local current_type = Nuiterm.config.type
+    local current_loc = 1
+    local new_loc = 1
+    for i,v in ipairs(types) do
+      if v == current_type then
+        current_loc = i
+      end
+    end
+    if current_loc ~= #types then
+      new_loc = current_loc + 1
+    end
+    Nuiterm.config.type = types[new_loc]
   end
 end
 
