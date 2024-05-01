@@ -154,10 +154,10 @@ function menu.send_submit(item,cmd,setup_cmd)
   end
 end
 
-function menu.bind_submit(item)
+function menu.bind_submit(item, buf)
   if item then
     local _,type,type_id = utils.find_by_type_and_num(item.type,item.type_id)
-    Nuiterm.bind_buf_to_terminal(type, type_id)
+    Nuiterm.bind_buf_to_terminal(type, type_id, buf)
   end
 end
 

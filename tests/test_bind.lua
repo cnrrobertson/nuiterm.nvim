@@ -69,4 +69,38 @@ T["bind_select"] = function()
   equals(terms_equal, true)
 end
 
+T["bind_2_windows"] = function()
+  init_term()
+
+  -- Get bufnr of file
+  local fbufnr = child.lua_get("vim.api.nvim_get_current_buf()")
+  child.cmd("Nuiterm type=buffer")
+  child.cmd("Nuiterm type=buffer")
+
+  -- Make new split
+  child.cmd[[vs]]
+  child.cmd[[e test2.py]]
+  local fwinnr = child.lua_get("vim.api.nvim_get_current_win()")
+
+  -- Create terminal
+  child.cmd("Nuiterm type=editor num=1")
+
+  -- Get bufnr of terminal
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  equals(term_exists, true)
+
+  -- Bind file (using menu selection)
+  child.api.nvim_win_set_cursor(fwinnr, {1,1})
+  child.lua("Nuiterm.bind_buf_to_terminal()")
+  child.type_keys("<cr>")
+  local bterm = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."']")
+  local eterm = child.lua_get("Nuiterm.terminals.editor['1']")
+  term_exists = bterm ~= vim.NIL
+  equals(term_exists, true)
+
+  -- Ensure buffer and editor term are the same
+  local terms_equal = table.concat(bterm) == table.concat(eterm)
+  equals(terms_equal, true)
+end
+
 return T

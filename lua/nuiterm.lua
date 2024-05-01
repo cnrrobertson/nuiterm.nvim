@@ -594,16 +594,16 @@ end
 ---
 ---@param type string|nil the type of terminal to bind to (see |Nuiterm.config|)
 ---@param num integer|nil the id of the terminal to rename
-function Nuiterm.bind_buf_to_terminal(type,num)
+---@param bufnr integer|nil the id of the buffer to bind (or use current buffer)
+function Nuiterm.bind_buf_to_terminal(type,num,bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
   if type == nil or num == nil then
-    local on_submit = function(item) menu.bind_submit(item) end
+    local on_submit = function(item) menu.bind_submit(item, bufnr) end
     menu.show_menu(on_submit)
   else
     local term,_,_ = utils.find_by_type_and_num(type,num)
-    type = type or term.type
-    local current_buf = vim.api.nvim_get_current_buf()
-    Nuiterm.delete_terminal("buffer", current_buf)
-    Nuiterm.terminals["buffer"][tostring(current_buf)] = term
+    Nuiterm.delete_terminal("buffer", bufnr)
+    Nuiterm.terminals["buffer"][tostring(bufnr)] = term
   end
 end
 
