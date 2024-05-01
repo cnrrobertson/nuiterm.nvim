@@ -1,10 +1,10 @@
 # nuiterm.nvim
 
-A Neovim plugin to toggle and send code to terminals which are local to your buffer, window, tab, or editor.
+A Neovim plugin to toggle and send code to terminals which are attached to your buffer, window, tab, or editor.
 
-The key design motivation in this plugin was to facilitate a terminal/REPL for individual file buffers rather than having a single terminal/REPL for all buffers or each filetype.
-With this, it mimics the REPL experience of using [Jupyter Interactive windows](https://code.visualstudio.com/docs/python/jupyter-support-py) in VSCode.
-The UI is all done with [nui.nvim](https://github.com/MunifTanjim/nui.nvim) to allow for ease of use and expansion.
+The key design motivation in this plugin was to facilitate a terminal/REPL for individual file buffers rather than having a single terminal/REPL for all buffers.
+This design allows it to mimic the REPL experience of using [Jupyter Interactive windows](https://code.visualstudio.com/docs/python/jupyter-support-py) in VSCode.
+The UI is all built with [nui.nvim](https://github.com/MunifTanjim/nui.nvim) to allow for ease of use and expansion.
 
 Some core features of `nuiterm`:
 
@@ -12,12 +12,11 @@ Some core features of `nuiterm`:
 - Toggle any number of global/editor split/floating terminals
 - Send commands, lines from the buffer, or visual selections to any terminal
 - Quickly create/toggle/delete/adjust terminals from a popup menu (or with [telescope](https://github.com/nvim-telescope/telescope.nvim) - see [Telescope integration](#telescope-integration))
-- Easily create and toggle task-specific terminals (such as for [lazygit](https://github.com/jesseduffield/lazygit) or [btop](https://github.com/aristocratos/btop))
+- Easily create and toggle task-specific terminals (such as for [`lazygit`](https://github.com/jesseduffield/lazygit) or [`btop`](https://github.com/aristocratos/btop))
 
 Some oddities about `nuiterm` (that may change in the future):
 
 - Can only display one terminal at a time
-- Displaying the same terminal in multiple tabpages is not supported
 
 ## Installation
 
@@ -32,37 +31,6 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   config = function()
     require("nuiterm").setup()
 
-    ---------------------
-    -- EXAMPLE KEYMAPS --
-    ---------------------
-    -- Toggle terminal of default type
-    vim.keymap.set({'n','t'},'<c-n>',Nuiterm.toggle)
-    -- to always make it a Python REPL:
-    -- vim.keymap.set({'n','t'},'<c-n>',function()Nuiterm.toggle(nil,nil,"python")end)
-
-    -- (For buffer-type terminals) show connected buffer in window 1
-    vim.keymap.set({'n','t'},'<c-p>',Nuiterm.focus_buffer_for_terminal)
-
-    -- Toggle a global terminal number 1
-    vim.keymap.set('n','<leader>tt',function()Nuiterm.toggle("editor",1)end)
-
-    -- Toggle a new global terminal
-    vim.keymap.set('n','<leader>tn',function()Nuiterm.toggle("editor",-1)end)
-
-    -- Toggle terminal menu
-    vim.keymap.set('n','<leader>tm',Nuiterm.toggle_menu)
-    vim.keymap.set('n','<leader>ft',require('nuiterm.telescope').picker)
-
-   -- Sending lines to terminal
-   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
-   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
-   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
-
-   -- Sending visually selected lines to terminal selected from menu
-   vim.keymap.set('v', '<localleader>Rs', function() require('nuiterm').send_visual("select") end)
-
-   -- Sending visually selected lines to currently open terminal
-   vim.keymap.set('v', '<localleader>Rc', function() require('nuiterm').send_visual("current") end)
   end,
 }
 ```
@@ -75,11 +43,11 @@ The telescope picker to toggle terminals can be called via:
 ```
 **Note:** It is not registered as a telescope extension
 
-## Configuration
+## Default Configuration
 
 The default plugin configuration is:
 ```lua
-  Nuiterm.config = {
+Nuiterm.config = {
   -- Default type of terminal
   -- could be "buffer", "window", "tab", or "editor"
   type = "buffer",
@@ -105,6 +73,7 @@ The default plugin configuration is:
   menu_buf_depth = 1,
   -- Confirm destruction of terminals
   menu_confirm_destroy = true,
+  -- Keymaps for terminals (see nui.popup for more info)
   keymaps = {},
   ui = {
     -- Default ui type of terminal
@@ -158,7 +127,7 @@ The default plugin configuration is:
 
 **Note:** By default terminals are opened in `splits` and are toggled often, so it can be helpful to set the vim option `:noequalalways` or `:lua vim.o.equalalways = false` to avoid constant window resizing.
 
-## Task-specific terminals
+## Custom terminals
 A common use case for the floating/popup terminals provided with this plugin is to quickly open a TUI such as `lazygit`.
 This can be easily accomplished with `nuiterm` via:
 
@@ -178,7 +147,7 @@ end
 vim.keymap.set('n','<leader>g',lazygit_terminal)
 ```
 
-## Available commands
+## User commands
 
 ```vim
 :Nuiterm [[type=]...] [[num=]...] [[cmd=]...]
@@ -239,6 +208,47 @@ vim.keymap.set('n','<leader>g',lazygit_terminal)
 
 " Bind the current buffer to send to the editor 3 terminal
 :NuitermBindBuf type=editor num=3
+
+" Show the terminal menu (to create, destroy, toggle, or adjust all terminals)
+:NuitermMenu
+```
+
+## Lua API
+
+Corresponding `lua` functions are available for all user commands:
+
+### Example keybindings
+
+Examples of keybindings using the `lua` API for various common tasks:
+
+```lua
+---------------------
+-- EXAMPLE KEYMAPS --
+---------------------
+-- Toggle terminal of default type
+vim.keymap.set({'n','t'},'<c-n>',Nuiterm.toggle)
+-- to always make it a Python REPL:
+-- vim.keymap.set({'n','t'},'<c-n>',function()Nuiterm.toggle(nil,nil,"python")end)
+
+-- Toggle a global terminal number 1
+vim.keymap.set('n','<leader>tt',function()Nuiterm.toggle("editor",1)end)
+
+-- Toggle a new global terminal
+vim.keymap.set('n','<leader>tn',function()Nuiterm.toggle("editor",-1)end)
+
+-- Toggle terminal menu
+vim.keymap.set('n','<leader>tm',Nuiterm.toggle_menu)
+vim.keymap.set('n','<leader>ft',require('nuiterm.telescope').picker)
+
+-- Sending lines to terminal
+vim.keymap.set('n', '<localleader>rr', require('nuiterm').send_line)
+vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
+
+-- Sending visually selected lines to terminal selected from menu
+vim.keymap.set('v', '<localleader>rs', function() require('nuiterm').send_visual("select") end)
+
+-- Sending visually selected lines to currently open terminal
+vim.keymap.set('v', '<localleader>rc', function() require('nuiterm').send_visual("current") end)
 ```
 
 ## Comparisons
@@ -277,6 +287,11 @@ When running the documentation or tests, [`mini.nvim`](https://github.com/echasn
     - [ ] Output only the REPL output not the input
     - [ ] Display results inline with `nui.text` and `nui.line`
   - [ ] If editing a remote file (either via scp or with fuse), option to open terminal/repl on remote machine
-- [ ] Display additional terminal info in terminal menu
+- [ ] Display additional terminal info in terminal menu - current default type
 - [ ] Add ability to open buffer connected to terminal in a specific window (maybe number, or left, right, top, bottom, etc?)
 - [ ] Add ability to "pin" terminal (don't close when toggling others)
+- [ ] Find fix for ANSI escape sequences when sending to terminal (which can cause wild repeats) - use TERM="dumb" if it is a problem
+- [ ] Avoid hiding terminal unless absolutely necessary
+- [ ] Fix terminal resizing when sending commands
+- [ ] Use menu to change default terminal type (or all settings?? - real time!)
+- [ ] Allow to rebind to previous terminal rather than deleting (if buffer - check if buffer name is still there and change buffer number)

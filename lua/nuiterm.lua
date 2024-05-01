@@ -117,10 +117,10 @@
 ---   })
 ---   -- Toggle terminal of default type
 ---   vim.keymap.set({'n','t'},'<c-n>',Nuiterm.toggle)
----   -- (For buffer-type terminals) show connected buffer in window 1
----   vim.keymap.set({'n','t'},'<c-p>',Nuiterm.focus_buffer_for_terminal)
 ---   -- Toggle global terminal number 1
----   vim.keymap.set('n','<leader>n',function()Nuiterm.toggle("editor",1)end)
+---   vim.keymap.set('n','<leader>tt',function()Nuiterm.toggle("editor",1)end)
+---   -- Toggle new global terminal
+---   vim.keymap.set('n','<leader>tn',function()Nuiterm.toggle("editor",-1)end)
 ---
 ---   -- Toggle terminal menu
 ---   vim.keymap.set('n','<leader>tm',Nuiterm.toggle_menu)
@@ -130,9 +130,8 @@
 ---   -- Sending lines to terminal
 ---   vim.keymap.set('n', '<localleader>r', require('nuiterm').send_line)
 ---   vim.keymap.set('v', '<localleader>r', require('nuiterm').send_visual)
----   vim.keymap.set('v', '<localleader>Rs', function() require('nuiterm').send_visual("select") end)
----   vim.keymap.set('v', '<localleader>Rc', function() require('nuiterm').send_visual("current") end)
----   vim.keymap.set('n', '<localleader>t', require('nuiterm').toggle_menu)
+---   vim.keymap.set('v', '<localleader>rs', function() require('nuiterm').send_visual("select") end)
+---   vim.keymap.set('v', '<localleader>rc', function() require('nuiterm').send_visual("current") end)
 --- <
 ---
 --- ## Usage as repl
@@ -240,6 +239,9 @@
 ---
 --- " Bind the current buffer to send to the editor 3 terminal
 --- :NuitermBindBuf type=editor num=3
+---
+--- " Show the terminal menu (to create, destroy, toggle, or adjust all terminals)
+--- :NuitermMenu
 --- ```
 ---
 --- # Tips~
@@ -250,18 +252,20 @@
 ---
 --- # Comparisons~
 ---
---- - 'akinsho/toggleterm.nvim':
----    - This was the main inspiriation for this plugin and the design of using
----      a `Terminal` object was based on the `toggleterm` design
----    - The downside of this plugin is it's inability to easily make terminals
----      that are local to buffers, windows, or tabs for quickly sending text
----      from specific buffers to specific terminals
---- - 'nyngwang/NeoTerm.lua':
----    - This plugin focuses on buffer specific terminals but with very few
----      features
---- - 'caenrique/nvim-toggle-terminal':
----    - Has great features and toggles tab specific and window specific
----      terminals (but replaced by 'caenrique/buffer-term.nvim')
+--- - [akinsho/toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim):
+---   - This was the main inspiration for this plugin and the design of using
+---     a `Terminal` object was based on the `toggleterm` design
+---   - The downside of this plugin is its inability to easily make terminals
+---     that are local to buffers, windows, or tabs and lack of REPL-like
+---     functionality
+--- - [nyngwang/NeoTerm.lua](https://github.com/nyngwang/NeoTerm.lua):
+---   - This plugin focuses on buffer specific terminals but with few
+---     features
+--- - [caenrique/nvim-toggle-terminal](https://github.com/caenrique/nvim-toggle-terminal):
+---   - Has great features and toggles tab specific and window specific
+---     terminals (but replaced by [caenrique/buffer-term.nvim](https://github.com/caenrique/buffer-term.nvim))
+--- - [milanglacier/yarepl.nvim](https://github.com/milanglacier/yarepl.nvim#replstart)
+---    - Allows for general numbers of REPLs that can be attached to any buffer
 ---
 -- Plugin definition ==========================================================
 local Nuiterm = {}
