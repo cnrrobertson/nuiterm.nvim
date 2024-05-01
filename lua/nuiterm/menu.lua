@@ -1,6 +1,8 @@
 local Layout = require("nui.layout")
 local Text = require("nui.text")
+local Line = require("nui.line")
 local Menu = require("nui.menu")
+local Popup = require("nui.popup")
 local Input = require("nui.input")
 local event = require("nui.utils.autocmd").event
 local utils = require("nuiterm.utils")
@@ -52,32 +54,56 @@ function menu.create_help(keys)
     enter = false,
     focusable = false,
   }
-  local help_menu = Menu(popup_opts, {
-    lines = {
-        Menu.item(Text("Focus next", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.focus_next), "SpecialKey")),
-        Menu.item(Text("Focus previous", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.focus_prev), "SpecialKey")),
-        Menu.item(Text("Select", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.submit), "SpecialKey")),
-        Menu.item(Text("Close menu", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.close), "SpecialKey")),
-      Menu.separator("Terminals"),
-        Menu.item(Text("New terminal", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.new), "SpecialKey")),
-        Menu.item(Text("Destroy terminal", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.destroy), "SpecialKey")),
-        Menu.item(Text("Change terminal style", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.change_style), "SpecialKey")),
-        Menu.item(Text("Change terminal layout", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.change_layout), "SpecialKey")),
-        Menu.item(Text("Toggle terminal visibility", "Title")),
-        Menu.item(Text("  "..menu.join_keys(keys.toggle), "SpecialKey")),
-      Menu.separator("Hint"),
-        Menu.item(Text(" * = displayed terminal", "SpecialKey")),
-    },
-  })
-  return help_menu
+  local help_opts = vim.deepcopy(popup_opts)
+  help_opts.border.text.top = "Help"
+  local help_menu = Popup(help_opts)
+  local helps = {
+      Line({Text("Focus next", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.focus_next), "SpecialKey")}),
+      Line({Text("Focus previous", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.focus_prev), "SpecialKey")}),
+      Line({Text("Select", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.submit), "SpecialKey")}),
+      Line({Text("Close menu", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.close), "SpecialKey")}),
+  }
+  for i,h in ipairs(helps) do
+    h:render(help_menu.bufnr, help_menu.ns_id, i)
+  end
+
+  local action_opts = vim.deepcopy(popup_opts)
+  action_opts.border.text.top = "Actions"
+  local action_menu = Popup(action_opts)
+  local actions = {
+      Line({Text("New terminal", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.new), "SpecialKey")}),
+      Line({Text("Destroy terminal", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.destroy), "SpecialKey")}),
+      Line({Text("Change terminal style", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.change_style), "SpecialKey")}),
+      Line({Text("Change terminal layout", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.change_layout), "SpecialKey")}),
+      Line({Text("Toggle terminal visibility", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.toggle), "SpecialKey")}),
+      Line({Text("Change default terminal type", "Title")}),
+      Line({Text("  "..menu.join_keys(keys.change_default_type), "SpecialKey")}),
+  }
+  for i,a in ipairs(actions) do
+    a:render(action_menu.bufnr, action_menu.ns_id, i)
+  end
+
+  local hint_opts = vim.deepcopy(popup_opts)
+  hint_opts.border.text.top = "Hints"
+  local hint_menu = Popup(hint_opts)
+  local hints = {
+    Line({Text("Default type: "..Nuiterm.config.type, "Title")}),
+    Line({Text(" * = displayed terminal", "SpecialKey")})
+  }
+  for i,h in ipairs(hints) do
+    h:render(hint_menu.bufnr, hint_menu.ns_id, i)
+  end
+
+  return help_menu, action_menu, hint_menu
 end
 
 function menu.show_menu(on_submit)
@@ -91,11 +117,15 @@ function menu.show_menu(on_submit)
   menu.add_buffer_terms(lines)
   local keys = vim.deepcopy(Nuiterm.config.ui.menu_keys)
   local terminal_menu = menu.create_menu(lines,keys,on_submit)
-  local help_menu = menu.create_help(keys)
+  local help_menu, action_menu, hint_menu = menu.create_help(keys)
   local menu_layout = Layout(Nuiterm.config.ui.menu_opts,
     Layout.Box({
-      Layout.Box(terminal_menu, { size = "70%" }),
-      Layout.Box(help_menu, { size = {height="100%", width="28"} }),
+      Layout.Box(terminal_menu, {size = "70%"}),
+      Layout.Box({
+        Layout.Box(help_menu, {size = "25%"}),
+        Layout.Box(action_menu, {size = "35%"}),
+        Layout.Box(hint_menu, {size = "10%"})
+      }, {dir="col", size = {height = "100%", width = 30}})
     }, {dir="row"})
   )
   menu_layout:mount()
