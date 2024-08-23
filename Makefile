@@ -2,6 +2,12 @@ help:
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
 ## ----------------------------------------------
+##    Check configuration
+##    -------------------
+config: ##                            -- Generate diff of config in README vs lua/nuiterm/config.lua
+	bash scripts/check-readme-config.sh lua/nuiterm/config.lua README.md
+
+## ----------------------------------------------
 ##    Documentation
 ##    -------------
 docs: deps ##                         -- Compile documentation from source files
