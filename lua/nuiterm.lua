@@ -1,7 +1,7 @@
 --- *nuiterm* Neovim terminal manager for terminals local to buffer, window, tab, or editor
 --- *Nuiterm*
 ---
---- MIT License Copyright (c) 2024 Connor Robertson
+--- MIT License Copyright (c) 2025 Connor Robertson
 ---
 --- ===========================================================================
 ---
@@ -828,4 +828,3 @@ function Nuiterm.confirm_quit(write, all)
 end
 
 return Nuiterm
-

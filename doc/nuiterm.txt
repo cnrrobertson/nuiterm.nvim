@@ -3,7 +3,7 @@
 *nuiterm* Neovim terminal manager for terminals local to buffer, window, tab, or editor
 *Nuiterm*
 
-MIT License Copyright (c) 2024 Connor Robertson
+MIT License Copyright (c) 2025 Connor Robertson
 
 ===========================================================================
 
@@ -269,13 +269,12 @@ accomplished with nuiterm via:
 - [milanglacier/yarepl.nvim](https://github.com/milanglacier/yarepl.nvim#replstart)
    - Allows for general numbers of REPLs that can be attached to any buffer
 
-
 ------------------------------------------------------------------------------
                                                              *Nuiterm.terminals*
                               `Nuiterm.terminals`
 Nuiterm data storage
 
->
+>lua
   Nuiterm.terminals = {
     editor = {},
     tab = {},
@@ -285,16 +284,15 @@ Nuiterm data storage
   Nuiterm.windows = {}
 
 <
-
 ------------------------------------------------------------------------------
                                                                *Nuiterm.setup()*
                            `Nuiterm.setup`({config})
 Plugin setup
 
-Parameters~
+Parameters ~
 {config} `(table|nil)` Plugin config table. See |Nuiterm.config|.
 
-Usage~
+Usage ~
 `require('nuiterm').setup({})` (replace `{}` with your `config` table)
 
 ------------------------------------------------------------------------------
@@ -302,13 +300,13 @@ Usage~
                        `Nuiterm.create_term_win`({opts})
 Create terminal window
 
-Parameters~
+Parameters ~
 {opts} `(table|nil)` Terminal UI config table
 
-Usage~
+Usage ~
 `Nuiterm.create_term_win({})` (replace `{}` with UI `config` table)
 
-Return~
+Return ~
 |nui.object|
 
 ------------------------------------------------------------------------------
@@ -316,7 +314,7 @@ Return~
                         `Nuiterm.show_term_win`({term})
 Show terminal window
 
-Parameters~
+Parameters ~
 {term} Terminal Terminal to be displayed in window
 
 ------------------------------------------------------------------------------
@@ -324,13 +322,13 @@ Parameters~
                        `Nuiterm.create_new_term`({opts})
 Create new terminal
 
-Parameters~
+Parameters ~
 {opts} `(table|nil)` Terminal config table. See |Nuiterm.config|
 
-Usage~
+Usage ~
 `Nuiterm.create_new_term({})` (replace `{}` with your `config` table)
 
-Return~
+Return ~
 |Terminal|
 
 ------------------------------------------------------------------------------
@@ -338,7 +336,7 @@ Return~
                            `Nuiterm.hide_all_terms`()
 Hide all visible terminals
 
-Usage~
+Usage ~
 `Nuiterm.hide_all_terms()`
 
 ------------------------------------------------------------------------------
@@ -348,20 +346,20 @@ Toggle terminal
 
 Note: if the cursor is in a terminal, that terminal will be hidden
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type of terminal to toggle (see |Nuiterm.config|)
 {num} `(integer|string|nil)` the id of the terminal to toggle
 {cmd} `(string|nil)` a command to run in terminal (if opening for the first time)
 
-Usage~
+Usage ~
 `Nuiterm.toggle('buffer', 12)` (toggle the terminal bound to buffer 12)
-Usage~
+Usage ~
 `Nuiterm.toggle('editor', 2)` (toggle the global terminal number 2)
-Usage~
+Usage ~
 `Nuiterm.toggle()` (toggle the default terminal for this buffer/window/tab/editor)
-Usage~
+Usage ~
 `Nuiterm.toggle('editor', 2, 'python')` (run python in global terminal 2 - if opening)
-Usage~
+Usage ~
 `Nuiterm.toggle('editor', -1)` (open a new global terminal)
 
 ------------------------------------------------------------------------------
@@ -369,7 +367,7 @@ Usage~
                  `Nuiterm.change_style`({style}, {type}, {num})
 Change terminal UI style
 
-Parameters~
+Parameters ~
 {style} `(string|nil)` the ui style to change to (or swap if nil)
 {type} `(string|nil)` the type of terminal to toggle (see |Nuiterm.config|)
 {num} `(integer|nil)` the id of the terminal to toggle
@@ -379,7 +377,7 @@ Parameters~
                 `Nuiterm.change_layout`({layout}, {type}, {num})
 Change terminal UI layout
 
-Parameters~
+Parameters ~
 {layout} `(table|nil)` see nui.popup:update_layout
 {type} `(string|nil)` the type of terminal to toggle (see |Nuiterm.config|)
 {num} `(integer|nil)` the id of the terminal to toggle
@@ -389,7 +387,7 @@ Parameters~
                 `Nuiterm.rename_terminal`({name}, {type}, {num})
 Rename terminal (only works for "editor" terminals)
 
-Parameters~
+Parameters ~
 {name} `(string)` name for terminal (set as `type_id` in Terminal)
 {type} `(string|nil)` the type of terminal to rename (see |Nuiterm.config|)
 {num} `(integer|nil)` the id of the terminal to rename
@@ -399,7 +397,7 @@ Parameters~
                   `Nuiterm.delete_terminal`({type}, {type_id})
 Delete terminal
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type of terminal to delete (see |Nuiterm.config|)
 {type_id} `(integer|string|nil)` the id of the terminal to delete
 
@@ -408,7 +406,7 @@ Parameters~
                   `Nuiterm.focus_buffer_for_terminal`({bufnr})
 Focus the buffer tied to the terminal under cursor in window 1
 
-Parameters~
+Parameters ~
 {bufnr} `(number|nil)` the buffer number of the terminal
 
 ------------------------------------------------------------------------------
@@ -416,7 +414,7 @@ Parameters~
              `Nuiterm.bind_buf_to_terminal`({type}, {num}, {bufnr})
 Bind current buffer to terminal
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type of terminal to bind to (see |Nuiterm.config|)
 {num} `(integer|nil)` the id of the terminal to rename
 {bufnr} `(integer|nil)` the id of the buffer to bind (or use current buffer)
@@ -426,7 +424,7 @@ Parameters~
                `Nuiterm.send`({cmd}, {type}, {num}, {setup_cmd})
 Send text to a terminal
 
-Parameters~
+Parameters ~
 {cmd} `(string)` the command to send to the terminal
 {type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu, "current" to use open terminal
 {num} `(number|string|nil)` the id of the terminal (type specific)
@@ -437,7 +435,7 @@ Parameters~
             `Nuiterm.send_select`({cmd}, {type}, {num}, {setup_cmd})
 Wrap sending text to a terminal to allow for selecting terminal
 
-Parameters~
+Parameters ~
 {cmd} `(string)` the command to send to the terminal
 {type} `(string|nil)` the type of terminal to send to (or default). "select" to select from menu, "current" to use open terminal
 {num} `(number|nil)` the id of the terminal (type specific)
@@ -448,7 +446,7 @@ Parameters~
                 `Nuiterm.send_line`({type}, {num}, {setup_cmd})
 Send current line in buffer to a terminal
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
@@ -458,7 +456,7 @@ Parameters~
    `Nuiterm.send_lines`({start_line}, {end_line}, {type}, {num}, {setup_cmd})
 Send multiple lines in buffer to a terminal
 
-Parameters~
+Parameters ~
 {start_line} `(number|nil)` the line number at which to start sending
 {end_line} `(number|nil)` the line number at which to end sending
 {type} `(string|nil)` the type of terminal to send to (or default)
@@ -472,7 +470,7 @@ Send selection in line in buffer to a terminal
 
 Note: this is robust to reverse selections
 
-Parameters~
+Parameters ~
 {line} `(string|nil)` the line number at which to send
 {start_col} `(string|nil)` the column number at which to start sending
 {end_col} `(string|nil)` the column number at which to end sending
@@ -487,7 +485,7 @@ Send visual selection
 
 Note: this is robust to reverse selections
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
@@ -497,7 +495,7 @@ Parameters~
                 `Nuiterm.send_file`({type}, {num}, {setup_cmd})
 Send file contents to terminal
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type of terminal to send to (or default)
 {num} `(number|nil)` the id of the terminal (type specific)
 {setup_cmd} `(string|nil)` the first command to send to a freshly opened terminal (if needed)
@@ -507,13 +505,12 @@ Parameters~
                             `Nuiterm.toggle_menu`()
 Toggle terminal menu to select (and toggle) terminals
 
-
 ------------------------------------------------------------------------------
                                                  *Nuiterm.change_default_type()*
                      `Nuiterm.change_default_type`({type})
 Change default type by cycling through the types
 
-Parameters~
+Parameters ~
 {type} `(string|nil)` the type to change to (or cycle)
 
 ------------------------------------------------------------------------------
@@ -521,7 +518,7 @@ Parameters~
                      `Nuiterm.confirm_quit`({write}, {all})
 Confirm quit commands when terminals are mounted
 
-Parameters~
+Parameters ~
 {write} `(boolean|nil)` whether to write before quitting
 {all} `(boolean|nil)` if all windows are being quit
 
@@ -534,7 +531,7 @@ Parameters~
 Plugin config
 
 Default values:
->
+>lua
   Nuiterm.config = {
     -- Default type of terminal
     -- could be "buffer", "window", "tab", or "editor"
@@ -613,16 +610,15 @@ Default values:
   }
 <
 
-
 ==============================================================================
 ------------------------------------------------------------------------------
                                                                       *Terminal*
                                    `Terminal`
 
-Class~
+Class ~
 {Terminal}
 
-Fields~
+Fields ~
 {bufname} `(string)` name of terminal buffer (uses nuiterm:... pattern)
 {bufnr} `(integer)` buffer number of terminal buffer
 {cwd} `(string)` directory of terminal
@@ -640,7 +636,7 @@ Fields~
                            `Terminal:new`({options})
 Create new terminal object
 
-Parameters~
+Parameters ~
 {options} `(table|nil)` config options for terminal (see |Nuiterm.config|)
 
 ------------------------------------------------------------------------------
@@ -648,7 +644,7 @@ Parameters~
                       `init_funcs.get_type_id`({options})
 Get type id
 
-Parameters~
+Parameters ~
 {options} `(table)` terminal options table
 
 ------------------------------------------------------------------------------
@@ -656,7 +652,7 @@ Parameters~
                    `init_funcs.generate_type_name`({options})
 Create type name for terminal (if tied to buffer)
 
-Parameters~
+Parameters ~
 {options} `(table)` terminal options table
 
 ------------------------------------------------------------------------------
@@ -664,7 +660,7 @@ Parameters~
                       `init_funcs.get_term_cwd`({options})
 Get term cwd
 
-Parameters~
+Parameters ~
 {options} `(table)` terminal options table
 
 ------------------------------------------------------------------------------
@@ -672,7 +668,7 @@ Parameters~
                       `init_funcs.get_ui_opts`({ui_type})
 Get UI options
 
-Parameters~
+Parameters ~
 {ui_type} `(string)` terminal ui style
 
 ------------------------------------------------------------------------------
@@ -680,13 +676,12 @@ Parameters~
                             `Terminal:set_keymaps`()
 Create keymaps in terminal buffer
 
-
 ------------------------------------------------------------------------------
                                                                *Terminal:show()*
                         `Terminal:show`({focus}, {cmd})
 Show the terminal window
 
-Parameters~
+Parameters ~
 {focus} `(boolean|nil)` whether to put cursor in terminal when showing
 {cmd} `(string|nil)` cmd to run immediately in terminal (if not shown before)
 
@@ -695,7 +690,7 @@ Parameters~
                             `Terminal:mount`({cmd})
 Create a terminal buffer
 
-Parameters~
+Parameters ~
 {cmd} `(string|nil)` cmd to send to the terminal upon mounting
 
 ------------------------------------------------------------------------------
@@ -703,33 +698,30 @@ Parameters~
                               `Terminal:unmount`()
 Unmount the terminal
 
-
 ------------------------------------------------------------------------------
                                                                *Terminal:send()*
                              `Terminal:send`({cmd})
 Send command to the terminal
 
-Parameters~
-{cmd} `(string)` command to run in terminal
+Parameters ~
+{cmd} `(string|nil)` command to run in terminal
 
 ------------------------------------------------------------------------------
                                                             *Terminal:isshown()*
                               `Terminal:isshown`()
 Check if terminal UI is displayed
 
-
 ------------------------------------------------------------------------------
                                                           *Terminal:ismounted()*
                              `Terminal:ismounted`()
 Check if terminal UI is mounted
-
 
 ------------------------------------------------------------------------------
                                                        *Terminal:change_style()*
                         `Terminal:change_style`({style})
 Change UI style of terminal
 
-Parameters~
+Parameters ~
 {style} `(string)` split or popup
 
 ------------------------------------------------------------------------------
@@ -737,7 +729,7 @@ Parameters~
                        `Terminal:change_layout`({layout})
 Change UI layout of terminal
 
-Parameters~
+Parameters ~
 {layout} `(table|nil)` see nui.popup:update_layout() for details
 
 
