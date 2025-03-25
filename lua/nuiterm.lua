@@ -17,7 +17,7 @@
 --- - Text can be easily sent from buffer to terminal (line, visual selection,
 ---   visual line selection, etc.) built with a REPL in mind
 ---
---- # Setup~
+--- # Setup ~
 ---
 --- This plugin needs to be setup with `require('nuiterm').setup({})` (replace
 --- `{}` with you `config` table). It will create a global Lua table `Nuiterm`
@@ -25,11 +25,11 @@
 ---
 --- See |Nuiterm.config| for available config settings.
 ---
---- ## Dependencies~
+--- ## Dependencies ~
 --- - 'MunifTanjim/nui.nvim' for UI
 --- - (optional) 'nvim-telescope/telescope.nvim' for extra terminal finder
 ---
---- ## Default config
+--- ## Default config ~
 --- >
 ---   Nuiterm.config = {
 ---     -- Default type of terminal
@@ -108,7 +108,7 @@
 ---   }
 --- <
 ---
---- ## Example config with keybindings~
+--- ## Example config with keybindings ~
 --- >
 ---   require('nuiterm').setup({
 ---     type = "buffer",
@@ -134,7 +134,7 @@
 ---   vim.keymap.set('v', '<localleader>rc', function() require('nuiterm').send_visual("current") end)
 --- <
 ---
---- ## Usage as repl
+--- # Usage as repl ~
 --- A terminal connected to the current buffer can be easily made a REPL by
 --- adjusting the keymap to send a REPL setup command on toggle (python for
 --- example):
@@ -142,7 +142,7 @@
 ---   vim.keymap.set({'n','t'},'<c-n>',function() Nuiterm.toggle(nil,nil,"python") end)
 --- <
 ---
---- ## Opening new global terminal
+--- # Opening new global terminal ~
 --- If a new, unused global terminal is desired, you can pass in -1 as the id
 --- for an "editor" type terminal:
 --- >
@@ -150,14 +150,14 @@
 ---   vim.keymap.set('n', '<c-n>', function() Nuiterm.toggle("editor",-1) end)
 --- <
 ---
---- ## Telescope integration~
+--- # Telescope integration ~
 --- `telescope.nvim` can be used to find and pick terminals to toggle via
 --- keymap as:
 --- >
 ---   vim.keymap.set('n','<leader>f',require('nuiterm.telescope').picker)
 --- <
 ---
---- ## Task-specific terminals~
+--- # Task-specific terminals ~
 --- A common use case for floating terminals such as are provided with this
 --- plugin is to quickly open a TUI such as `lazygit`. This can be easily
 --- accomplished with nuiterm via:
@@ -178,7 +178,7 @@
 ---   vim.keymap.set('n','<leader>g',lazygit_terminal)
 --- <
 ---
---- # Available commands
+--- # Available commands ~
 ---
 --- ```vim
 --- :Nuiterm [[type=]...] [[num=]...] [[cmd=]...]
@@ -193,7 +193,7 @@
 ---
 --- **Note:** Commands can be used with or without keyword arguments. i.e. `Nuiterm type=editor` is the same as `Nuiterm editor`.
 ---
---- ### Examples
+--- # Examples ~
 ---
 --- ```vim
 --- " Toggle a terminal of default type and number
@@ -244,13 +244,13 @@
 --- :NuitermMenu
 --- ```
 ---
---- # Tips~
+--- # Tips ~
 ---
 --- - Given that most terminals are implemented as vim `splits` and are opened
 ---   and closed constantly, it is helpful to set the vim option `:noequalalways`
 ---   or `:lua vim.o.equalalways = false` to stop constant window resizing
 ---
---- # Comparisons~
+--- # Comparisons ~
 ---
 --- - [akinsho/toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim):
 ---   - This was the main inspiration for this plugin and the design of using
