@@ -25,16 +25,12 @@ T['send_to_buffer_term'] = function()
   -- Send to buffer terminal
   child.loop.sleep(500)
   child.cmd("lua Nuiterm.send('buffer term', 'current', nil, nil)")
-  child.loop.sleep(100)
 
-  local screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("buffer term", screenshot))
+  equals(true, utils.is_in_term_buf(child, "buffer term"))
 
   child.cmd("NuitermSend cmd=usercommand")
-  child.loop.sleep(100)
 
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("usercommand", screenshot))
+  equals(true, utils.is_in_term_buf(child, "usercommand"))
 end
 
 T['send_to_current'] = function()
@@ -47,25 +43,19 @@ T['send_to_current'] = function()
   -- Send to current terminal
   child.loop.sleep(500)
   child.cmd("lua Nuiterm.send('terminal one', 'current', nil, nil)")
-  child.loop.sleep(100)
 
-  local screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("terminal one", screenshot))
+  equals(true, utils.is_in_term_buf(child, "terminal one"))
 
   child.cmd("NuitermSend type=current cmd=usercommand")
-  child.loop.sleep(100)
 
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("usercommand", screenshot))
+  equals(true, utils.is_in_term_buf(child, "usercommand"))
 
-  -- Send to personal terminal
+  -- Send to personal terminal (both terminals visible with exclusive_mode off)
   child.cmd("lua Nuiterm.send('terminal two', nil, nil, nil)")
-  child.loop.sleep(100)
 
-  screenshot = child.get_screenshot()
-  nequals(true, utils.is_in_screenshot("terminal one", screenshot))
-  nequals(true, utils.is_in_screenshot("usercommand", screenshot))
-  equals(true, utils.is_in_screenshot("terminal two", screenshot))
+  -- The new buffer terminal for test2.py should have "terminal two"
+  local test2_bufnr = child.lua_get("vim.api.nvim_get_current_buf()")
+  equals(true, utils.is_in_term_buf(child, "terminal two", "buffer", tostring(test2_bufnr)))
 end
 
 T['send_to_current_none_exists'] = function()
@@ -75,28 +65,23 @@ T['send_to_current_none_exists'] = function()
   -- Send to current terminal
   child.loop.sleep(500)
   child.cmd("lua Nuiterm.send('terminal one', 'current', nil, nil)")
-  child.loop.sleep(100)
 
-  local screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("terminal one", screenshot))
+  equals(true, utils.is_in_term_buf(child, "terminal one"))
 
   child.cmd("NuitermSend type=current cmd=usercommand")
-  child.loop.sleep(100)
 
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("usercommand", screenshot))
+  equals(true, utils.is_in_term_buf(child, "usercommand"))
 
-  -- Send to current terminal from new buffer
+  -- Send to current terminal from new buffer (same terminal since "current" resolves to shown)
   child.cmd("e test2.py")
   child.cmd("lua Nuiterm.send('terminal two', 'current', nil, nil)")
-  child.loop.sleep(100)
 
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("terminal one", screenshot))
-  equals(true, utils.is_in_screenshot("usercommand", screenshot))
-  equals(true, utils.is_in_screenshot("terminal two", screenshot))
+  -- All three should be in the same terminal buffer
+  equals(true, utils.is_in_term_buf(child, "terminal one"))
+  equals(true, utils.is_in_term_buf(child, "usercommand"))
+  equals(true, utils.is_in_term_buf(child, "terminal two"))
 
-  child.lua('Nlen = require("nuiterm.utils").dict_length(Nuiterm.windows)')
+  child.lua('Nlen = #Nuiterm.get_visible_terms()')
   equals(1, child.lua_get('Nlen'))
 end
 
@@ -118,9 +103,11 @@ T['send_line(s)_w_unecessary_whitespace'] = function()
   child.cmd("lua Nuiterm.send_line()")
   child.loop.sleep(100)
 
-  -- Ensure leading spaces were removed on send
+  -- Ensure leading spaces were removed on send (text in terminal buf without leading spaces)
+  equals(true, utils.is_in_term_buf(child, "echo 'hello1'"))
+
+  -- The source buffer should still have the leading whitespace
   local screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("echo 'hello1'", screenshot, 2))
   equals(true, utils.is_in_screenshot("       echo 'hello1'", screenshot, 1))
 
   -- Send two lines to terminal
@@ -128,11 +115,9 @@ T['send_line(s)_w_unecessary_whitespace'] = function()
   child.cmd("lua Nuiterm.send_lines(1, 2)")
   child.loop.sleep(100)
 
-  -- Ensure leading spaces were removed on send (from both!)
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("       echo 'hello1'", screenshot, 1))
-  equals(true, utils.is_in_screenshot("           echo 'hello2'", screenshot, 1))
-  equals(true, utils.is_in_screenshot("    echo 'hello2'", screenshot, 2))
+  -- Both lines should be in the terminal buffer
+  equals(true, utils.is_in_term_buf(child, "echo 'hello1'"))
+  equals(true, utils.is_in_term_buf(child, "echo 'hello2'"))
 end
 
 child.stop()

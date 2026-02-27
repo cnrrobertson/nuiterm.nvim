@@ -118,16 +118,16 @@ T["rename"] = function()
   child.cmd("Nuiterm type=editor")
 
   -- Ensure it exists
-  local term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['1'] ~= nil")
   equals(term_exists, true)
 
   -- Rename terminal
   child.lua("Nuiterm.rename_terminal('check', 'editor', 1)")
 
   -- Ensure old doesn't exist and new does
-  term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.editor['1'] ~= nil")
   equals(term_exists, false)
-  term_exists = child.lua_get("Nuiterm.terminals.editor['check']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.editor['check'] ~= nil")
   equals(term_exists, true)
 end
 
@@ -146,13 +146,13 @@ T["rename_w_bind"] = function()
   child.lua("Nuiterm.rename_terminal('check', 'editor', 1)")
 
   -- Ensure old doesn't exist and new does
-  local term_exists = child.lua_get("Nuiterm.terminals.editor['1']") ~= vim.NIL
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['1'] ~= nil")
   equals(term_exists, false)
-  term_exists = child.lua_get("Nuiterm.terminals.editor['check']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.editor['check'] ~= nil")
   equals(term_exists, true)
 
   -- Ensure renaming worked for bound terminal
-  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..file_buf.."']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..file_buf.."'] ~= nil")
   equals(term_exists, true)
 end
 

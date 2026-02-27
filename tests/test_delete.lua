@@ -26,14 +26,14 @@ T["unmount"] = function()
 
   -- Get bufnr of terminal
   local tbufnr = child.lua_get("vim.api.nvim_get_current_buf()")
-  local term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."']") ~= vim.NIL
+  local term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."'] ~= nil")
   equals(term_exists, true)
 
   -- Delete terminal
   child.lua("Nuiterm.terminals.buffer['"..fbufnr.."']:unmount()")
 
   -- Ensure it is not in terminal list
-  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."'] ~= nil")
   equals(term_exists, false)
 
   -- Ensure buffer is not valid
@@ -52,14 +52,14 @@ T["delete"] = function()
 
   -- Get bufnr of terminal
   local tbufnr = child.lua_get("vim.api.nvim_get_current_buf()")
-  local term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."']") ~= vim.NIL
+  local term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."'] ~= nil")
   equals(term_exists, true)
 
   -- Delete terminal
   child.lua("Nuiterm.delete_terminal('buffer', "..fbufnr..")")
 
   -- Ensure it is not in terminal list
-  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."'] ~= nil")
   equals(term_exists, false)
 
   -- Ensure buffer is not valid
@@ -87,11 +87,9 @@ T["delete_with_bind"] = function()
   child.lua("Nuiterm.delete_terminal('editor', 1)")
 
   -- Ensure neither is in terminal list
-  local bterm = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."']")
-  local eterm = child.lua_get("Nuiterm.terminals.editor['1']")
-  local term_exists = eterm ~= vim.NIL
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['1'] ~= nil")
   equals(term_exists, false)
-  term_exists = bterm ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.buffer['"..fbufnr.."'] ~= nil")
   equals(term_exists, false)
 
   -- Ensure buffer is not valid
@@ -110,14 +108,14 @@ T["delete_w_str_name"] = function()
 
   -- Get bufnr of terminal
   local tbufnr = child.lua_get("vim.api.nvim_get_current_buf()")
-  local term_exists = child.lua_get("Nuiterm.terminals.editor['cool']") ~= vim.NIL
+  local term_exists = child.lua_get("Nuiterm.terminals.editor['cool'] ~= nil")
   equals(term_exists, true)
 
   -- Delete terminal
   child.lua("Nuiterm.delete_terminal('editor', 'cool')")
 
   -- Ensure it is not in terminal list
-  term_exists = child.lua_get("Nuiterm.terminals.editor['cool']") ~= vim.NIL
+  term_exists = child.lua_get("Nuiterm.terminals.editor['cool'] ~= nil")
   equals(term_exists, false)
 
   -- Ensure buffer is not valid

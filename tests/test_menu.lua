@@ -19,6 +19,30 @@ local init_term = function()
   child.cmd("Nuiterm")
 end
 
+local is_term_shown = function()
+  child.lua([[
+    _G._chk = false
+    for _,group in pairs(Nuiterm.terminals) do
+      for _,term in pairs(group) do
+        if term.isshown and term:isshown() then _G._chk = true end
+      end
+    end
+  ]])
+  return child.lua_get('_G._chk')
+end
+
+local is_term_mounted = function()
+  child.lua([[
+    _G._chk = false
+    for _,group in pairs(Nuiterm.terminals) do
+      for _,term in pairs(group) do
+        if term.ismounted and term:ismounted() then _G._chk = true end
+      end
+    end
+  ]])
+  return child.lua_get('_G._chk')
+end
+
 T['menu_populated'] = function()
   init_term()
 
@@ -34,35 +58,39 @@ end
 T['show_term_on_attempt_destroy'] = function()
   init_term()
   child.loop.sleep(500)
-  local screenshot1 = child.get_screenshot()
+
+  -- Terminal should be shown and mounted
+  equals(true, is_term_shown())
+  equals(true, is_term_mounted())
 
   -- Show menu, try to destroy, decide to show
   child.lua("Nuiterm.toggle_menu()")
   child.loop.sleep(100)
 
   child.type_keys("ds<cr>")
-  local screenshot2 = child.get_screenshot()
+  child.loop.sleep(100)
 
-  -- Ensure no changes (aside from bottom 2 rows)
-  local sc1 = utils.stack_screenshot(screenshot1,nil,2)
-  local sc2 = utils.stack_screenshot(screenshot2,nil,2)
-  equals(sc1,sc2)
+  -- Terminal should still be shown and mounted (chose "show" not "yes")
+  equals(true, is_term_shown())
+  equals(true, is_term_mounted())
 
   -- Hide terminal
   child.cmd("Nuiterm")
   child.loop.sleep(500)
 
+  equals(false, is_term_shown())
+  equals(true, is_term_mounted())
+
   -- Show menu, try to destroy, decide to show
   child.lua("Nuiterm.toggle_menu()")
   child.loop.sleep(100)
 
   child.type_keys("ds<cr>")
-  local screenshot3 = child.get_screenshot()
+  child.loop.sleep(100)
 
-  -- Ensure no changes (aside from bottom 2 rows)
-  local sc3 = utils.stack_screenshot(screenshot3,nil,2)
-  equals(sc1,sc3)
-  equals(sc2,sc3)
+  -- Terminal should be shown again (chose "show")
+  equals(true, is_term_shown())
+  equals(true, is_term_mounted())
 end
 
 return T

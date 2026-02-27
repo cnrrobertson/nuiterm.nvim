@@ -1,5 +1,3 @@
-==============================================================================
-------------------------------------------------------------------------------
 *nuiterm* Neovim terminal manager for terminals local to buffer, window, tab, or editor
 *Nuiterm*
 
@@ -59,6 +57,8 @@ See |Nuiterm.config| for available config settings.
     menu_buf_depth = 1,
     -- Confirm destruction of terminals
     menu_confirm_destroy = true,
+    -- Only allow one terminal visible at a time (per tabpage)
+    exclusive_mode = false,
     keymaps = {},
     ui = {
       -- Default ui type of terminal
@@ -281,7 +281,6 @@ Nuiterm data storage
     window = {},
     buffer = {}
   }
-  Nuiterm.windows = {}
 
 <
 ------------------------------------------------------------------------------
@@ -296,28 +295,6 @@ Usage ~
 `require('nuiterm').setup({})` (replace `{}` with your `config` table)
 
 ------------------------------------------------------------------------------
-                                                     *Nuiterm.create_term_win()*
-                       `Nuiterm.create_term_win`({opts})
-Create terminal window
-
-Parameters ~
-{opts} `(table|nil)` Terminal UI config table
-
-Usage ~
-`Nuiterm.create_term_win({})` (replace `{}` with UI `config` table)
-
-Return ~
-|nui.object|
-
-------------------------------------------------------------------------------
-                                                       *Nuiterm.show_term_win()*
-                        `Nuiterm.show_term_win`({term})
-Show terminal window
-
-Parameters ~
-{term} Terminal Terminal to be displayed in window
-
-------------------------------------------------------------------------------
                                                      *Nuiterm.create_new_term()*
                        `Nuiterm.create_new_term`({opts})
 Create new terminal
@@ -329,15 +306,35 @@ Usage ~
 `Nuiterm.create_new_term({})` (replace `{}` with your `config` table)
 
 Return ~
-|Terminal|
+|`(Terminal|)`
 
 ------------------------------------------------------------------------------
                                                       *Nuiterm.hide_all_terms()*
                            `Nuiterm.hide_all_terms`()
-Hide all visible terminals
+Hide all visible terminals on current tabpage
 
 Usage ~
 `Nuiterm.hide_all_terms()`
+
+------------------------------------------------------------------------------
+                                                   *Nuiterm.get_visible_terms()*
+                      `Nuiterm.get_visible_terms`({tpage})
+Get all visible terminals on a tabpage
+
+Parameters ~
+{tpage} `(number|nil)` tabpage to check (defaults to current)
+Return ~
+`(table)` list of visible Terminal objects
+
+------------------------------------------------------------------------------
+                                                     *Nuiterm.focus_next_term()*
+                          `Nuiterm.focus_next_term`()
+Cycle focus to next visible terminal on current tabpage
+
+------------------------------------------------------------------------------
+                                                     *Nuiterm.focus_prev_term()*
+                          `Nuiterm.focus_prev_term`()
+Cycle focus to previous visible terminal on current tabpage
 
 ------------------------------------------------------------------------------
                                                               *Nuiterm.toggle()*
@@ -558,6 +555,8 @@ Default values:
     menu_buf_depth = 1,
     -- Confirm destruction of terminals
     menu_confirm_destroy = true,
+    -- Only allow one terminal visible at a time (per tabpage)
+    exclusive_mode = false,
     -- Keymaps for terminals (see nui.popup for more info)
     keymaps = {},
     ui = {
@@ -630,6 +629,7 @@ Fields ~
 {ui.type} `(string)` type of nui object to use for window
 {ui.options} `(table)` nui.object terminal nui options
 {ui.num_layout} `(integer)` which layout the terminal should be in
+{windows} `(table)` map of tabpage -> NUI window object
 
 ------------------------------------------------------------------------------
                                                                 *Terminal:new()*
@@ -673,8 +673,19 @@ Parameters ~
 
 ------------------------------------------------------------------------------
                                                         *Terminal:set_keymaps()*
-                            `Terminal:set_keymaps`()
+                        `Terminal:set_keymaps`({tpage})
 Create keymaps in terminal buffer
+
+Parameters ~
+{tpage} `(number|nil)` tabpage to set keymaps on (defaults to current)
+
+------------------------------------------------------------------------------
+                                                      *Terminal:create_window()*
+                       `Terminal:create_window`({tpage})
+Create a NUI window for this terminal on the given tabpage
+
+Parameters ~
+{tpage} `(number|nil)` tabpage to create window on (defaults to current)
 
 ------------------------------------------------------------------------------
                                                                *Terminal:show()*
@@ -694,6 +705,24 @@ Parameters ~
 {cmd} `(string|nil)` cmd to send to the terminal upon mounting
 
 ------------------------------------------------------------------------------
+                                                               *Terminal:hide()*
+                               `Terminal:hide`()
+Hide terminal on current tabpage
+
+------------------------------------------------------------------------------
+                                                    *Terminal:hide_on_tabpage()*
+                      `Terminal:hide_on_tabpage`({tpage})
+Hide terminal on specific tabpage
+
+Parameters ~
+{tpage} `(number)` tabpage to hide on
+
+------------------------------------------------------------------------------
+                                                           *Terminal:hide_all()*
+                             `Terminal:hide_all`()
+Hide terminal on all tabpages
+
+------------------------------------------------------------------------------
                                                             *Terminal:unmount()*
                               `Terminal:unmount`()
 Unmount the terminal
@@ -709,7 +738,20 @@ Parameters ~
 ------------------------------------------------------------------------------
                                                             *Terminal:isshown()*
                               `Terminal:isshown`()
-Check if terminal UI is displayed
+Check if terminal UI is displayed on current tabpage
+
+------------------------------------------------------------------------------
+                                                 *Terminal:isshown_on_tabpage()*
+                     `Terminal:isshown_on_tabpage`({tpage})
+Check if terminal UI is displayed on specific tabpage
+
+Parameters ~
+{tpage} `(number)` tabpage to check
+
+------------------------------------------------------------------------------
+                                                   *Terminal:isshown_anywhere()*
+                         `Terminal:isshown_anywhere`()
+Check if terminal UI is displayed on any tabpage
 
 ------------------------------------------------------------------------------
                                                           *Terminal:ismounted()*

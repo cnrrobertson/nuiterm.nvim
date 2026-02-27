@@ -57,6 +57,8 @@
 ---     menu_buf_depth = 1,
 ---     -- Confirm destruction of terminals
 ---     menu_confirm_destroy = true,
+---     -- Only allow one terminal visible at a time (per tabpage)
+---     exclusive_mode = false,
 ---     keymaps = {},
 ---     ui = {
 ---       -- Default ui type of terminal
@@ -270,9 +272,6 @@
 -- Plugin definition ==========================================================
 local Nuiterm = {}
 
-local Split = require("nui.split")
-local Popup = require("nui.popup")
-local event = require("nui.utils.autocmd").event
 local Terminal = require("nuiterm.terminal")
 local utils = require("nuiterm.utils")
 local menu = require("nuiterm.menu")
@@ -288,7 +287,6 @@ Nuiterm.terminals = {
   window = {},
   buffer = {}
 }
-Nuiterm.windows = {}
 
 --- Plugin setup
 ---
@@ -309,6 +307,24 @@ function Nuiterm.setup(config)
   Nuiterm.augroup = vim.api.nvim_create_augroup("Nuiterm", {clear = true})
 
   -- Only allow terminals in terminal windows
+  if not Nuiterm.config.terminal_win_fixed then
+    -- Unset winfixbuf on any existing terminal windows
+    local major = vim.version().major
+    local minor = vim.version().minor
+    if (major < 1) and (minor > 9) then
+      for _,group in pairs(Nuiterm.terminals) do
+        for _,term in pairs(group) do
+          if term.windows then
+            for _,win in pairs(term.windows) do
+              if win.winid and vim.api.nvim_win_is_valid(win.winid) then
+                vim.api.nvim_set_option_value("winfixbuf", false, {win = win.winid})
+              end
+            end
+          end
+        end
+      end
+    end
+  end
   if Nuiterm.config.terminal_win_fixed then
     local major = vim.version().major
     local minor = vim.version().minor
@@ -380,67 +396,6 @@ function Nuiterm.setup(config)
   end
 end
 
---- Create terminal window
----
----@param opts table|nil Terminal UI config table
----
----@usage `Nuiterm.create_term_win({})` (replace `{}` with UI `config` table)
----
----@return |nui.object|
-function Nuiterm.create_term_win(opts)
-  opts = opts or {}
-  local tpage = vim.api.nvim_get_current_tabpage()
-  if opts.type == "split" then
-    Nuiterm.windows[tpage] = Split(opts.options)
-  else
-    Nuiterm.windows[tpage] = Popup(opts.options)
-  end
-  Nuiterm.windows[tpage]:mount()
-  vim.api.nvim_win_set_option(Nuiterm.windows[tpage].winid,"number",false)
-
-  -- Save window info to each terminal
-  Nuiterm.windows[tpage]:on({event.WinLeave}, function()
-    local term = utils.find_by_bufnr(Nuiterm.windows[tpage].bufnr)
-    if Nuiterm.config.persist_size then
-      if Nuiterm.windows[tpage]._.size.width then
-        local new_width = vim.api.nvim_win_get_width(Nuiterm.windows[tpage].winid)
-        if term then
-          term.ui.width = new_width
-        end
-      end
-      if Nuiterm.windows[tpage]._.size.height then
-        local new_height = vim.api.nvim_win_get_height(Nuiterm.windows[tpage].winid)
-        if term then
-          term.ui.height = new_height
-        end
-      end
-    end
-    if Nuiterm.config.hide_on_leave then
-      Nuiterm.windows[tpage]:hide()
-    end
-  end, {})
-
-  return Nuiterm.windows[tpage]
-end
-
---- Show terminal window
----
----@param term Terminal Terminal to be displayed in window
-function Nuiterm.show_term_win(term)
-  local tpage = vim.api.nvim_get_current_tabpage()
-  if (term.ui.type == "popup") or (term.ui.type == "float") then
-    Nuiterm.hide_all_terms()
-    Nuiterm.windows[tpage] = Popup(term.ui.options)
-  else
-    Nuiterm.hide_all_terms()
-    Nuiterm.windows[tpage] = Split(term.ui.options)
-  end
-  Nuiterm.windows[tpage]:mount()
-  vim.api.nvim_win_set_option(Nuiterm.windows[tpage].winid,"number",false)
-  vim.api.nvim_win_set_buf(Nuiterm.windows[tpage].winid, term.bufnr)
-  Nuiterm.windows[tpage].bufnr = term.bufnr
-end
-
 --- Create new terminal
 ---
 ---@param opts table|nil Terminal config table. See |Nuiterm.config|
@@ -452,21 +407,69 @@ function Nuiterm.create_new_term(opts)
   return Terminal:new(opts)
 end
 
---- Hide all visible terminals
+--- Hide all visible terminals on current tabpage
 ---
 ---@usage `Nuiterm.hide_all_terms()`
 function Nuiterm.hide_all_terms()
-  -- for group,_ in pairs(Nuiterm.terminals) do
-  --   for _,other_term in pairs(Nuiterm.terminals[group]) do
-  --     if other_term:isshown() then
-  --       other_term:hide(Nuiterm.config.persist_size)
-  --     end
-  --   end
-  -- end
   local tpage = vim.api.nvim_get_current_tabpage()
-  if Nuiterm.windows[tpage] then
-    Nuiterm.windows[tpage]:hide()
+  for _,group in pairs(Nuiterm.terminals) do
+    for _,term in pairs(group) do
+      if term.isshown_on_tabpage and term:isshown_on_tabpage(tpage) then
+        term:hide()
+      end
+    end
   end
+end
+
+--- Get all visible terminals on a tabpage
+---
+---@param tpage number|nil tabpage to check (defaults to current)
+---@return table list of visible Terminal objects
+function Nuiterm.get_visible_terms(tpage)
+  tpage = tpage or vim.api.nvim_get_current_tabpage()
+  local visible = {}
+  for _,group in pairs(Nuiterm.terminals) do
+    for _,term in pairs(group) do
+      if term.isshown_on_tabpage and term:isshown_on_tabpage(tpage) then
+        table.insert(visible, term)
+      end
+    end
+  end
+  return visible
+end
+
+--- Cycle focus to next visible terminal on current tabpage
+---
+function Nuiterm.focus_next_term()
+  local tpage = vim.api.nvim_get_current_tabpage()
+  local visible = Nuiterm.get_visible_terms(tpage)
+  if #visible == 0 then return end
+  local current_win = vim.api.nvim_get_current_win()
+  for i,term in ipairs(visible) do
+    if term.windows[tpage].winid == current_win then
+      local next_term = visible[(i % #visible) + 1]
+      vim.api.nvim_set_current_win(next_term.windows[tpage].winid)
+      return
+    end
+  end
+  vim.api.nvim_set_current_win(visible[1].windows[tpage].winid)
+end
+
+--- Cycle focus to previous visible terminal on current tabpage
+---
+function Nuiterm.focus_prev_term()
+  local tpage = vim.api.nvim_get_current_tabpage()
+  local visible = Nuiterm.get_visible_terms(tpage)
+  if #visible == 0 then return end
+  local current_win = vim.api.nvim_get_current_win()
+  for i,term in ipairs(visible) do
+    if term.windows[tpage].winid == current_win then
+      local prev_term = visible[((i - 2) % #visible) + 1]
+      vim.api.nvim_set_current_win(prev_term.windows[tpage].winid)
+      return
+    end
+  end
+  vim.api.nvim_set_current_win(visible[#visible].windows[tpage].winid)
 end
 
 --- Toggle terminal
@@ -486,9 +489,11 @@ function Nuiterm.toggle(type,num,cmd)
   local term,type,type_id = utils.find_by_type_and_num(type,num)
 
   if term and term:isshown() then
-    Nuiterm.hide_all_terms()
+    term:hide()
   else
-    Nuiterm.hide_all_terms()
+    if Nuiterm.config.exclusive_mode then
+      Nuiterm.hide_all_terms()
+    end
     if term == nil then
       term = Nuiterm.create_new_term({type=type,type_id=type_id})
     end
@@ -624,7 +629,9 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
 
   -- Ensure term exists and is shown with setup_cmd
   local term_shown = utils.find_shown()
-  Nuiterm.hide_all_terms()
+  if Nuiterm.config.exclusive_mode then
+    Nuiterm.hide_all_terms()
+  end
   term = term or Nuiterm.create_new_term({type=type,type_id=type_id})
   term:show(Nuiterm.config.focus_on_send,setup_cmd)
 
@@ -633,14 +640,16 @@ function Nuiterm.send(cmd,type,num,setup_cmd)
 
   -- Put cursor at bottom of terminal buffer
   local tpage = vim.api.nvim_get_current_tabpage()
-  vim.api.nvim_win_call(Nuiterm.windows[tpage].winid, function()
-    local buf_len = vim.api.nvim_buf_line_count(Nuiterm.windows[tpage].bufnr)
-    vim.api.nvim_win_set_cursor(Nuiterm.windows[tpage].winid, {buf_len,0})
-  end)
+  if term.windows[tpage] then
+    vim.api.nvim_win_call(term.windows[tpage].winid, function()
+      local buf_len = vim.api.nvim_buf_line_count(term.windows[tpage].bufnr)
+      vim.api.nvim_win_set_cursor(term.windows[tpage].winid, {buf_len,0})
+    end)
+  end
 
   -- Hide terminal if it should be hidden
   if not Nuiterm.config.show_on_send then
-    Nuiterm.hide_all_terms()
+    term:hide()
     if term_shown then
       local same_term = (term_shown[1] == term.type) and (term_shown[2] == term.type_id)
       local temp_term = Nuiterm.terminals[term_shown[1]][term_shown[2]]

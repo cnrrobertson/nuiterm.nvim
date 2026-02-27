@@ -1,3 +1,6 @@
+local Split = require("nui.split")
+local Popup = require("nui.popup")
+local event = require("nui.utils.autocmd").event
 local utils = require("nuiterm.utils")
 
 ---@tag Terminal
@@ -16,6 +19,7 @@ local utils = require("nuiterm.utils")
 ---@field ui.type string type of nui object to use for window
 ---@field ui.options table nui.object terminal nui options
 ---@field ui.num_layout integer which layout the terminal should be in
+---@field windows table map of tabpage -> NUI window object
 local Terminal = {}
 local init_funcs = {}
 
@@ -42,6 +46,9 @@ function Terminal:new(options)
     options = init_funcs.get_ui_opts(options.ui.type),
     num_layout = 1
   }
+
+  -- Window storage (keyed by tabpage)
+  options.windows = {}
 
   -- Create terminal
   local term = setmetatable(options,self)
@@ -110,13 +117,53 @@ end
 
 --- Create keymaps in terminal buffer
 ---
-function Terminal:set_keymaps()
-  local tpage = vim.api.nvim_get_current_tabpage()
-  if self.keymaps then
+---@param tpage number|nil tabpage to set keymaps on (defaults to current)
+function Terminal:set_keymaps(tpage)
+  tpage = tpage or vim.api.nvim_get_current_tabpage()
+  if self.keymaps and self.windows[tpage] then
     for _,km in pairs(self.keymaps) do
-      Nuiterm.windows[tpage]:map(unpack(km))
+      self.windows[tpage]:map(unpack(km))
     end
   end
+end
+
+--- Create a NUI window for this terminal on the given tabpage
+---
+---@param tpage number|nil tabpage to create window on (defaults to current)
+function Terminal:create_window(tpage)
+  tpage = tpage or vim.api.nvim_get_current_tabpage()
+
+  if (self.ui.type == "popup") or (self.ui.type == "float") then
+    self.windows[tpage] = Popup(self.ui.options)
+  else
+    self.windows[tpage] = Split(self.ui.options)
+  end
+
+  self.windows[tpage]:mount()
+  vim.api.nvim_win_set_option(self.windows[tpage].winid,"number",false)
+  vim.api.nvim_win_set_buf(self.windows[tpage].winid, self.bufnr)
+  self.windows[tpage].bufnr = self.bufnr
+
+  -- Save window info on leave
+  local win = self.windows[tpage]
+  local term = self
+  win:on({event.WinLeave}, function()
+    if not win.winid or not vim.api.nvim_win_is_valid(win.winid) then
+      return
+    end
+    if Nuiterm.config.persist_size then
+      if win._.size.width then
+        term.ui.width = vim.api.nvim_win_get_width(win.winid)
+      end
+      if win._.size.height then
+        term.ui.height = vim.api.nvim_win_get_height(win.winid)
+      end
+    end
+    if Nuiterm.config.hide_on_leave then
+      win:hide()
+      term.windows[tpage] = nil
+    end
+  end, {})
 end
 
 --- Show the terminal window
@@ -126,34 +173,51 @@ end
 function Terminal:show(focus,cmd)
   local start_win = vim.api.nvim_get_current_win()
   local start_cursor = vim.api.nvim_win_get_cursor(start_win)
-  -- Enusre terminal buffer exists
+  local tpage = vim.api.nvim_get_current_tabpage()
+
+  -- Ensure terminal buffer exists
   if self:ismounted() == false then
     self:mount(cmd)
   end
 
-  -- Enusre terminal buffer is displayed
-  local tpage = vim.api.nvim_get_current_tabpage()
-  if Nuiterm.windows[tpage] == nil then
-    Nuiterm.create_term_win(self.ui)
+  -- Already shown on this tabpage - just focus if needed
+  if self:isshown_on_tabpage(tpage) then
+    if focus then
+      vim.api.nvim_set_current_win(self.windows[tpage].winid)
+    end
+    return
   end
-  Nuiterm.show_term_win(self)
+
+  -- Create window for this terminal on this tabpage
+  self:create_window(tpage)
 
   -- Set keymaps
-  self:set_keymaps()
+  self:set_keymaps(tpage)
 
-  -- Set layout
-  local layout = Nuiterm.windows[tpage].layout
-  if self.ui.width then
-    layout.size.width = self.ui.width
+  -- Update layout with persisted size if available
+  local layout = self.windows[tpage].layout
+  if layout then
+    if self.ui.width then
+      layout.size.width = self.ui.width
+    end
+    if self.ui.height then
+      layout.size.height = self.ui.height
+    end
+    self.windows[tpage]:update_layout(layout)
+  elseif self.ui.width or self.ui.height then
+    local size = {}
+    if self.ui.width then size.width = self.ui.width end
+    if self.ui.height then size.height = self.ui.height end
+    pcall(function() self.windows[tpage]:update_layout({size = size}) end)
   end
-  if self.ui.height then
-    layout.size.height = self.ui.height
-  end
-  Nuiterm.windows[tpage]:update_layout(layout)
+
+  -- Scroll terminal to bottom
+  local buf_len = vim.api.nvim_buf_line_count(self.bufnr)
+  vim.api.nvim_win_set_cursor(self.windows[tpage].winid, {buf_len, 0})
 
   -- Set cursor focus
   if focus then
-    vim.api.nvim_set_current_win(Nuiterm.windows[tpage].winid)
+    vim.api.nvim_set_current_win(self.windows[tpage].winid)
   else
     vim.api.nvim_set_current_win(start_win)
     vim.api.nvim_win_set_cursor(start_win,start_cursor)
@@ -183,16 +247,35 @@ function Terminal:mount(cmd)
   end
 end
 
+--- Hide terminal on current tabpage
+---
+function Terminal:hide()
+  local tpage = vim.api.nvim_get_current_tabpage()
+  self:hide_on_tabpage(tpage)
+end
+
+--- Hide terminal on specific tabpage
+---
+---@param tpage number tabpage to hide on
+function Terminal:hide_on_tabpage(tpage)
+  if self:isshown_on_tabpage(tpage) then
+    self.windows[tpage]:hide()
+    self.windows[tpage] = nil
+  end
+end
+
+--- Hide terminal on all tabpages
+---
+function Terminal:hide_all()
+  for tpage,_ in pairs(self.windows) do
+    self:hide_on_tabpage(tpage)
+  end
+end
+
 --- Unmount the terminal
 ---
 function Terminal:unmount()
-  local tpage = vim.api.nvim_get_current_tabpage()
-  if Nuiterm.windows[tpage] then
-    if Nuiterm.windows[tpage].bufnr == self.bufnr then
-      Nuiterm.hide_all_terms()
-      Nuiterm.windows[tpage].bufnr = nil
-    end
-  end
+  self:hide_all()
   Nuiterm.delete_terminal(self.type, self.type_id)
 end
 
@@ -203,15 +286,35 @@ function Terminal:send(cmd)
   vim.api.nvim_chan_send(self.chan, cmd)
 end
 
---- Check if terminal UI is displayed
+--- Check if terminal UI is displayed on current tabpage
 ---
 function Terminal:isshown()
   local tpage = vim.api.nvim_get_current_tabpage()
-  if Nuiterm.windows[tpage] then
-    if Nuiterm.windows[tpage].winid then
-      if self.bufnr == Nuiterm.windows[tpage].bufnr then
-        return true
-      end
+  return self:isshown_on_tabpage(tpage)
+end
+
+--- Check if terminal UI is displayed on specific tabpage
+---
+---@param tpage number tabpage to check
+function Terminal:isshown_on_tabpage(tpage)
+  local win = self.windows[tpage]
+  if win and win.winid then
+    if vim.api.nvim_win_is_valid(win.winid) then
+      return true
+    else
+      -- Window closed externally, clean up
+      self.windows[tpage] = nil
+    end
+  end
+  return false
+end
+
+--- Check if terminal UI is displayed on any tabpage
+---
+function Terminal:isshown_anywhere()
+  for tpage,_ in pairs(self.windows) do
+    if self:isshown_on_tabpage(tpage) then
+      return true
     end
   end
   return false
@@ -229,7 +332,7 @@ end
 function Terminal:change_style(style)
   local was_shown = self:isshown()
   if was_shown then
-    Nuiterm.hide_all_terms()
+    self:hide()
   end
   self.ui.type = style
   self.ui.options = init_funcs.get_ui_opts(style)
@@ -244,7 +347,9 @@ end
 function Terminal:change_layout(layout)
   self.ui.options = layout
   local tpage = vim.api.nvim_get_current_tabpage()
-  Nuiterm.windows[tpage]:update_layout(layout)
+  if self.windows[tpage] then
+    self.windows[tpage]:update_layout(layout)
+  end
 end
 
 return Terminal
