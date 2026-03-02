@@ -49,8 +49,6 @@ See |Nuiterm.config| for available config settings.
     persist_size = true,
     -- Hide terminal when leaving window
     hide_on_leave = false,
-    -- Confirm exit when mounted terminals exist
-    confirm_quit = true,
     -- Set insert mode on entering nuiterm terminal buffer
     insert_on_enter = true,
     -- Number of parent directories to show for buffers in terminal menu
@@ -510,16 +508,6 @@ Change default type by cycling through the types
 Parameters ~
 {type} `(string|nil)` the type to change to (or cycle)
 
-------------------------------------------------------------------------------
-                                                        *Nuiterm.confirm_quit()*
-                     `Nuiterm.confirm_quit`({write}, {all})
-Confirm quit commands when terminals are mounted
-
-Parameters ~
-{write} `(boolean|nil)` whether to write before quitting
-{all} `(boolean|nil)` if all windows are being quit
-
-
 ==============================================================================
 ------------------------------------------------------------------------------
                                                                 *Nuiterm.config*
@@ -547,8 +535,6 @@ Default values:
     persist_size = true,
     -- Hide terminal when leaving window
     hide_on_leave = false,
-    -- Confirm exit when mounted terminals exist
-    confirm_quit = true,
     -- Set insert mode on entering nuiterm terminal buffer
     insert_on_enter = true,
     -- Number of parent directories to show for buffers in terminal menu

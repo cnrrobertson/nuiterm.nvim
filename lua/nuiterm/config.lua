@@ -25,8 +25,6 @@ local config = {
   persist_size = true,
   -- Hide terminal when leaving window
   hide_on_leave = false,
-  -- Confirm exit when mounted terminals exist
-  confirm_quit = true,
   -- Set insert mode on entering nuiterm terminal buffer
   insert_on_enter = true,
   -- Number of parent directories to show for buffers in terminal menu
