@@ -244,7 +244,6 @@ function Terminal:mount(cmd)
             return
           end
           vim.api.nvim_feedkeys("0", "n", true)
-          self.bufnr = nil
           self:unmount()
         end,
         cwd=self.cwd
