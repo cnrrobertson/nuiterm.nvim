@@ -248,8 +248,3 @@ function Terminal:change_layout(layout)
 end
 
 return Terminal
-
-
-
-
-

@@ -40,7 +40,14 @@ function utils.find_first_unmounted(terminals)
       return id
     end
   end
-  return utils.dict_length(terminals)+1
+  local new_term_num = 1
+  while true do
+    if terminals[tostring(new_term_num)] == nil then
+      return tostring(new_term_num)
+    else
+      new_term_num = new_term_num + 1
+    end
+  end
 end
 
 function utils.find_by_bufnr(bufnr)
