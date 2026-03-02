@@ -49,8 +49,6 @@
 ---     persist_size = true,
 ---     -- Hide terminal when leaving window
 ---     hide_on_leave = false,
----     -- Confirm exit when mounted terminals exist
----     confirm_quit = true,
 ---     -- Set insert mode on entering nuiterm terminal buffer
 ---     insert_on_enter = true,
 ---     -- Number of parent directories to show for buffers in terminal menu
@@ -352,21 +350,6 @@ function Nuiterm.setup(config)
     end
   end
 
-  -- Clean up terminals on exit (helps session management)
-  vim.api.nvim_create_autocmd({"ExitPre"}, {
-    group = "Nuiterm",
-    pattern="*",
-    callback = function()
-      local terms_mounted = utils.find_mounted()
-      if terms_mounted then
-        for _,term_info in ipairs(terms_mounted) do
-          local term = Nuiterm.terminals[term_info[1]][term_info[2]]
-          term:unmount()
-        end
-      end
-    end
-  })
-
   -- Automatically enter insert mode when entering terminal
   if Nuiterm.config.insert_on_enter == true then
     vim.api.nvim_create_autocmd({"BufEnter"}, {
@@ -387,13 +370,6 @@ function Nuiterm.setup(config)
     })
   end
 
-  -- Abbreviations
-  if Nuiterm.config.confirm_quit == true then
-    vim.cmd[[cnoreabbrev <silent> <expr> q getcmdtype() == ":" && getcmdline() == 'q' ? 'lua Nuiterm.confirm_quit(false, false)' : 'q']]
-    vim.cmd[[cnoreabbrev <silent> <expr> qa getcmdtype() == ":" && getcmdline() == 'qa' ? 'lua Nuiterm.confirm_quit(false, true)' : 'qa']]
-    vim.cmd[[cnoreabbrev <silent> <expr> wq getcmdtype() == ":" && getcmdline() == 'wq' ? 'lua Nuiterm.confirm_quit(true, false)' : 'wq']]
-    vim.cmd[[cnoreabbrev <silent> <expr> wqa getcmdtype() == ":" && getcmdline() == 'wqa' ? 'lua Nuiterm.confirm_quit(true, true)' : 'wqa']]
-  end
 end
 
 --- Create new terminal
@@ -806,33 +782,6 @@ function Nuiterm.change_default_type(type)
       new_loc = current_loc + 1
     end
     Nuiterm.config.type = types[new_loc]
-  end
-end
-
---- Confirm quit commands when terminals are mounted
----
----@param write boolean|nil whether to write before quitting
----@param all boolean|nil if all windows are being quit
-function Nuiterm.confirm_quit(write, all)
-  local terms_mounted = utils.find_mounted()
-  local num_windows = #vim.api.nvim_list_wins()
-
-  if terms_mounted then
-    if all == false and num_windows > 1 then
-      -- Only closing one of multiple windows
-      utils.write_quit(write, false)
-    else
-      -- Closing all windows or the only window
-      vim.ui.input({prompt = "Active terminals. Exit? (y/n/[s]how) "}, function(input)
-        if input == "y" then
-          utils.write_quit(write, true)
-        elseif input == "" or input == "s" or input == "show" then
-          menu.show_menu()
-        end
-      end)
-    end
-  else
-    utils.write_quit(write, all)
   end
 end
 

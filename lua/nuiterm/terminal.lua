@@ -140,6 +140,11 @@ function Terminal:create_window(tpage)
   end
 
   self.windows[tpage]:mount()
+
+  -- Remove nui's QuitPre/WinClosed handlers that intercept :q/:qa
+  pcall(vim.api.nvim_del_augroup_by_name, self.windows[tpage]._.augroup.unmount)
+  pcall(vim.api.nvim_del_augroup_by_name, self.windows[tpage]._.augroup.hide)
+
   vim.api.nvim_win_set_option(self.windows[tpage].winid,"number",false)
   vim.api.nvim_win_set_buf(self.windows[tpage].winid, self.bufnr)
   self.windows[tpage].bufnr = self.bufnr
@@ -235,6 +240,9 @@ function Terminal:mount(cmd)
       return vim.fn.termopen(term_cmd, {
         -- Ensure terminal object is destroyed when closed
         on_exit=function()
+          if vim.v.exiting ~= vim.NIL or vim.v.dying > 0 then
+            return
+          end
           vim.api.nvim_feedkeys("0", "n", true)
           self.bufnr = nil
           self:unmount()
@@ -244,6 +252,22 @@ function Terminal:mount(cmd)
     end)
     vim.api.nvim_buf_set_option(self.bufnr,"filetype","terminal")
     utils.rename_buffer(self.bufnr,self.bufname)
+
+    -- Close terminal windows when buffer leaves so session managers
+    -- don't save them
+    local term = self
+    vim.api.nvim_create_autocmd("BufWinLeave", {
+      buffer = self.bufnr,
+      callback = function()
+        if not term.windows then return end
+        for tpage, win in pairs(term.windows) do
+          if win and win.winid and vim.api.nvim_win_is_valid(win.winid) then
+            pcall(vim.api.nvim_win_close, win.winid, true)
+          end
+          term.windows[tpage] = nil
+        end
+      end,
+    })
   end
 end
 
@@ -267,6 +291,27 @@ end
 --- Hide terminal on all tabpages
 ---
 function Terminal:hide_all()
+  if not self.windows then return end
+
+  -- If the terminal is the only window, create a fallback so hiding
+  -- doesn't accidentally quit Neovim
+  local term_wins = {}
+  for _, win_obj in pairs(self.windows) do
+    if win_obj and win_obj.winid then
+      term_wins[win_obj.winid] = true
+    end
+  end
+  local has_fallback = false
+  for _, winid in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if not term_wins[winid] then
+      has_fallback = true
+      break
+    end
+  end
+  if not has_fallback and vim.v.dying == 0 and vim.v.exiting == vim.NIL then
+    vim.cmd("topleft vnew")
+  end
+
   for tpage,_ in pairs(self.windows) do
     self:hide_on_tabpage(tpage)
   end

@@ -123,17 +123,6 @@ function utils.get_mounted(type)
   return mounted_terms
 end
 
-function utils.write_quit(write, all)
-  if write and vim.o.modified then
-    vim.cmd[[write]]
-  end
-  if all then
-    vim.cmd[[quitall]]
-  else
-    vim.cmd[[quit]]
-  end
-end
-
 function utils.rename_buffer(bufnr, name)
   vim.api.nvim_buf_set_name(bufnr,name)
   -- Renaming causes duplication of terminal buffer -> delete old buffer
