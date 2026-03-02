@@ -25,7 +25,7 @@ T['usercmds'] = function()
       num_ucmds = num_ucmds + 1
     end
   end
-  equals(num_ucmds, 7)
+  equals(num_ucmds, 8)
 end
 
 T['fixed_buffer_in_window'] = function()
@@ -37,9 +37,10 @@ T['fixed_buffer_in_window'] = function()
 
   child.cmd("Nuiterm")
   child.loop.sleep(100)
-  child.cmd("bnext")
+  -- bnext should fail or stay in terminal buffer due to winfixbuf
+  child.lua([[pcall(vim.cmd, 'bnext')]])
   nequals(string.find(child.api.nvim_buf_get_name(0), "nuiterm:"), nil)
-  child.cmd("bprev")
+  child.lua([[pcall(vim.cmd, 'bprev')]])
   nequals(string.find(child.api.nvim_buf_get_name(0), "nuiterm:"), nil)
 
   -- Allow for changing buffer in window
@@ -47,7 +48,7 @@ T['fixed_buffer_in_window'] = function()
     focus_on_open = true,
     terminal_win_fixed = false,
   })]])
-  child.cmd("bnext")
+  child.lua([[pcall(vim.cmd, 'bnext')]])
   equals(string.find(child.api.nvim_buf_get_name(0), "nuiterm:"), nil)
 end
 

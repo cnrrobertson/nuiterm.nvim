@@ -14,10 +14,6 @@ Some core features of `nuiterm`:
 - Quickly create/toggle/delete/adjust terminals from a popup menu (or with [telescope](https://github.com/nvim-telescope/telescope.nvim) - see [Telescope integration](#telescope-integration))
 - Easily create and toggle task-specific terminals (such as for [`lazygit`](https://github.com/jesseduffield/lazygit) or [`btop`](https://github.com/aristocratos/btop))
 
-Some oddities about `nuiterm` (that may change in the future):
-
-- Can only display one terminal at a time
-
 ## Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
@@ -73,6 +69,8 @@ Nuiterm.config = {
   menu_buf_depth = 1,
   -- Confirm destruction of terminals
   menu_confirm_destroy = true,
+  -- Only allow one terminal visible at a time (per tabpage)
+  exclusive_mode = false,
   -- Keymaps for terminals (see nui.popup for more info)
   keymaps = {},
   ui = {

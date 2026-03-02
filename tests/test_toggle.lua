@@ -111,29 +111,29 @@ T['toggle_same_term_on_different_tabs'] = function()
 
   -- Send to terminal
   child.cmd("NuitermSend cmd=tab2")
-  child.loop.sleep(100)
-  local screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("tab2", screenshot))
+  equals(true, utils.is_in_term_buf(child, "tab2"))
 
   -- Change to new tab and also send to terminal
   child.cmd("tabprev")
   child.cmd("NuitermSend cmd=tab1")
-  child.loop.sleep(100)
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("tab2", screenshot))
-  equals(true, utils.is_in_screenshot("tab1", screenshot))
+
+  -- Same terminal buffer, should have both commands
+  equals(true, utils.is_in_term_buf(child, "tab2"))
+  equals(true, utils.is_in_term_buf(child, "tab1"))
 
   -- Hide terminals on tab 1
   child.cmd("Nuiterm")
-  screenshot = child.get_screenshot()
-  nequals(true, utils.is_in_screenshot("tab2", screenshot))
-  nequals(true, utils.is_in_screenshot("tab1", screenshot))
+  child.lua("_G._shown = require('nuiterm.utils').find_shown() ~= nil")
+  equals(false, child.lua_get('_G._shown'))
 
-  -- Move to tab 2 and ensure both commmands are present
+  -- Move to tab 2 and ensure terminal is still shown there
   child.cmd("tabnext")
-  screenshot = child.get_screenshot()
-  equals(true, utils.is_in_screenshot("tab2", screenshot))
-  equals(true, utils.is_in_screenshot("tab1", screenshot))
+  child.lua("_G._shown = require('nuiterm.utils').find_shown() ~= nil")
+  equals(true, child.lua_get('_G._shown'))
+
+  -- Buffer should still have both commands
+  equals(true, utils.is_in_term_buf(child, "tab2"))
+  equals(true, utils.is_in_term_buf(child, "tab1"))
 end
 
 child.stop()

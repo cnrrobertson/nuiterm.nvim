@@ -77,10 +77,11 @@ function utils.find_by_type_and_num(type,num)
   if (ft == "terminal") then
     _,type,num = utils.find_by_bufnr()
   elseif type == "current" then
-    local tpage = vim.api.nvim_get_current_tabpage()
-    if Nuiterm.windows[tpage] and Nuiterm.windows[tpage].bufnr then
-      local tbufnr = Nuiterm.windows[tpage].bufnr
-      _,type,num = utils.find_by_bufnr(tbufnr)
+    -- Find the currently shown terminal on this tabpage
+    local shown = utils.find_shown()
+    if shown then
+      type = shown[1]
+      num = shown[2]
     else
       type = Nuiterm.config.type
     end

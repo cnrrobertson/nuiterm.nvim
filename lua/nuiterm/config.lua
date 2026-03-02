@@ -33,6 +33,8 @@ local config = {
   menu_buf_depth = 1,
   -- Confirm destruction of terminals
   menu_confirm_destroy = true,
+  -- Only allow one terminal visible at a time (per tabpage)
+  exclusive_mode = false,
   -- Keymaps for terminals (see nui.popup for more info)
   keymaps = {},
   ui = {
